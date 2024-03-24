@@ -22,6 +22,7 @@ import com.cmc.curtaincall.feature.partymember.ui.create.screen.PartyMemberCreat
 import com.cmc.curtaincall.feature.partymember.ui.detail.PartyMemberDetailScreen
 import com.cmc.curtaincall.feature.partymember.ui.list.PartyMemberListScreen
 import com.cmc.curtaincall.feature.partymember.ui.livetalk.PartyMemberLiveTalkScreen
+import com.cmc.curtaincall.feature.partymember.ui.recruit.PartyMemberRecruitScreen
 import io.getstream.chat.android.client.ChatClient
 
 private const val PARTYMEMBER_GRAPH = "partymember_graph"
@@ -110,7 +111,15 @@ fun NavGraphBuilder.partymemberNavGraph(
 ) {
     navigation(startDestination = PartyMemberDestination.PartyMember.route, route = NavGraphLabel.PARTY_MEMBER) {
         composable(route = PartyMemberDestination.PartyMember.route) {
-            PartyMemberScreen { navHostController.navigate("${PartyMemberDestination2.List.route}/$it") }
+            PartyMemberScreen {
+                navHostController.navigate(PartyMemberDestination.Recruit.route)
+            }
+        }
+
+        composable(route = PartyMemberDestination.Recruit.route) {
+            PartyMemberRecruitScreen {
+                navHostController.popBackStack()
+            }
         }
 
         composable(
