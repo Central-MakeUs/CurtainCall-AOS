@@ -1,6 +1,7 @@
 package com.cmc.curtaincall.common.designsystem.custom.poster
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -303,6 +304,48 @@ fun CurtainCallShowPoster(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun CurtainCallTitlePoster(
+    model: Any?,
+    title: String,
+    isSelected: Boolean = false,
+    onSelect: () -> Unit = {}
+) {
+    Column(
+        modifier = Modifier.size(100.dp, 160.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AsyncImage(
+            model = model,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(100f / 134)
+                .clip(RoundedCornerShape(10.dp))
+                .clickable { onSelect() }
+                .then(
+                    if (isSelected) {
+                        Modifier.border(3.dp, CurtainCallTheme.colors.primary, RoundedCornerShape(10.dp))
+                    } else {
+                        Modifier
+                    }
+                ),
+            error = painterResource(R.drawable.ic_error_poster),
+            contentScale = ContentScale.FillBounds
+        )
+        Text(
+            text = title,
+            modifier = Modifier.padding(top = 6.dp),
+            style = CurtainCallTheme.typography.body3.copy(
+                fontWeight = FontWeight.SemiBold,
+                color = Grey1
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

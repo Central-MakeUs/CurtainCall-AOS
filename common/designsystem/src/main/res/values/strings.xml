@@ -105,6 +105,14 @@
     <string name="party_member_recruitment">파티원 모집하기</string>
     <string name="party_member_tooltip">공연을 함께 볼 사람을 구할 수 있어요!</string>
     <string name="party_member_recruit">파티원 모집</string>
+    <string name="party_member_recruit_first_step_title">작품을 선택해주세요.</string>
+    <string name="party_member_first_step">작품</string>
+    <string name="party_member_second_step">일정/인원</string>
+    <string name="party_member_third_step">제목/내용</string>
+    <string name="party_member_show_date_guide">공연 날짜를 선택해주세요.</string>
+    <string name="party_member_show_date_placeholder">날짜를 선택해주세요.</string>
+    <string name="party_member_show_time_guide">시간대를 선택해주세요.</string>
+    <string name="party_member_show_member_number_guide">인원을 선택해주세요.</string>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 

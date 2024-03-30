@@ -12,6 +12,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
+import com.cmc.curtaincall.common.designsystem.theme.Grey6
+import com.cmc.curtaincall.common.designsystem.theme.Grey8
 
 private val ButtonRadius = 10.dp
 private val OutlinedButtonBorderSize = 1.dp
@@ -23,6 +25,8 @@ fun CurtainCallFilledButton(
     enabled: Boolean = true,
     containerColor: Color = CurtainCallTheme.colors.primary,
     contentColor: Color = CurtainCallTheme.colors.onPrimary,
+    disabledContainerColor: Color = Grey8,
+    disabledContentColor: Color = Grey6,
     textStyle: TextStyle = CurtainCallTheme.typography.subTitle4,
     onClick: () -> Unit = {}
 ) {
@@ -32,13 +36,16 @@ fun CurtainCallFilledButton(
         enabled = enabled,
         shape = RoundedCornerShape(ButtonRadius),
         colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor
+            containerColor = containerColor,
+            disabledContainerColor = disabledContainerColor
         ),
         contentPadding = PaddingValues.Absolute()
     ) {
         Text(
             text = text,
-            style = textStyle.copy(color = contentColor)
+            style = textStyle.copy(
+                color = if (enabled) contentColor else disabledContentColor
+            )
         )
     }
 }
