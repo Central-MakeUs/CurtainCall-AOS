@@ -9,11 +9,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.cmc.curtaincall.common.designsystem.R
+import com.cmc.curtaincall.common.navigation.NavGraphLabel
+import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
 import com.cmc.curtaincall.core.navigation.BottomDestination
 import com.cmc.curtaincall.core.navigation.CurtainCallDestination
 import com.cmc.curtaincall.feature.mypage.editprofile.MyPageProfileEditScreen
-import com.cmc.curtaincall.feature.mypage.main.MyPageScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeDetailScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeScreen
 import com.cmc.curtaincall.feature.mypage.party.participation.MyPageParticipationScreen
@@ -39,15 +40,15 @@ private const val MYPAGE_RECRUITMENT = "mypage_recruitment"
 private const val MYPAGE_PARTICIPATION = "mypage_participantion"
 private const val MYPAGE_QUESTIONS = "mypage_questions"
 
-sealed interface MyPageDestination : CurtainCallDestination {
-    object MyPage : MyPageDestination, BottomDestination {
+sealed interface MyPageDestination2 : CurtainCallDestination {
+    object MyPage : MyPageDestination2, BottomDestination {
         override val route = MYPAGE
         override val icon = R.drawable.ic_my
         override val selectIcon = R.drawable.ic_my_sel
         override val label = MYPAGE_LABEL
     }
 
-    object ProfileEdit : MyPageDestination {
+    object ProfileEdit : MyPageDestination2 {
         override val route = MYPAGE_PROFILE_EDIT
         const val profileUrlArg = "profileUrl"
         val routeWithArgs = "$route?" +
@@ -59,27 +60,27 @@ sealed interface MyPageDestination : CurtainCallDestination {
         )
     }
 
-    object SavedPerformance : MyPageDestination {
+    object SavedPerformance : MyPageDestination2 {
         override val route = MYPAGE_SAVED_PERFORMANCE
     }
 
-    object Write : MyPageDestination {
+    object Write : MyPageDestination2 {
         override val route = MYPAGE_WRITE
     }
 
-    object Setting : MyPageDestination {
+    object Setting : MyPageDestination2 {
         override val route = MYPAGE_SETTING
     }
 
-    object DeleteMember : MyPageDestination {
+    object DeleteMember : MyPageDestination2 {
         override val route = MYPAGE_DELETE_MEMBER
     }
 
-    object Notice : MyPageDestination {
+    object Notice : MyPageDestination2 {
         override val route = MYPAGE_NOTICE
     }
 
-    object NoticeDetail : MyPageDestination {
+    object NoticeDetail : MyPageDestination2 {
         override val route = MYPAGE_NOTICE_DETAIL
         const val noticeIdArg = "noticeId"
         val routeWithArgs = "$route/{$noticeIdArg}"
@@ -90,15 +91,15 @@ sealed interface MyPageDestination : CurtainCallDestination {
         )
     }
 
-    object Recruitment : MyPageDestination {
+    object Recruitment : MyPageDestination2 {
         override val route = MYPAGE_RECRUITMENT
     }
 
-    object Participation : MyPageDestination {
+    object Participation : MyPageDestination2 {
         override val route = MYPAGE_PARTICIPATION
     }
 
-    object Questions : MyPageDestination {
+    object Questions : MyPageDestination2 {
         override val route = MYPAGE_QUESTIONS
     }
 }
@@ -108,44 +109,44 @@ fun NavGraphBuilder.mypageNavGraph(
     onLogout: () -> Unit,
     onDeleteMember: () -> Unit
 ) {
-    navigation(startDestination = MyPageDestination.MyPage.route, MYPAGE_GRAPH) {
+    navigation(startDestination = MyPageDestination.MyPage.route, NavGraphLabel.MYPAGE) {
         composable(MyPageDestination.MyPage.route) {
             MyPageScreen(
                 onNavigateSetting = {
-                    navHostController.navigate(MyPageDestination.Setting.route)
+                    navHostController.navigate(MyPageDestination2.Setting.route)
                 },
                 onNavigateProfileEdit = {
                     navHostController.navigate(
-                        MyPageDestination.ProfileEdit.route + "?" +
-                            "${MyPageDestination.ProfileEdit.profileUrlArg}=$it"
+                        MyPageDestination2.ProfileEdit.route + "?" +
+                            "${MyPageDestination2.ProfileEdit.profileUrlArg}=$it"
                     )
                 },
                 onNavigateRecruitment = {
-                    navHostController.navigate(MyPageDestination.Recruitment.route)
+                    navHostController.navigate(MyPageDestination2.Recruitment.route)
                 },
                 onNavigateParticipation = {
-                    navHostController.navigate(MyPageDestination.Participation.route)
+                    navHostController.navigate(MyPageDestination2.Participation.route)
                 },
                 onNavigateSavedPerformance = {
-                    navHostController.navigate(MyPageDestination.SavedPerformance.route)
+                    navHostController.navigate(MyPageDestination2.SavedPerformance.route)
                 },
                 onNavigateWrite = {
-                    navHostController.navigate(MyPageDestination.Write.route)
+                    navHostController.navigate(MyPageDestination2.Write.route)
                 },
                 onNavigateAnnouncement = {
-                    navHostController.navigate(MyPageDestination.Notice.route)
+                    navHostController.navigate(MyPageDestination2.Notice.route)
                 },
                 onNavigateQuestion = {
-                    navHostController.navigate(MyPageDestination.Questions.route)
+                    navHostController.navigate(MyPageDestination2.Questions.route)
                 }
             )
         }
 
         composable(
-            route = MyPageDestination.ProfileEdit.routeWithArgs,
-            arguments = MyPageDestination.ProfileEdit.arguments
+            route = MyPageDestination2.ProfileEdit.routeWithArgs,
+            arguments = MyPageDestination2.ProfileEdit.arguments
         ) { entry ->
-            val profileUrl = entry.arguments?.getString(MyPageDestination.ProfileEdit.profileUrlArg)
+            val profileUrl = entry.arguments?.getString(MyPageDestination2.ProfileEdit.profileUrlArg)
             MyPageProfileEditScreen(
                 profileUrl = profileUrl,
                 onBack = {
@@ -154,8 +155,8 @@ fun NavGraphBuilder.mypageNavGraph(
             )
         }
 
-        composable(MyPageDestination.SavedPerformance.route) { entry ->
-            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination.MyPage.route) }
+        composable(MyPageDestination2.SavedPerformance.route) { entry ->
+            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.MyPage.route) }
             MyPageSavedPerformanceScreen(
                 myPageViewModel = hiltViewModel(parentEntry),
                 onNavigateShowDetail = {
@@ -165,7 +166,7 @@ fun NavGraphBuilder.mypageNavGraph(
             )
         }
 
-        composable(MyPageDestination.Write.route) { entry ->
+        composable(MyPageDestination2.Write.route) { entry ->
             MyPageWriteScreen(
                 onNavigateReviewEdit = { showId, reviewId ->
                     navHostController.navigate("${ShowDestination.ReviewCreate.route}/$showId/$reviewId")
@@ -184,11 +185,11 @@ fun NavGraphBuilder.mypageNavGraph(
             )
         }
 
-        composable(MyPageDestination.Setting.route) {
+        composable(MyPageDestination2.Setting.route) {
             MyPageSettingScreen(
                 onLogout = onLogout,
                 onNavigateDeleteMember = {
-                    navHostController.navigate(MyPageDestination.DeleteMember.route)
+                    navHostController.navigate(MyPageDestination2.DeleteMember.route)
                 },
                 onBack = {
                     navHostController.popBackStack()
@@ -196,28 +197,28 @@ fun NavGraphBuilder.mypageNavGraph(
             )
         }
 
-        composable(MyPageDestination.DeleteMember.route) {
+        composable(MyPageDestination2.DeleteMember.route) {
             MyPageDeleteMemberScreen(
                 onDeleteMember = onDeleteMember,
                 onBack = { navHostController.popBackStack() }
             )
         }
 
-        composable(MyPageDestination.Notice.route) {
+        composable(MyPageDestination2.Notice.route) {
             MyPageNoticeScreen(
                 onNavigateNoticeDetail = {
-                    navHostController.navigate("${MyPageDestination.NoticeDetail.route}/$it")
+                    navHostController.navigate("${MyPageDestination2.NoticeDetail.route}/$it")
                 },
                 onBack = { navHostController.popBackStack() }
             )
         }
 
         composable(
-            route = MyPageDestination.NoticeDetail.routeWithArgs,
-            arguments = MyPageDestination.NoticeDetail.arguments
+            route = MyPageDestination2.NoticeDetail.routeWithArgs,
+            arguments = MyPageDestination2.NoticeDetail.arguments
         ) { entry ->
-            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination.Notice.route) }
-            val noticeId = entry.arguments?.getInt(MyPageDestination.NoticeDetail.noticeIdArg) ?: 0
+            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.Notice.route) }
+            val noticeId = entry.arguments?.getInt(MyPageDestination2.NoticeDetail.noticeIdArg) ?: 0
             MyPageNoticeDetailScreen(
                 myPageNoticeViewModel = hiltViewModel(parentEntry),
                 noticeId = noticeId,
@@ -225,8 +226,8 @@ fun NavGraphBuilder.mypageNavGraph(
             )
         }
 
-        composable(MyPageDestination.Recruitment.route) { entry ->
-            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination.MyPage.route) }
+        composable(MyPageDestination2.Recruitment.route) { entry ->
+            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.MyPage.route) }
             MyPageRecruitmentScreen(
                 myPageViewModel = hiltViewModel(parentEntry),
                 onNavigateRecruitmentDetail = { partyType, partyId ->
@@ -248,8 +249,8 @@ fun NavGraphBuilder.mypageNavGraph(
             )
         }
 
-        composable(MyPageDestination.Participation.route) { entry ->
-            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination.MyPage.route) }
+        composable(MyPageDestination2.Participation.route) { entry ->
+            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.MyPage.route) }
             MyPageParticipationScreen(
                 myPageViewModel = hiltViewModel(parentEntry),
                 onNavigateParticipationDetail = { partyType, partyId ->
@@ -271,7 +272,7 @@ fun NavGraphBuilder.mypageNavGraph(
             )
         }
 
-        composable(MyPageDestination.Questions.route) {
+        composable(MyPageDestination2.Questions.route) {
             MyPageQuestionScreen { navHostController.popBackStack() }
         }
     }

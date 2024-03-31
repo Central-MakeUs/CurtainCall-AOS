@@ -23,4 +23,6 @@ object NavRouteLabel {
     const val PARTY_MEMBER_LIST = "party_member_list"
     const val PARTY_MEMBER_DETAIL = "party_member_detail"
     const val PARTY_MEMBER_CREATE = "party_member_create"
+
+    const val MYPAGE = "mypage"
 }

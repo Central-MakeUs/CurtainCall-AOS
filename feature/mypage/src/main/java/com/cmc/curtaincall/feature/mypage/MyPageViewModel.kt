@@ -1,13 +1,15 @@
-package com.cmc.curtaincall.feature.mypage.main
+package com.cmc.curtaincall.feature.mypage
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.cmc.curtaincall.common.designsystem.component.card.PartyType
 import com.cmc.curtaincall.core.base.BaseViewModel
 import com.cmc.curtaincall.domain.model.favorite.FavoriteShowModel
+import com.cmc.curtaincall.domain.model.member.MemberInfoModel
 import com.cmc.curtaincall.domain.repository.FavoriteRepository
 import com.cmc.curtaincall.domain.repository.MemberRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +26,11 @@ class MyPageViewModel @Inject constructor(
 ) : BaseViewModel<MyPageUiState, MyPageEvent, Nothing>(
     initialState = MyPageUiState()
 ) {
+    private var _memberID = MutableStateFlow(Int.MIN_VALUE)
+    val memberID = _memberID.asStateFlow()
+
+    private var _memberInfoModel = MutableStateFlow(MemberInfoModel())
+    val memberInfoModel = _memberInfoModel.asStateFlow()
 
     private var _memberId = MutableStateFlow(0)
     val memberId: StateFlow<Int> = _memberId.asStateFlow()
@@ -68,8 +75,20 @@ class MyPageViewModel @Inject constructor(
     ).cachedIn(viewModelScope)
 
     init {
+        checkMemberID()
         getMemberId()
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun checkMemberID() {
+        memberRepository.getMemberId()
+            .onEach { _memberID.value = it }
+            .flatMapLatest { memberRepository.requestMemberInfo(it) }
+            .onEach { _memberInfoModel.value = it }
+            .launchIn(viewModelScope)
+    }
+
+    // ////
 
     override fun reduceState(currentState: MyPageUiState, event: MyPageEvent): MyPageUiState =
         when (event) {

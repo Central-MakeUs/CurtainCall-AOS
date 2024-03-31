@@ -31,7 +31,7 @@ import com.cmc.curtaincall.common.designsystem.theme.Nero
 import com.cmc.curtaincall.common.utility.extensions.toChangeFullDate
 import com.cmc.curtaincall.common.utility.extensions.toDateWithDay
 import com.cmc.curtaincall.common.utility.extensions.toTime
-import com.cmc.curtaincall.feature.mypage.main.MyPageViewModel
+import com.cmc.curtaincall.feature.mypage.MyPageViewModel
 import com.cmc.curtaincall.feature.mypage.party.MyPagePartyMenuTab
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
