@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.cmc.curtaincall.common.designsystem.component.navigation.CurtainCallNavigationBar
 import com.cmc.curtaincall.common.navigation.NavGraphLabel
 import com.cmc.curtaincall.common.navigation.destination.HomeDestination
+import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
 import com.cmc.curtaincall.common.navigation.destination.PartyMemberDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
 import com.cmc.curtaincall.domain.type.HomeGuideMenu
@@ -22,7 +23,6 @@ import com.cmc.curtaincall.feature.home.HomeScreen
 import com.cmc.curtaincall.feature.home.guide.HomeGuideScreen
 import com.cmc.curtaincall.feature.home.report.HomeReportScreen
 import com.cmc.curtaincall.feature.livetalk.livetalkNavGraph
-import com.cmc.curtaincall.feature.mypage.MyPageDestination
 import com.cmc.curtaincall.feature.mypage.mypageNavGraph
 import com.cmc.curtaincall.feature.partymember.partymemberNavGraph
 import com.cmc.curtaincall.feature.show.showNavGraph

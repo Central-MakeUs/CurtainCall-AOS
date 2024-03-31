@@ -1,4 +1,4 @@
-package com.cmc.curtaincall.feature.mypage.main
+package com.cmc.curtaincall.feature.mypage
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn

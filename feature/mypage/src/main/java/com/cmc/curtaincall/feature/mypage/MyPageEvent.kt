@@ -1,4 +1,4 @@
-package com.cmc.curtaincall.feature.mypage.main
+package com.cmc.curtaincall.feature.mypage
 
 import com.cmc.curtaincall.core.base.BaseEvent
 import com.cmc.curtaincall.domain.model.member.MemberInfoModel
