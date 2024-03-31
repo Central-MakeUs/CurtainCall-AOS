@@ -19,14 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cmc.curtaincall.common.designsystem.R
-import com.cmc.curtaincall.common.designsystem.extensions.toSp
 import com.cmc.curtaincall.common.designsystem.theme.Bright_Grey
-import com.cmc.curtaincall.common.designsystem.theme.White
-import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
+import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 
 @Composable
 fun CurtainCallSnackbarHost(
@@ -48,32 +47,33 @@ fun CurtainCallSnackbarHost(
 @Composable
 fun BoxScope.CurtainCallSnackbar(
     modifier: Modifier = Modifier,
-    snackbarData: SnackbarData
+    snackbarData: SnackbarData,
+    painter: Painter = painterResource(R.drawable.ic_complete_green)
 ) {
     Box(
         modifier = modifier
-            .padding(bottom = 19.dp)
+            .padding(bottom = 30.dp)
             .fillMaxWidth()
-            .height(60.dp)
+            .height(48.dp)
             .padding(horizontal = 20.dp)
             .background(Bright_Grey.copy(0.9f), RoundedCornerShape(12.dp))
-            .padding(horizontal = 18.dp),
+            .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                painter = painterResource(R.drawable.ic_complete_green),
+                painter = painter,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
                 tint = Color.Unspecified
             )
             Text(
                 text = snackbarData.visuals.message,
-                modifier = Modifier.padding(start = 10.dp),
-                color = White,
-                fontSize = 14.dp.toSp(),
-                fontWeight = FontWeight.Normal,
-                fontFamily = spoqahansanseeo
+                style = CurtainCallTheme.typography.body3.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    color = CurtainCallTheme.colors.background
+                ),
+                modifier = Modifier.padding(start = 10.dp)
             )
         }
     }

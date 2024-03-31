@@ -5,6 +5,5 @@ data class CreatePartyRequest(
     val showAt: String?,
     val title: String,
     val content: String,
-    val maxMemberNum: Int,
-    val category: String
+    val maxMemberNum: Int
 )

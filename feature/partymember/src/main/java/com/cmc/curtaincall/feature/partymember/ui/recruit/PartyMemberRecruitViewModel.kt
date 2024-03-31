@@ -1,5 +1,6 @@
 package com.cmc.curtaincall.feature.partymember.ui.recruit
 
+import androidx.lifecycle.viewModelScope
 import com.cmc.curtaincall.core.base.BaseViewModel
 import com.cmc.curtaincall.domain.enums.ShowGenreType
 import com.cmc.curtaincall.domain.enums.ShowSortType
@@ -8,6 +9,9 @@ import com.cmc.curtaincall.domain.repository.PartyRepository
 import com.cmc.curtaincall.domain.repository.ShowRepository
 import com.kizitonwose.calendar.core.CalendarDay
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -15,7 +19,7 @@ import javax.inject.Inject
 class PartyMemberRecruitViewModel @Inject constructor(
     private val showRepository: ShowRepository,
     private val partyRepository: PartyRepository
-) : BaseViewModel<PartyMemberRecruitUiState, PartyMemberRecruitEvent, Nothing>(
+) : BaseViewModel<PartyMemberRecruitUiState, PartyMemberRecruitEvent, PartyMemberRecruitSideEffect>(
     initialState = PartyMemberRecruitUiState()
 ) {
     init {
@@ -82,13 +86,27 @@ class PartyMemberRecruitViewModel @Inject constructor(
                 currentState.copy(
                     selectShowDate = "",
                     selectShowTime = "",
-                    selectMemberNumber = 2
+                    selectMemberNumber = 2,
+                    title = "",
+                    content = ""
                 )
             }
 
             is PartyMemberRecruitEvent.ChangeMemberNumber -> {
                 currentState.copy(
                     selectMemberNumber = event.memberNumber
+                )
+            }
+
+            is PartyMemberRecruitEvent.WritePartyTitle -> {
+                currentState.copy(
+                    title = event.title
+                )
+            }
+
+            is PartyMemberRecruitEvent.WritePartyContent -> {
+                currentState.copy(
+                    content = event.content
                 )
             }
 
@@ -197,5 +215,36 @@ class PartyMemberRecruitViewModel @Inject constructor(
                 memberNumber = memberNumber
             )
         )
+    }
+
+    fun changePartyTitle(title: String) {
+        sendAction(
+            PartyMemberRecruitEvent.WritePartyTitle(
+                title = title
+            )
+        )
+    }
+
+    fun changePartyContent(content: String) {
+        sendAction(
+            PartyMemberRecruitEvent.WritePartyContent(
+                content = content
+            )
+        )
+    }
+
+    fun createParty() {
+        val state = uiState.value
+        partyRepository.createParty(
+            showId = state.showId,
+            showAt = String.format("%sT%s", state.selectShowDate, state.selectShowTime),
+            title = state.title,
+            content = state.content,
+            maxMemberNum = state.selectMemberNumber
+        ).catch {
+            sendSideEffect(PartyMemberRecruitSideEffect.FailedCreateParty)
+        }.onEach {
+            sendSideEffect(PartyMemberRecruitSideEffect.CreateParty)
+        }.launchIn(viewModelScope)
     }
 }

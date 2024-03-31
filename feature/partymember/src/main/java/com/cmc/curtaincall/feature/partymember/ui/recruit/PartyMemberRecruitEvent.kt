@@ -51,4 +51,12 @@ sealed class PartyMemberRecruitEvent : BaseEvent {
     data class ChangeMemberNumber(
         val memberNumber: Int
     ) : PartyMemberRecruitEvent()
+
+    data class WritePartyTitle(
+        val title: String
+    ) : PartyMemberRecruitEvent()
+
+    data class WritePartyContent(
+        val content: String
+    ) : PartyMemberRecruitEvent()
 }

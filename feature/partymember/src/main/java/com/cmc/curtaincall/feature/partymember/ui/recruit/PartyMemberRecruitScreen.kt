@@ -1,8 +1,7 @@
 package com.cmc.curtaincall.feature.partymember.ui.recruit
 
-import android.view.MotionEvent
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,37 +10,30 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,34 +44,32 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallSearchTitleTopAppBarWithBack
+import com.cmc.curtaincall.common.designsystem.component.basic.CurtainCallSnackbar
+import com.cmc.curtaincall.common.designsystem.component.basic.CurtainCallSnackbarHost
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.buttons.common.CurtainCallFilledButton
 import com.cmc.curtaincall.common.designsystem.component.chips.CurtainCallBasicChip
 import com.cmc.curtaincall.common.designsystem.component.sheets.bottom.CurtainCallShowSortBottomSheet
 import com.cmc.curtaincall.common.designsystem.component.tooltip.CurtainCallShowSortTooltip
-import com.cmc.curtaincall.common.designsystem.custom.common.CurtainCallCalendar
 import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallTitlePoster
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
-import com.cmc.curtaincall.common.designsystem.theme.Grey1
-import com.cmc.curtaincall.common.designsystem.theme.Grey5
-import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey7
-import com.cmc.curtaincall.common.designsystem.theme.Grey9
-import com.cmc.curtaincall.common.utility.extensions.convertDefaultDate
 import com.cmc.curtaincall.domain.enums.ShowGenreType
 import com.cmc.curtaincall.domain.enums.ShowSortType
-import com.cmc.curtaincall.domain.model.show.ShowTimeModel
-import com.kizitonwose.calendar.core.CalendarDay
-import com.kizitonwose.calendar.core.DayPosition
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
 fun PartyMemberRecruitScreen(
     partyMemberRecruitViewModel: PartyMemberRecruitViewModel = hiltViewModel(),
     onBack: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    var snackbarPainter by remember { mutableIntStateOf(R.drawable.ic_complete_green) }
+    var isShowFAB by remember { mutableStateOf(true) }
     val partyMemberRecruitUiState by partyMemberRecruitViewModel.uiState.collectAsStateWithLifecycle()
     SystemUiStatusBar(CurtainCallTheme.colors.background)
     Scaffold(
@@ -101,39 +91,57 @@ fun PartyMemberRecruitScreen(
                 }
             )
         },
+        snackbarHost = {
+            CurtainCallSnackbarHost(snackbarHostState = snackbarHostState) { snackbarData ->
+                CurtainCallSnackbar(
+                    modifier = Modifier.fillMaxWidth(),
+                    snackbarData = snackbarData,
+                    painter = painterResource(snackbarPainter)
+                )
+            }
+        },
         floatingActionButton = {
-            CurtainCallFilledButton(
-                text = stringResource(R.string.next),
-                modifier = Modifier
-                    .padding(bottom = 30.dp)
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-                    .height(51.dp),
-                containerColor = CurtainCallTheme.colors.primary,
-                contentColor = CurtainCallTheme.colors.onPrimary,
-                enabled = when (partyMemberRecruitUiState.phrase) {
-                    1 -> {
-                        partyMemberRecruitUiState.showId != null
-                    }
+            if (isShowFAB) {
+                CurtainCallFilledButton(
+                    text = stringResource(
+                        if (partyMemberRecruitUiState.phrase == 3) {
+                            R.string.finish_write
+                        } else {
+                            R.string.next
+                        }
+                    ),
+                    modifier = Modifier
+                        .padding(bottom = 30.dp)
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
+                        .height(51.dp),
+                    containerColor = CurtainCallTheme.colors.primary,
+                    contentColor = CurtainCallTheme.colors.onPrimary,
+                    enabled = when (partyMemberRecruitUiState.phrase) {
+                        1 -> {
+                            partyMemberRecruitUiState.showId != null
+                        }
 
-                    2 -> {
-                        partyMemberRecruitUiState.selectShowDate.isNotEmpty() &&
-                            partyMemberRecruitUiState.selectShowTime.isNotEmpty()
-                    }
+                        2 -> {
+                            partyMemberRecruitUiState.selectShowDate.isNotEmpty() &&
+                                partyMemberRecruitUiState.selectShowTime.isNotEmpty()
+                        }
 
-                    else -> {
-                        // TODO
-                        false
+                        else -> {
+                            partyMemberRecruitUiState.title.isNotEmpty() &&
+                                partyMemberRecruitUiState.content.isNotEmpty() &&
+                                partyMemberRecruitUiState.content.length < 500
+                        }
+                    },
+                    onClick = {
+                        if (partyMemberRecruitUiState.phrase < 3) {
+                            partyMemberRecruitViewModel.movePhrase(partyMemberRecruitUiState.phrase + 1)
+                        } else {
+                            partyMemberRecruitViewModel.createParty()
+                        }
                     }
-                },
-                onClick = {
-                    if (partyMemberRecruitUiState.phrase < 3) {
-                        partyMemberRecruitViewModel.movePhrase(partyMemberRecruitUiState.phrase + 1)
-                    } else {
-                        // TODO
-                    }
-                }
-            )
+                )
+            }
         },
         floatingActionButtonPosition = FabPosition.Center
     ) { paddingValues ->
@@ -144,6 +152,49 @@ fun PartyMemberRecruitScreen(
                 .background(CurtainCallTheme.colors.background),
             partyMemberRecruitUiState = partyMemberRecruitUiState
         )
+    }
+
+    BackHandler {
+        when (partyMemberRecruitUiState.phrase) {
+            1 -> onBack()
+            2 -> {
+                partyMemberRecruitViewModel.movePhrase(partyMemberRecruitUiState.phrase - 1)
+                partyMemberRecruitViewModel.clearSelection()
+            }
+
+            else -> {
+                partyMemberRecruitViewModel.movePhrase(partyMemberRecruitUiState.phrase - 1)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        partyMemberRecruitViewModel.effects.collectLatest { effect ->
+            isShowFAB = false
+            when (effect) {
+                PartyMemberRecruitSideEffect.CreateParty -> {
+                    snackbarPainter = R.drawable.ic_complete_green
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(
+                            context.getString(R.string.party_member_upload_success)
+                        )
+                    }
+                    delay(2000)
+                    onBack()
+                }
+
+                PartyMemberRecruitSideEffect.FailedCreateParty -> {
+                    snackbarPainter = R.drawable.ic_error_snackbar
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(
+                            context.getString(R.string.party_member_upload_failure)
+                        )
+                    }
+                    delay(2000)
+                    onBack()
+                }
+            }
+        }
     }
 }
 
@@ -168,7 +219,7 @@ private fun PartyMemberRecruitContent(
                 )
             }
 
-            else -> {
+            2 -> {
                 PartyMemberRecruitSecondContent(
                     showStartDate = partyMemberRecruitUiState.showStartDate,
                     showEndDate = partyMemberRecruitUiState.showEndDate,
@@ -176,6 +227,13 @@ private fun PartyMemberRecruitContent(
                     selectShowDate = partyMemberRecruitUiState.selectShowDate,
                     selectShowTime = partyMemberRecruitUiState.selectShowTime,
                     selectMemberNumber = partyMemberRecruitUiState.selectMemberNumber
+                )
+            }
+
+            else -> {
+                PartyMemberRecruitThirdContent(
+                    title = partyMemberRecruitUiState.title,
+                    content = partyMemberRecruitUiState.content
                 )
             }
         }
@@ -293,236 +351,6 @@ private fun ColumnScope.PartyMemberRecruitFirstContent(
                         }
                     )
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun ColumnScope.PartyMemberRecruitSecondContent(
-    partyMemberRecruitViewModel: PartyMemberRecruitViewModel = hiltViewModel(),
-    showStartDate: String = "",
-    showEndDate: String = "",
-    showTimes: List<ShowTimeModel> = listOf(),
-    selectShowDate: String = "",
-    selectShowTime: String = "",
-    selectMemberNumber: Int = 2,
-) {
-    var isDateFocused by remember { mutableStateOf(false) }
-    var isTimeFocused by remember { mutableStateOf(false) }
-    Box(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = stringResource(R.string.party_member_show_date_guide),
-            modifier = Modifier.padding(top = 30.dp, start = 20.dp),
-            style = CurtainCallTheme.typography.subTitle4
-        )
-        Box(
-            modifier = Modifier
-                .padding(top = 64.dp)
-                .padding(horizontal = 20.dp)
-                .fillMaxWidth()
-                .height(44.dp)
-                .background(Grey9, RoundedCornerShape(10.dp))
-                .then(
-                    if (isDateFocused) {
-                        Modifier.border(1.dp, Grey5, RoundedCornerShape(10.dp))
-                    } else {
-                        Modifier
-                    }
-                )
-                .clickable {
-                    isDateFocused = isDateFocused.not()
-                    isTimeFocused = false
-                }
-                .padding(horizontal = 12.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Text(
-                text = selectShowDate.convertDefaultDate().ifEmpty { stringResource(R.string.party_member_show_date_placeholder) },
-                style = CurtainCallTheme.typography.body3.copy(
-                    color = if (selectShowDate.isEmpty()) Grey6 else Grey1
-                )
-            )
-        }
-        if (isDateFocused) {
-            CurtainCallCalendar(
-                modifier = Modifier
-                    .padding(top = 120.dp)
-                    .zIndex(1f)
-                    .align(Alignment.TopCenter)
-                    .width(320.dp),
-                onSelectDays = {
-                    partyMemberRecruitViewModel.selectShowDate(it.first())
-                    isDateFocused = false
-                },
-                startDay = if (showStartDate.isEmpty()) null else CalendarDay(LocalDate.parse(showStartDate, DateTimeFormatter.ISO_DATE), DayPosition.MonthDate),
-                endDay = if (showStartDate.isEmpty()) null else CalendarDay(LocalDate.parse(showEndDate, DateTimeFormatter.ISO_DATE), DayPosition.MonthDate),
-                count = 1,
-                canSelectDayOfWeeks = showTimes
-                    .filter { it.dayOfWeek != "HOL" }
-                    .map { DayOfWeek.valueOf(it.dayOfWeek) }
-            )
-        }
-        Text(
-            text = stringResource(R.string.party_member_show_time_guide),
-            modifier = Modifier.padding(top = 148.dp, start = 20.dp),
-            style = CurtainCallTheme.typography.subTitle4
-        )
-        Box(
-            modifier = Modifier
-                .padding(top = 182.dp)
-                .padding(horizontal = 20.dp)
-                .fillMaxWidth()
-                .height(44.dp)
-                .background(Grey9, RoundedCornerShape(10.dp))
-                .then(
-                    if (isTimeFocused) {
-                        Modifier.border(1.dp, Grey5, RoundedCornerShape(10.dp))
-                    } else {
-                        Modifier
-                    }
-                )
-                .clickable {
-                    if (selectShowDate.isNotEmpty()) {
-                        isTimeFocused = isTimeFocused.not()
-                        isDateFocused = false
-                    }
-                }
-                .padding(horizontal = 12.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Text(
-                text = if (selectShowTime.isNotEmpty()) {
-                    selectShowTime.substring(0, 5)
-                } else {
-                    stringResource(R.string.party_member_show_time_guide)
-                },
-                style = CurtainCallTheme.typography.body3.copy(
-                    color = if (selectShowTime.isEmpty()) Grey6 else Grey1
-                )
-            )
-        }
-        if (isTimeFocused) {
-            Card(
-                modifier = Modifier
-                    .zIndex(1f)
-                    .padding(top = 238.dp)
-                    .align(Alignment.TopCenter)
-                    .width(320.dp)
-                    .heightIn(max = 162.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = CurtainCallTheme.colors.background
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 10.dp
-                )
-            ) {
-                val times = showTimes.filter { it.dayOfWeek == LocalDate.parse(selectShowDate, DateTimeFormatter.ISO_DATE).dayOfWeek.name }
-                var touchItem: Int by remember { mutableStateOf(Int.MIN_VALUE) }
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    itemsIndexed(times) { index, time ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(54.dp)
-                                .background(
-                                    if (touchItem == index) {
-                                        Grey9
-                                    } else {
-                                        CurtainCallTheme.colors.background
-                                    }
-                                )
-                                .pointerInteropFilter { event ->
-                                    when (event.action) {
-                                        MotionEvent.ACTION_DOWN -> {
-                                            touchItem = index
-                                        }
-
-                                        MotionEvent.ACTION_UP -> {
-                                            touchItem = Int.MIN_VALUE
-                                            partyMemberRecruitViewModel.selectShowTime(time.time)
-                                            isTimeFocused = false
-                                        }
-
-                                        else -> return@pointerInteropFilter false
-                                    }
-                                    true
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = time.time.substring(0, 5),
-                                style = CurtainCallTheme.typography.subTitle4
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        Text(
-            text = stringResource(R.string.party_member_show_member_number_guide),
-            modifier = Modifier.padding(top = 266.dp, start = 20.dp),
-            style = CurtainCallTheme.typography.subTitle4
-        )
-        Row(
-            modifier = Modifier
-                .padding(top = 300.dp)
-                .padding(horizontal = 20.dp)
-                .fillMaxWidth()
-                .height(44.dp)
-                .clip(RoundedCornerShape(10.dp))
-        ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .background(CurtainCallTheme.colors.secondary)
-                    .clickable {
-                        if (selectMemberNumber > 2) {
-                            partyMemberRecruitViewModel.changeMemberNumber(selectMemberNumber - 1)
-                        }
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_remove_member_number),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = Color.Unspecified
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .background(Grey9),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = selectMemberNumber.toString(),
-                    style = CurtainCallTheme.typography.subTitle2
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .background(CurtainCallTheme.colors.secondary)
-                    .clickable {
-                        if (selectMemberNumber < 100) {
-                            partyMemberRecruitViewModel.changeMemberNumber(selectMemberNumber + 1)
-                        }
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_add_member_number),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = Color.Unspecified
-                )
             }
         }
     }

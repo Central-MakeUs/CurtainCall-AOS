@@ -51,8 +51,7 @@ interface PartyRepository {
         showAt: String?,
         title: String,
         content: String,
-        maxMemberNum: Int,
-        category: String
+        maxMemberNum: Int
     ): Flow<CreatePartyModel>
 
     fun deleteParty(
