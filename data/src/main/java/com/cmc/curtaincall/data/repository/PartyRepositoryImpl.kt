@@ -83,16 +83,14 @@ class PartyRepositoryImpl @Inject constructor(
         showAt: String?,
         title: String,
         content: String,
-        maxMemberNum: Int,
-        category: String
+        maxMemberNum: Int
     ): Flow<CreatePartyModel> =
         partyRemoteSource.createParty(
             showId = showId,
             showAt = showAt,
             title = title,
             content = content,
-            maxMemberNum = maxMemberNum,
-            category = category
+            maxMemberNum = maxMemberNum
         ).map { it.toModel() }
 
     override fun deleteParty(partyId: Int): Flow<Boolean> =

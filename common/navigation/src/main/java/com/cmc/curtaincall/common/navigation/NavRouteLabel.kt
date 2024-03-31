@@ -18,6 +18,8 @@ object NavRouteLabel {
     const val SHOW_LOST_PROPERTY_DETAIL = "show_lost_property_detail"
     const val SHOW_LOST_PROPERTY_CREATE = "show_lost_property_create"
     const val PARTY_MEMBER = "party_member"
+    const val PARTY_MEMBER_RECRUIT = "party_member_recruit"
+
     const val PARTY_MEMBER_LIST = "party_member_list"
     const val PARTY_MEMBER_DETAIL = "party_member_detail"
     const val PARTY_MEMBER_CREATE = "party_member_create"

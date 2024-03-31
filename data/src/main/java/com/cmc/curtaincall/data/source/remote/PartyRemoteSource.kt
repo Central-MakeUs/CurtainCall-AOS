@@ -61,8 +61,7 @@ class PartyRemoteSource @Inject constructor(
         showAt: String?,
         title: String,
         content: String,
-        maxMemberNum: Int,
-        category: String
+        maxMemberNum: Int
     ): Flow<CreatePartyResponse> = flow {
         emit(
             partyService.createParty(
@@ -71,8 +70,7 @@ class PartyRemoteSource @Inject constructor(
                     showAt = showAt,
                     title = title,
                     content = content,
-                    maxMemberNum = maxMemberNum,
-                    category = category
+                    maxMemberNum = maxMemberNum
                 )
             )
         )

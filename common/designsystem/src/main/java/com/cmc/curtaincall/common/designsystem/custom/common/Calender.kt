@@ -57,7 +57,11 @@ private val UnSelectedCalendarDay = CalendarDay(LocalDate.MIN, DayPosition.InDat
 @Composable
 fun CurtainCallCalendar(
     modifier: Modifier = Modifier,
-    onSelectDays: (List<CalendarDay>) -> Unit = {}
+    onSelectDays: (List<CalendarDay>) -> Unit = {},
+    startDay: CalendarDay? = null,
+    endDay: CalendarDay? = null,
+    count: Int = 2,
+    canSelectDayOfWeeks: List<DayOfWeek> = DayOfWeek.values().toList()
 ) {
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
     val startMonth = remember { currentMonth.minusMonths(12) }
@@ -101,14 +105,17 @@ fun CurtainCallCalendar(
             dayContent = { day ->
                 CurtainCallDay(
                     day = day,
+                    startDay = startDay,
+                    endDay = endDay,
                     selectedCalendarDays = selectedDays,
                     onDayClick = {
-                        if (selectedDays.size == 2) {
+                        if (selectedDays.size == count) {
                             selectedDays = listOf(it)
                         } else {
                             selectedDays = (selectedDays + listOf(it)).sortedBy { it.date }
                         }
-                    }
+                    },
+                    canSelectDayOfWeeks = canSelectDayOfWeeks
                 )
             }
         )
@@ -206,13 +213,22 @@ private fun CurtainCallMonthHeader(
 @Composable
 private fun CurtainCallDay(
     day: CalendarDay,
+    startDay: CalendarDay? = null,
+    endDay: CalendarDay? = null,
     selectedCalendarDays: List<CalendarDay> = listOf(),
-    onDayClick: (CalendarDay) -> Unit = {}
+    onDayClick: (CalendarDay) -> Unit = {},
+    canSelectDayOfWeeks: List<DayOfWeek> = DayOfWeek.values().toList()
 ) {
     Box(
         modifier = Modifier
             .aspectRatio(1f)
-            .clickable { onDayClick(day) },
+            .clickable {
+                if (invalidateDay(day, startDay, endDay)) {
+                    if (day.date.dayOfWeek in canSelectDayOfWeeks) {
+                        onDayClick(day)
+                    }
+                }
+            },
         contentAlignment = Alignment.Center
     ) {
         if (day.position == DayPosition.MonthDate) {
@@ -281,23 +297,44 @@ private fun CurtainCallDay(
                             DayOfWeek.SUNDAY -> Red
                             else -> Grey1
                         }.copy(
-                            if (selectedCalendarDays.contains(day)) {
+                            if (invalidateDay(day, startDay, endDay) && day.date.dayOfWeek in canSelectDayOfWeeks) {
                                 1f
                             } else {
-                                if (selectedCalendarDays.size == 2 &&
-                                    selectedCalendarDays[0].date < day.date &&
-                                    day.date < selectedCalendarDays[1].date
-                                ) {
-                                    1f
-                                } else {
-                                    0.5f
-                                }
+                                0.5f
                             }
                         )
                     )
                 )
             }
         }
+    }
+}
+
+private fun invalidateDay(
+    day: CalendarDay,
+    startDay: CalendarDay?,
+    endDay: CalendarDay?
+): Boolean {
+    if (startDay != null) {
+        if (endDay != null) {
+            if (startDay.date <= day.date && day.date <= endDay.date) {
+                return true
+            }
+            return false
+        } else {
+            if (startDay.date <= day.date) {
+                return true
+            }
+            return false
+        }
+    } else {
+        if (endDay != null) {
+            if (day.date <= endDay.date) {
+                return true
+            }
+            return false
+        }
+        return true
     }
 }
 

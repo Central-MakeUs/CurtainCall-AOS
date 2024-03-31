@@ -13,6 +13,7 @@
     <string name="finish_recruitment">모집완료</string>
     <string name="recruiting">모집중</string>
     <string name="finish_select">선택완료</string>
+    <string name="finish_write">작성 완료</string>
 
     <!-- app -->
     <string name="onboarding_first_banner_title">작품 정보뿐만 아니라 분실물까지!</string>
@@ -104,6 +105,22 @@
     <string name="party_member">파티원</string>
     <string name="party_member_recruitment">파티원 모집하기</string>
     <string name="party_member_tooltip">공연을 함께 볼 사람을 구할 수 있어요!</string>
+    <string name="party_member_recruit">파티원 모집</string>
+    <string name="party_member_recruit_first_step_title">작품을 선택해주세요.</string>
+    <string name="party_member_first_step">작품</string>
+    <string name="party_member_second_step">일정/인원</string>
+    <string name="party_member_third_step">제목/내용</string>
+    <string name="party_member_show_date_guide">공연 날짜를 선택해주세요.</string>
+    <string name="party_member_show_date_placeholder">날짜를 선택해주세요.</string>
+    <string name="party_member_show_time_guide">시간대를 선택해주세요.</string>
+    <string name="party_member_show_member_number_guide">인원을 선택해주세요.</string>
+    <string name="party_member_show_title_guide">제목을 적어주세요.</string>
+    <string name="party_member_show_title_placeholder">예시) OOO 함께 볼 사람 구해요!</string>
+    <string name="party_member_show_content_guide">내용을 적어주세요.</string>
+    <string name="party_member_show_content_placeholder">예시)\n이번주 공연 같이 볼 3명 구합니다\n구체적인 내용은 톡방 생성되면 이야기해요!</string>
+    <string name="party_member_show_content_restrict">500자 이내로 작성해주세요</string>
+    <string name="party_member_upload_success">파티원 모집글이 업로드되었어요</string>
+    <string name="party_member_upload_failure">오류로 인해 모집글 업로드에 실패했어요</string>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 

@@ -32,7 +32,6 @@ import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallSearchTitleTopAppBarWithCalendar
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.buttons.common.CurtainCallFilledButton
-import com.cmc.curtaincall.common.designsystem.component.card.PartyType
 import com.cmc.curtaincall.common.designsystem.component.tooltip.CurtainCallPartyTooltip
 import com.cmc.curtaincall.common.designsystem.custom.common.CurtainCallCalendar
 import com.cmc.curtaincall.common.designsystem.custom.party.PartyContent
@@ -44,7 +43,7 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun PartyMemberScreen(
-    onNavigateList: (PartyType) -> Unit
+    onNavigateToRecruit: () -> Unit = {}
 ) {
     var selectedCalendarDays = remember { mutableStateOf<List<CalendarDay>>(listOf()) }
     var isShowCalendar by remember { mutableStateOf(false) }
@@ -71,7 +70,7 @@ fun PartyMemberScreen(
                     fontWeight = FontWeight.SemiBold
                 ),
                 onClick = {
-                    // TODO 파티원 모집
+                    onNavigateToRecruit()
                 }
             )
         },
