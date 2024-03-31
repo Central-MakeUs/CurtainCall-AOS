@@ -1,4 +1,4 @@
-package com.cmc.curtaincall.feature.partymember.ui.recruit
+package com.cmc.curtaincall.feature.partymember.ui.recruit.screen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -44,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallSearchTitleTopAppBarWithBack
+import com.cmc.curtaincall.common.designsystem.component.appbars.SearchAppBarState
 import com.cmc.curtaincall.common.designsystem.component.basic.CurtainCallSnackbar
 import com.cmc.curtaincall.common.designsystem.component.basic.CurtainCallSnackbarHost
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
@@ -56,6 +57,9 @@ import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey7
 import com.cmc.curtaincall.domain.enums.ShowGenreType
 import com.cmc.curtaincall.domain.enums.ShowSortType
+import com.cmc.curtaincall.feature.partymember.ui.recruit.PartyMemberRecruitSideEffect
+import com.cmc.curtaincall.feature.partymember.ui.recruit.PartyMemberRecruitUiState
+import com.cmc.curtaincall.feature.partymember.ui.recruit.PartyMemberRecruitViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -71,11 +75,14 @@ fun PartyMemberRecruitScreen(
     var snackbarPainter by remember { mutableIntStateOf(R.drawable.ic_complete_green) }
     var isShowFAB by remember { mutableStateOf(true) }
     val partyMemberRecruitUiState by partyMemberRecruitViewModel.uiState.collectAsStateWithLifecycle()
+    val searchAppBarState by partyMemberRecruitViewModel.searchAppBarState.collectAsStateWithLifecycle()
+
     SystemUiStatusBar(CurtainCallTheme.colors.background)
     Scaffold(
         topBar = {
             CurtainCallSearchTitleTopAppBarWithBack(
                 title = stringResource(R.string.party_member_recruit),
+                searchAppBarState = searchAppBarState,
                 onBack = {
                     when (partyMemberRecruitUiState.phrase) {
                         1 -> onBack()
@@ -150,7 +157,8 @@ fun PartyMemberRecruitScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
                 .background(CurtainCallTheme.colors.background),
-            partyMemberRecruitUiState = partyMemberRecruitUiState
+            partyMemberRecruitUiState = partyMemberRecruitUiState,
+            searchAppBarState = searchAppBarState
         )
     }
 
@@ -201,8 +209,10 @@ fun PartyMemberRecruitScreen(
 @Composable
 private fun PartyMemberRecruitContent(
     modifier: Modifier = Modifier,
-    partyMemberRecruitUiState: PartyMemberRecruitUiState
+    partyMemberRecruitUiState: PartyMemberRecruitUiState,
+    searchAppBarState: SearchAppBarState
 ) {
+    val showInfoModels = partyMemberRecruitUiState.showInfoModels.collectAsLazyPagingItems()
     Column(modifier) {
         PartyMemberRecruitPhrase(
             modifier = Modifier
@@ -212,7 +222,8 @@ private fun PartyMemberRecruitContent(
         )
         when (partyMemberRecruitUiState.phrase) {
             1 -> {
-                PartyMemberRecruitFirstContent(
+                PartyMemberRecruitFirstScreen(
+                    searchAppBarState = searchAppBarState,
                     sortType = partyMemberRecruitUiState.sortType,
                     genreType = partyMemberRecruitUiState.genreType,
                     isShowTooltip = partyMemberRecruitUiState.isShowTooltip
@@ -220,7 +231,7 @@ private fun PartyMemberRecruitContent(
             }
 
             2 -> {
-                PartyMemberRecruitSecondContent(
+                PartyMemberRecruitSecondScreen(
                     showStartDate = partyMemberRecruitUiState.showStartDate,
                     showEndDate = partyMemberRecruitUiState.showEndDate,
                     showTimes = partyMemberRecruitUiState.showTimes,
@@ -231,7 +242,7 @@ private fun PartyMemberRecruitContent(
             }
 
             else -> {
-                PartyMemberRecruitThirdContent(
+                PartyMemberRecruitThirdScreen(
                     title = partyMemberRecruitUiState.title,
                     content = partyMemberRecruitUiState.content
                 )
@@ -241,8 +252,9 @@ private fun PartyMemberRecruitContent(
 }
 
 @Composable
-private fun ColumnScope.PartyMemberRecruitFirstContent(
+private fun ColumnScope.PartyMemberRecruitFirstScreen(
     partyMemberRecruitViewModel: PartyMemberRecruitViewModel = hiltViewModel(),
+    searchAppBarState: SearchAppBarState = SearchAppBarState(),
     sortType: ShowSortType,
     genreType: ShowGenreType,
     isShowTooltip: Boolean
@@ -266,72 +278,14 @@ private fun ColumnScope.PartyMemberRecruitFirstContent(
         modifier = Modifier.padding(start = 20.dp, top = 30.dp),
         style = CurtainCallTheme.typography.subTitle4
     )
-    Box(
-        modifier = Modifier
-            .padding(top = 10.dp)
-            .fillMaxSize()
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CurtainCallBasicChip(
-                text = ShowGenreType.PLAY.value,
-                textStyle = CurtainCallTheme.typography.body2.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    color = CurtainCallTheme.colors.primary
-                ),
-                isSelect = genreType == ShowGenreType.PLAY,
-                onClick = { partyMemberRecruitViewModel.changeShowGenreType(ShowGenreType.PLAY) }
-            )
-            CurtainCallBasicChip(
-                modifier = Modifier.padding(start = 8.dp),
-                text = ShowGenreType.MUSICAL.value,
-                textStyle = CurtainCallTheme.typography.body2.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    color = CurtainCallTheme.colors.primary
-                ),
-                isSelect = genreType == ShowGenreType.MUSICAL,
-                onClick = { partyMemberRecruitViewModel.changeShowGenreType(ShowGenreType.MUSICAL) }
-            )
-            Spacer(Modifier.weight(1f))
-            Row(
-                modifier = Modifier.clickable { isShowSortBottomSheet = true },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = sortType.value,
-                    style = CurtainCallTheme.typography.body3
-                )
-                Icon(
-                    painter = painterResource(R.drawable.ic_down),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(start = 2.dp)
-                        .size(12.dp),
-                    tint = Color.Unspecified
-                )
-            }
-        }
-        if (isShowTooltip && sortType == ShowSortType.POPULAR) {
-            CurtainCallShowSortTooltip(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 31.dp, end = 20.dp)
-                    .zIndex(1f),
-                text = stringResource(R.string.show_coach_mark),
-                onClick = { partyMemberRecruitViewModel.hideTooltip() }
-            )
-        }
 
+    if (searchAppBarState.isSearchMode.value) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 49.dp),
-            contentPadding = PaddingValues(20.dp),
+                .padding(top = 32.dp)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
@@ -350,6 +304,95 @@ private fun ColumnScope.PartyMemberRecruitFirstContent(
                             )
                         }
                     )
+                }
+            }
+        }
+    } else {
+        Box(
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxSize()
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CurtainCallBasicChip(
+                    text = ShowGenreType.PLAY.value,
+                    textStyle = CurtainCallTheme.typography.body2.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = CurtainCallTheme.colors.primary
+                    ),
+                    isSelect = genreType == ShowGenreType.PLAY,
+                    onClick = { partyMemberRecruitViewModel.changeShowGenreType(ShowGenreType.PLAY) }
+                )
+                CurtainCallBasicChip(
+                    modifier = Modifier.padding(start = 8.dp),
+                    text = ShowGenreType.MUSICAL.value,
+                    textStyle = CurtainCallTheme.typography.body2.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = CurtainCallTheme.colors.primary
+                    ),
+                    isSelect = genreType == ShowGenreType.MUSICAL,
+                    onClick = { partyMemberRecruitViewModel.changeShowGenreType(ShowGenreType.MUSICAL) }
+                )
+                Spacer(Modifier.weight(1f))
+                Row(
+                    modifier = Modifier.clickable { isShowSortBottomSheet = true },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = sortType.value,
+                        style = CurtainCallTheme.typography.body3
+                    )
+                    Icon(
+                        painter = painterResource(R.drawable.ic_down),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(start = 2.dp)
+                            .size(12.dp),
+                        tint = Color.Unspecified
+                    )
+                }
+            }
+            if (isShowTooltip && sortType == ShowSortType.POPULAR) {
+                CurtainCallShowSortTooltip(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 31.dp, end = 20.dp)
+                        .zIndex(1f),
+                    text = stringResource(R.string.show_coach_mark),
+                    onClick = { partyMemberRecruitViewModel.hideTooltip() }
+                )
+            }
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 49.dp),
+                contentPadding = PaddingValues(20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items(showInfoModels.itemCount) { index ->
+                    showInfoModels[index]?.let { showInfoModel ->
+                        CurtainCallTitlePoster(
+                            model = showInfoModel.poster,
+                            title = showInfoModel.name,
+                            isSelected = uiState.showId == showInfoModel.id,
+                            onSelect = {
+                                partyMemberRecruitViewModel.selectShowPoster(
+                                    showId = showInfoModel.id,
+                                    showStartDate = showInfoModel.startDate,
+                                    showEndDate = showInfoModel.endDate,
+                                    showTimes = showInfoModel.showTimes
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }

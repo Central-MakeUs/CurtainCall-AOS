@@ -1,4 +1,4 @@
-package com.cmc.curtaincall.feature.partymember.ui.recruit
+package com.cmc.curtaincall.feature.partymember.ui.recruit.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,9 +23,10 @@ import com.cmc.curtaincall.common.designsystem.theme.Grey1
 import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey9
 import com.cmc.curtaincall.common.designsystem.theme.Red
+import com.cmc.curtaincall.feature.partymember.ui.recruit.PartyMemberRecruitViewModel
 
 @Composable
-fun ColumnScope.PartyMemberRecruitThirdContent(
+fun ColumnScope.PartyMemberRecruitThirdScreen(
     partyMemberRecruitViewModel: PartyMemberRecruitViewModel = hiltViewModel(),
     title: String = "",
     content: String = ""
@@ -93,7 +94,7 @@ fun ColumnScope.PartyMemberRecruitThirdContent(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 12.dp),
+                .padding(horizontal = 14.dp, vertical = 12.dp)
         ) {
             if (content.isEmpty()) {
                 Text(

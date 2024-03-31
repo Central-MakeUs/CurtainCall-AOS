@@ -1,6 +1,7 @@
 package com.cmc.curtaincall.feature.partymember.ui.recruit
 
 import androidx.lifecycle.viewModelScope
+import com.cmc.curtaincall.common.designsystem.component.appbars.SearchAppBarState
 import com.cmc.curtaincall.core.base.BaseViewModel
 import com.cmc.curtaincall.domain.enums.ShowGenreType
 import com.cmc.curtaincall.domain.enums.ShowSortType
@@ -9,7 +10,10 @@ import com.cmc.curtaincall.domain.repository.PartyRepository
 import com.cmc.curtaincall.domain.repository.ShowRepository
 import com.kizitonwose.calendar.core.CalendarDay
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.time.format.DateTimeFormatter
@@ -22,8 +26,33 @@ class PartyMemberRecruitViewModel @Inject constructor(
 ) : BaseViewModel<PartyMemberRecruitUiState, PartyMemberRecruitEvent, PartyMemberRecruitSideEffect>(
     initialState = PartyMemberRecruitUiState()
 ) {
+    private var _searchAppBarState = MutableStateFlow(SearchAppBarState())
+    val searchAppBarState = _searchAppBarState.asStateFlow()
+
     init {
         fetchShowInfoModels()
+        _searchAppBarState.value = _searchAppBarState.value.copy(
+            onSearch = {
+                _searchAppBarState.value.isSearchMode.value = true
+                _searchAppBarState.value.isDoneSearch.value = false
+                clearShowList()
+            },
+            onClear = {
+                _searchAppBarState.value.searchText.value = ""
+                _searchAppBarState.value.isDoneSearch.value = false
+                clearShowList()
+            },
+            onCancel = {
+                _searchAppBarState.value.searchText.value = ""
+                _searchAppBarState.value.isSearchMode.value = false
+                _searchAppBarState.value.isDoneSearch.value = false
+                fetchShowInfoModels()
+            },
+            onDone = {
+                _searchAppBarState.value.isDoneSearch.value = true
+                searchShowList(_searchAppBarState.value.searchText.value)
+            }
+        )
     }
 
     override fun reduceState(currentState: PartyMemberRecruitUiState, event: PartyMemberRecruitEvent): PartyMemberRecruitUiState =
@@ -42,6 +71,10 @@ class PartyMemberRecruitViewModel @Inject constructor(
 
             is PartyMemberRecruitEvent.GetShowInfoModels -> {
                 currentState.copy(showInfoModels = event.showInfoModels)
+            }
+
+            PartyMemberRecruitEvent.ClearShowInfoModels -> {
+                currentState.copy(showInfoModels = flowOf())
             }
 
             PartyMemberRecruitEvent.ShowTooltip -> {
@@ -108,10 +141,6 @@ class PartyMemberRecruitViewModel @Inject constructor(
                 currentState.copy(
                     content = event.content
                 )
-            }
-
-            else -> {
-                currentState
             }
         }
 
@@ -246,5 +275,17 @@ class PartyMemberRecruitViewModel @Inject constructor(
         }.onEach {
             sendSideEffect(PartyMemberRecruitSideEffect.CreateParty)
         }.launchIn(viewModelScope)
+    }
+
+    private fun clearShowList() {
+        sendAction(PartyMemberRecruitEvent.ClearShowInfoModels)
+    }
+
+    private fun searchShowList(query: String) {
+        sendAction(
+            PartyMemberRecruitEvent.GetShowInfoModels(
+                showInfoModels = showRepository.fetchSearchShowList(query.trim())
+            )
+        )
     }
 }

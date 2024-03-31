@@ -335,6 +335,7 @@ fun CurtainCallTitlePoster(
                     }
                 ),
             error = painterResource(R.drawable.ic_error_poster),
+            placeholder = painterResource(R.drawable.ic_error_poster),
             contentScale = ContentScale.FillBounds
         )
         Text(

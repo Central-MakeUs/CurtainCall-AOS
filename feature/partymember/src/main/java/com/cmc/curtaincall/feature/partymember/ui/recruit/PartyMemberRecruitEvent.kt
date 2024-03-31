@@ -25,6 +25,8 @@ sealed class PartyMemberRecruitEvent : BaseEvent {
         val showInfoModels: Flow<PagingData<ShowInfoModel>>
     ) : PartyMemberRecruitEvent()
 
+    object ClearShowInfoModels : PartyMemberRecruitEvent()
+
     object ShowTooltip : PartyMemberRecruitEvent()
 
     object HideTooltip : PartyMemberRecruitEvent()

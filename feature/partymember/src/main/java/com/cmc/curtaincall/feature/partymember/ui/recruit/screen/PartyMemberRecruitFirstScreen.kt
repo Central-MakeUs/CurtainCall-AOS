@@ -1,4 +1,4 @@
-package com.cmc.curtaincall.feature.partymember.ui.recruit
+package com.cmc.curtaincall.feature.partymember.ui.recruit.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,9 +39,10 @@ import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallTitlePos
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.domain.enums.ShowGenreType
 import com.cmc.curtaincall.domain.enums.ShowSortType
+import com.cmc.curtaincall.feature.partymember.ui.recruit.PartyMemberRecruitViewModel
 
 @Composable
-private fun ColumnScope.PartyMemberRecruitFirstContent(
+private fun ColumnScope.PartyMemberRecruitFirstScreen(
     partyMemberRecruitViewModel: PartyMemberRecruitViewModel = hiltViewModel(),
     sortType: ShowSortType,
     genreType: ShowGenreType,

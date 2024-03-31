@@ -1,4 +1,4 @@
-package com.cmc.curtaincall.feature.partymember.ui.recruit
+package com.cmc.curtaincall.feature.partymember.ui.recruit.screen
 
 import android.view.MotionEvent
 import androidx.compose.foundation.background
@@ -47,6 +47,7 @@ import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey9
 import com.cmc.curtaincall.common.utility.extensions.convertDefaultDate
 import com.cmc.curtaincall.domain.model.show.ShowTimeModel
+import com.cmc.curtaincall.feature.partymember.ui.recruit.PartyMemberRecruitViewModel
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.DayPosition
 import java.time.DayOfWeek
@@ -55,7 +56,7 @@ import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ColumnScope.PartyMemberRecruitSecondContent(
+fun ColumnScope.PartyMemberRecruitSecondScreen(
     partyMemberRecruitViewModel: PartyMemberRecruitViewModel = hiltViewModel(),
     showStartDate: String = "",
     showEndDate: String = "",
