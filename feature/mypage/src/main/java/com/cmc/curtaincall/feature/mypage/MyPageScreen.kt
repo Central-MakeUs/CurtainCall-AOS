@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,6 +60,7 @@ import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
 @Composable
 fun MyPageScreen(
     myPageViewModel: MyPageViewModel = hiltViewModel(),
+    onNavigateToProfile: () -> Unit = {},
     onNavigateSetting: () -> Unit,
     onNavigateProfileEdit: (String?) -> Unit,
     onNavigateRecruitment: () -> Unit,
@@ -70,6 +72,11 @@ fun MyPageScreen(
 ) {
     val scrollState = rememberScrollState()
     val memberInfoModel by myPageViewModel.memberInfoModel.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        myPageViewModel.requestMemberInfo()
+    }
+
     SystemUiStatusBar(White)
     Column(
         modifier = Modifier
@@ -82,7 +89,8 @@ fun MyPageScreen(
                 .padding(horizontal = 20.dp, vertical = 40.dp)
                 .fillMaxWidth(),
             imageUrl = memberInfoModel.imageUrl,
-            nickname = memberInfoModel.nickname
+            nickname = memberInfoModel.nickname,
+            onNavigateToProfile = onNavigateToProfile
         )
         Spacer(
             modifier = Modifier
@@ -307,7 +315,8 @@ private fun MyPageActivity(
 private fun MyPageProfile(
     modifier: Modifier = Modifier,
     imageUrl: String?,
-    nickname: String
+    nickname: String,
+    onNavigateToProfile: () -> Unit = {}
 ) {
     Row(
         modifier = modifier,
@@ -324,7 +333,7 @@ private fun MyPageProfile(
             contentScale = ContentScale.FillBounds
         )
         Text(
-            text = nickname,
+            text = String.format("%s님", nickname),
             modifier = Modifier.padding(start = 14.dp),
             style = CurtainCallTheme.typography.subTitle4
         )
@@ -333,9 +342,7 @@ private fun MyPageProfile(
             modifier = Modifier
                 .border(1.dp, Grey5, RoundedCornerShape(30.dp))
                 .padding(horizontal = 10.dp, vertical = 4.dp)
-                .clickable {
-                    // TODO
-                },
+                .clickable { onNavigateToProfile() },
             contentAlignment = Alignment.Center
         ) {
             Text(

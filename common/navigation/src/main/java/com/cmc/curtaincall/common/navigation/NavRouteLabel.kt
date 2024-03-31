@@ -25,4 +25,5 @@ object NavRouteLabel {
     const val PARTY_MEMBER_CREATE = "party_member_create"
 
     const val MYPAGE = "mypage"
+    const val MYPAGE_PROFILE = "mypage_profile"
 }

@@ -14,6 +14,7 @@
     <string name="recruiting">모집중</string>
     <string name="finish_select">선택완료</string>
     <string name="finish_write">작성 완료</string>
+    <string name="complete">확인</string>
 
     <!-- app -->
     <string name="onboarding_first_banner_title">작품 정보뿐만 아니라 분실물까지!</string>
@@ -136,7 +137,7 @@
     <string name="mypage_profile_curtaincall_show_copyright">작품 정보 출처</string>
     <string name="mypage_profile_curtaincall_show_copyright_name">(재)예술경영지원센터 공연예술통합전산망</string>
     <string name="mypage_profile_curtaincall_show_copyright_date">© 2023. Curtain Call all rights reserved.</string>
-
+    <string name="mypage_profile_edit_complete">프로필 변경 완료</string>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
     <!-- common -->

@@ -14,4 +14,8 @@ sealed class MyPageDestination : CurtainCallDestination {
         override val selectIcon = R.drawable.ic_my_sel
         override val label = MYPAGE_LABEL
     }
+
+    object Profile : MyPageDestination() {
+        override val route = NavRouteLabel.MYPAGE_PROFILE
+    }
 }
