@@ -122,6 +122,21 @@
     <string name="party_member_upload_success">파티원 모집글이 업로드되었어요</string>
     <string name="party_member_upload_failure">오류로 인해 모집글 업로드에 실패했어요</string>
 
+    <!-- mypage -->
+    <string name="mypage_profile_edit">프로필 변경</string>
+    <string name="mypage_profile_activity">나의 활동</string>
+    <string name="mypage_profile_party_activity">MY 파티원</string>
+    <string name="mypage_profile_write_activity">내가 쓴 글</string>
+    <string name="mypage_profile_like_activity">좋아요한 작품 목록</string>
+    <string name="mypage_profile_service">서비스</string>
+    <string name="mypage_profile_notice">공지사항</string>
+    <string name="mypage_profile_frequently_asked_question">자주 묻는 질문</string>
+    <string name="mypage_profile_curtaincall_customer_service_center">커튼콜 고객센터</string>
+    <string name="mypage_prifile_curtaincall_email">curtaincall.official2023@gmail.com</string>
+    <string name="mypage_profile_curtaincall_show_copyright">작품 정보 출처</string>
+    <string name="mypage_profile_curtaincall_show_copyright_name">(재)예술경영지원센터 공연예술통합전산망</string>
+    <string name="mypage_profile_curtaincall_show_copyright_date">© 2023. Curtain Call all rights reserved.</string>
+
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
     <!-- common -->
