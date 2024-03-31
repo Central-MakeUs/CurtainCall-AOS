@@ -88,6 +88,12 @@ class MyPageViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    fun requestMemberInfo() {
+        memberRepository.requestMemberInfo(memberID.value)
+            .onEach { _memberInfoModel.value = it }
+            .launchIn(viewModelScope)
+    }
+
     // ////
 
     override fun reduceState(currentState: MyPageUiState, event: MyPageEvent): MyPageUiState =

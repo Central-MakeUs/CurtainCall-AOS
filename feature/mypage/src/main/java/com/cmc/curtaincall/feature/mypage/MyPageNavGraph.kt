@@ -19,6 +19,7 @@ import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeDetailScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeScreen
 import com.cmc.curtaincall.feature.mypage.party.participation.MyPageParticipationScreen
 import com.cmc.curtaincall.feature.mypage.party.recruitment.MyPageRecruitmentScreen
+import com.cmc.curtaincall.feature.mypage.profile.MyPageProfileScreen
 import com.cmc.curtaincall.feature.mypage.question.MyPageQuestionScreen
 import com.cmc.curtaincall.feature.mypage.saveperformance.MyPageSavedPerformanceScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageDeleteMemberScreen
@@ -112,6 +113,9 @@ fun NavGraphBuilder.mypageNavGraph(
     navigation(startDestination = MyPageDestination.MyPage.route, NavGraphLabel.MYPAGE) {
         composable(MyPageDestination.MyPage.route) {
             MyPageScreen(
+                onNavigateToProfile = {
+                    navHostController.navigate(MyPageDestination.Profile.route)
+                },
                 onNavigateSetting = {
                     navHostController.navigate(MyPageDestination2.Setting.route)
                 },
@@ -140,6 +144,12 @@ fun NavGraphBuilder.mypageNavGraph(
                     navHostController.navigate(MyPageDestination2.Questions.route)
                 }
             )
+        }
+
+        composable(route = MyPageDestination.Profile.route) {
+            MyPageProfileScreen {
+                navHostController.popBackStack()
+            }
         }
 
         composable(
