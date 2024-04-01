@@ -18,4 +18,8 @@ sealed class MyPageDestination : CurtainCallDestination {
     object Profile : MyPageDestination() {
         override val route = NavRouteLabel.MYPAGE_PROFILE
     }
+
+    object Writing : MyPageDestination() {
+        override val route = NavRouteLabel.MYPAGE_WRITING
+    }
 }

@@ -138,6 +138,10 @@
     <string name="mypage_profile_curtaincall_show_copyright_name">(재)예술경영지원센터 공연예술통합전산망</string>
     <string name="mypage_profile_curtaincall_show_copyright_date">© 2023. Curtain Call all rights reserved.</string>
     <string name="mypage_profile_edit_complete">프로필 변경 완료</string>
+    <string name="mypage_writing">내가 쓴 글</string>
+    <string name="mypage_empty_writing">공연 리뷰가 없어요</string>
+    <string name="mypage_empty_writing_guide">관람한 작품이 있다면,\n공연 리뷰를 작성해보세요!</string>
+
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
     <!-- common -->

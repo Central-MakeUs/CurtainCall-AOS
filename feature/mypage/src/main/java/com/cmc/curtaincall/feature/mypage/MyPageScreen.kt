@@ -61,8 +61,8 @@ import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
 fun MyPageScreen(
     myPageViewModel: MyPageViewModel = hiltViewModel(),
     onNavigateToProfile: () -> Unit = {},
+    onNavigateToWriting: () -> Unit = {},
     onNavigateSetting: () -> Unit,
-    onNavigateProfileEdit: (String?) -> Unit,
     onNavigateRecruitment: () -> Unit,
     onNavigateParticipation: () -> Unit,
     onNavigateSavedPerformance: () -> Unit,
@@ -101,7 +101,8 @@ fun MyPageScreen(
         MyPageActivity(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 30.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            onNavigateToWriting = onNavigateToWriting
         )
         Spacer(
             modifier = Modifier
@@ -241,7 +242,8 @@ private fun MyPageService(
 
 @Composable
 private fun MyPageActivity(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToWriting: () -> Unit = {},
 ) {
     Column(modifier) {
         Text(
@@ -271,9 +273,7 @@ private fun MyPageActivity(
         Row(
             modifier = Modifier
                 .padding(top = 30.dp)
-                .clickable {
-                    // TODO
-                },
+                .clickable { onNavigateToWriting() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

@@ -14,7 +14,6 @@ import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
 import com.cmc.curtaincall.core.navigation.BottomDestination
 import com.cmc.curtaincall.core.navigation.CurtainCallDestination
-import com.cmc.curtaincall.feature.mypage.editprofile.MyPageProfileEditScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeDetailScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeScreen
 import com.cmc.curtaincall.feature.mypage.party.participation.MyPageParticipationScreen
@@ -25,6 +24,7 @@ import com.cmc.curtaincall.feature.mypage.saveperformance.MyPageSavedPerformance
 import com.cmc.curtaincall.feature.mypage.setting.MyPageDeleteMemberScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageSettingScreen
 import com.cmc.curtaincall.feature.mypage.write.MyPageWriteScreen
+import com.cmc.curtaincall.feature.mypage.writing.MyPageWritingScreen
 import com.cmc.curtaincall.feature.partymember.PartyMemberDestination2
 
 private const val MYPAGE_GRAPH = "mypage_graph"
@@ -47,18 +47,6 @@ sealed interface MyPageDestination2 : CurtainCallDestination {
         override val icon = R.drawable.ic_my
         override val selectIcon = R.drawable.ic_my_sel
         override val label = MYPAGE_LABEL
-    }
-
-    object ProfileEdit : MyPageDestination2 {
-        override val route = MYPAGE_PROFILE_EDIT
-        const val profileUrlArg = "profileUrl"
-        val routeWithArgs = "$route?" +
-            "$profileUrlArg={$profileUrlArg}"
-        val arguments = listOf(
-            navArgument(profileUrlArg) {
-                type = NavType.StringType
-            }
-        )
     }
 
     object SavedPerformance : MyPageDestination2 {
@@ -116,14 +104,11 @@ fun NavGraphBuilder.mypageNavGraph(
                 onNavigateToProfile = {
                     navHostController.navigate(MyPageDestination.Profile.route)
                 },
+                onNavigateToWriting = {
+                    navHostController.navigate(MyPageDestination.Writing.route)
+                },
                 onNavigateSetting = {
                     navHostController.navigate(MyPageDestination2.Setting.route)
-                },
-                onNavigateProfileEdit = {
-                    navHostController.navigate(
-                        MyPageDestination2.ProfileEdit.route + "?" +
-                            "${MyPageDestination2.ProfileEdit.profileUrlArg}=$it"
-                    )
                 },
                 onNavigateRecruitment = {
                     navHostController.navigate(MyPageDestination2.Recruitment.route)
@@ -152,17 +137,10 @@ fun NavGraphBuilder.mypageNavGraph(
             }
         }
 
-        composable(
-            route = MyPageDestination2.ProfileEdit.routeWithArgs,
-            arguments = MyPageDestination2.ProfileEdit.arguments
-        ) { entry ->
-            val profileUrl = entry.arguments?.getString(MyPageDestination2.ProfileEdit.profileUrlArg)
-            MyPageProfileEditScreen(
-                profileUrl = profileUrl,
-                onBack = {
-                    navHostController.popBackStack()
-                }
-            )
+        composable(route = MyPageDestination.Writing.route) {
+            MyPageWritingScreen {
+                navHostController.popBackStack()
+            }
         }
 
         composable(MyPageDestination2.SavedPerformance.route) { entry ->
