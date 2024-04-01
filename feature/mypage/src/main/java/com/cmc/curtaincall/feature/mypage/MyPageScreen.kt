@@ -62,10 +62,10 @@ fun MyPageScreen(
     myPageViewModel: MyPageViewModel = hiltViewModel(),
     onNavigateToProfile: () -> Unit = {},
     onNavigateToWriting: () -> Unit = {},
+    onNavigateToFavorite: () -> Unit = {},
     onNavigateSetting: () -> Unit,
     onNavigateRecruitment: () -> Unit,
     onNavigateParticipation: () -> Unit,
-    onNavigateSavedPerformance: () -> Unit,
     onNavigateAnnouncement: () -> Unit,
     onNavigateQuestion: () -> Unit
 ) {
@@ -101,7 +101,8 @@ fun MyPageScreen(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 30.dp)
                 .fillMaxWidth(),
-            onNavigateToWriting = onNavigateToWriting
+            onNavigateToWriting = onNavigateToWriting,
+            onNavigateToFavorite = onNavigateToFavorite
         )
         Spacer(
             modifier = Modifier
@@ -243,6 +244,7 @@ private fun MyPageService(
 private fun MyPageActivity(
     modifier: Modifier = Modifier,
     onNavigateToWriting: () -> Unit = {},
+    onNavigateToFavorite: () -> Unit = {}
 ) {
     Column(modifier) {
         Text(
@@ -290,9 +292,7 @@ private fun MyPageActivity(
         Row(
             modifier = Modifier
                 .padding(top = 30.dp)
-                .clickable {
-                    // TODO
-                },
+                .clickable { onNavigateToFavorite() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

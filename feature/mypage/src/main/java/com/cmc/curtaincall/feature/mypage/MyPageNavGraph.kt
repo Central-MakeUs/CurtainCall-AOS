@@ -14,13 +14,13 @@ import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
 import com.cmc.curtaincall.core.navigation.BottomDestination
 import com.cmc.curtaincall.core.navigation.CurtainCallDestination
+import com.cmc.curtaincall.feature.mypage.favorite.MyPageFavoriteScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeDetailScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeScreen
 import com.cmc.curtaincall.feature.mypage.party.participation.MyPageParticipationScreen
 import com.cmc.curtaincall.feature.mypage.party.recruitment.MyPageRecruitmentScreen
 import com.cmc.curtaincall.feature.mypage.profile.MyPageProfileScreen
 import com.cmc.curtaincall.feature.mypage.question.MyPageQuestionScreen
-import com.cmc.curtaincall.feature.mypage.saveperformance.MyPageSavedPerformanceScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageDeleteMemberScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageSettingScreen
 import com.cmc.curtaincall.feature.mypage.writing.MyPageWritingScreen
@@ -29,7 +29,6 @@ import com.cmc.curtaincall.feature.partymember.PartyMemberDestination2
 private const val MYPAGE_GRAPH = "mypage_graph"
 const val MYPAGE = "mypage"
 private const val MYPAGE_LABEL = "MY"
-private const val MYPAGE_SAVED_PERFORMANCE = "mypage_saved_performance"
 private const val MYPAGE_SETTING = "mypage_setting"
 private const val MYPAGE_DELETE_MEMBER = "mypage_delete_member"
 private const val MYPAGE_NOTICE = "mypage_notice"
@@ -44,10 +43,6 @@ sealed interface MyPageDestination2 : CurtainCallDestination {
         override val icon = R.drawable.ic_my
         override val selectIcon = R.drawable.ic_my_sel
         override val label = MYPAGE_LABEL
-    }
-
-    object SavedPerformance : MyPageDestination2 {
-        override val route = MYPAGE_SAVED_PERFORMANCE
     }
 
     object Setting : MyPageDestination2 {
@@ -100,6 +95,9 @@ fun NavGraphBuilder.mypageNavGraph(
                 onNavigateToWriting = {
                     navHostController.navigate(MyPageDestination.Writing.route)
                 },
+                onNavigateToFavorite = {
+                    navHostController.navigate(MyPageDestination.Favorite.route)
+                },
                 onNavigateSetting = {
                     navHostController.navigate(MyPageDestination2.Setting.route)
                 },
@@ -108,9 +106,6 @@ fun NavGraphBuilder.mypageNavGraph(
                 },
                 onNavigateParticipation = {
                     navHostController.navigate(MyPageDestination2.Participation.route)
-                },
-                onNavigateSavedPerformance = {
-                    navHostController.navigate(MyPageDestination2.SavedPerformance.route)
                 },
                 onNavigateAnnouncement = {
                     navHostController.navigate(MyPageDestination2.Notice.route)
@@ -138,15 +133,10 @@ fun NavGraphBuilder.mypageNavGraph(
             )
         }
 
-        composable(MyPageDestination2.SavedPerformance.route) { entry ->
-            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.MyPage.route) }
-            MyPageSavedPerformanceScreen(
-                myPageViewModel = hiltViewModel(parentEntry),
-                onNavigateShowDetail = {
-                    navHostController.navigate("${ShowDestination.Detail.route}/$it")
-                },
-                onBack = { navHostController.popBackStack() }
-            )
+        composable(route = MyPageDestination.Favorite.route) {
+            MyPageFavoriteScreen {
+                navHostController.popBackStack()
+            }
         }
 
         composable(MyPageDestination2.Setting.route) {

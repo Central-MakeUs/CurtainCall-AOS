@@ -22,4 +22,8 @@ sealed class MyPageDestination : CurtainCallDestination {
     object Writing : MyPageDestination() {
         override val route = NavRouteLabel.MYPAGE_WRITING
     }
+
+    object Favorite : MyPageDestination() {
+        override val route = NavRouteLabel.MYPAGE_FAVORITE
+    }
 }
