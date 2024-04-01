@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -22,15 +23,19 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
 import com.cmc.curtaincall.common.designsystem.R
+import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.custom.show.MyReviewContent
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey4
+import com.cmc.curtaincall.common.designsystem.theme.White
 
 @Composable
 internal fun MyPageWritingScreen(
     myPageWritingViewModel: MyPageWritingViewModel = hiltViewModel(),
+    onNavigateToReviewCreate: (String, Int) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
+    SystemUiStatusBar(White)
     Scaffold(
         topBar = {
             CurtainCallCenterTopAppBarWithBack(
@@ -43,15 +48,21 @@ internal fun MyPageWritingScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(CurtainCallTheme.colors.background)
+                .background(CurtainCallTheme.colors.background),
+            onNavigateToReviewCreate = onNavigateToReviewCreate
         )
+    }
+
+    LaunchedEffect(Unit) {
+        myPageWritingViewModel.fetchMyReviews()
     }
 }
 
 @Composable
 private fun MyPageWritingContent(
     modifier: Modifier = Modifier,
-    myPageWritingViewModel: MyPageWritingViewModel = hiltViewModel()
+    myPageWritingViewModel: MyPageWritingViewModel = hiltViewModel(),
+    onNavigateToReviewCreate: (String, Int) -> Unit = { _, _ -> },
 ) {
     val myReviewModels = myPageWritingViewModel.myReviewModels.collectAsLazyPagingItems()
     if (myReviewModels.itemCount == 0) {
@@ -86,7 +97,8 @@ private fun MyPageWritingContent(
                 myReviewModel?.let { model ->
                     MyReviewContent(
                         modifier = Modifier.fillMaxWidth(),
-                        memberReviewModel = model
+                        memberReviewModel = model,
+                        onClick = { onNavigateToReviewCreate(model.showId, model.id) }
                     )
                 }
             }

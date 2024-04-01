@@ -23,16 +23,13 @@ import com.cmc.curtaincall.feature.mypage.question.MyPageQuestionScreen
 import com.cmc.curtaincall.feature.mypage.saveperformance.MyPageSavedPerformanceScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageDeleteMemberScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageSettingScreen
-import com.cmc.curtaincall.feature.mypage.write.MyPageWriteScreen
 import com.cmc.curtaincall.feature.mypage.writing.MyPageWritingScreen
 import com.cmc.curtaincall.feature.partymember.PartyMemberDestination2
 
 private const val MYPAGE_GRAPH = "mypage_graph"
 const val MYPAGE = "mypage"
 private const val MYPAGE_LABEL = "MY"
-private const val MYPAGE_PROFILE_EDIT = "mypage_profile_edit"
 private const val MYPAGE_SAVED_PERFORMANCE = "mypage_saved_performance"
-private const val MYPAGE_WRITE = "mypage_write"
 private const val MYPAGE_SETTING = "mypage_setting"
 private const val MYPAGE_DELETE_MEMBER = "mypage_delete_member"
 private const val MYPAGE_NOTICE = "mypage_notice"
@@ -51,10 +48,6 @@ sealed interface MyPageDestination2 : CurtainCallDestination {
 
     object SavedPerformance : MyPageDestination2 {
         override val route = MYPAGE_SAVED_PERFORMANCE
-    }
-
-    object Write : MyPageDestination2 {
-        override val route = MYPAGE_WRITE
     }
 
     object Setting : MyPageDestination2 {
@@ -119,9 +112,6 @@ fun NavGraphBuilder.mypageNavGraph(
                 onNavigateSavedPerformance = {
                     navHostController.navigate(MyPageDestination2.SavedPerformance.route)
                 },
-                onNavigateWrite = {
-                    navHostController.navigate(MyPageDestination2.Write.route)
-                },
                 onNavigateAnnouncement = {
                     navHostController.navigate(MyPageDestination2.Notice.route)
                 },
@@ -138,9 +128,14 @@ fun NavGraphBuilder.mypageNavGraph(
         }
 
         composable(route = MyPageDestination.Writing.route) {
-            MyPageWritingScreen {
-                navHostController.popBackStack()
-            }
+            MyPageWritingScreen(
+                onNavigateToReviewCreate = { showId, reviewId ->
+                    navHostController.navigate("${ShowDestination.ReviewCreate.route}/$showId/$reviewId")
+                },
+                onBack = {
+                    navHostController.popBackStack()
+                }
+            )
         }
 
         composable(MyPageDestination2.SavedPerformance.route) { entry ->
@@ -151,25 +146,6 @@ fun NavGraphBuilder.mypageNavGraph(
                     navHostController.navigate("${ShowDestination.Detail.route}/$it")
                 },
                 onBack = { navHostController.popBackStack() }
-            )
-        }
-
-        composable(MyPageDestination2.Write.route) { entry ->
-            MyPageWriteScreen(
-                onNavigateReviewEdit = { showId, reviewId ->
-                    navHostController.navigate("${ShowDestination.ReviewCreate.route}/$showId/$reviewId")
-                },
-                onNavigateLostItemEdit = { lostPropertyId, facilityId, facilityName ->
-                    navHostController.navigate(
-                        "${ShowDestination.LostPropertyCreate.route}?" +
-                            "${ShowDestination.LostPropertyCreate.lostPropertyIdArg}=$lostPropertyId&" +
-                            "${ShowDestination.LostPropertyCreate.facilityIdArg}=$facilityId&" +
-                            "${ShowDestination.LostPropertyCreate.facilityNameArg}=$facilityName"
-                    )
-                },
-                onBack = {
-                    navHostController.popBackStack()
-                }
             )
         }
 

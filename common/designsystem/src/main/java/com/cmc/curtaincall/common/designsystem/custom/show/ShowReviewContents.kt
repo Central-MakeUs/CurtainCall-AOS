@@ -385,7 +385,7 @@ fun MyReviewContent(
                 modifier = Modifier
                     .padding(top = 11.dp)
                     .size(84.dp, 16.dp),
-                rating = memberReviewModel.likeCount
+                rating = memberReviewModel.grade
             )
             Text(
                 text = memberReviewModel.content,

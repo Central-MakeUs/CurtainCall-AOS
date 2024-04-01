@@ -66,7 +66,6 @@ fun MyPageScreen(
     onNavigateRecruitment: () -> Unit,
     onNavigateParticipation: () -> Unit,
     onNavigateSavedPerformance: () -> Unit,
-    onNavigateWrite: () -> Unit,
     onNavigateAnnouncement: () -> Unit,
     onNavigateQuestion: () -> Unit
 ) {
