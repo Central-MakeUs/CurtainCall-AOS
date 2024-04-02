@@ -130,8 +130,10 @@
     <string name="mypage_profile_write_activity">내가 쓴 글</string>
     <string name="mypage_profile_like_activity">좋아요한 작품 목록</string>
     <string name="mypage_profile_service">서비스</string>
+    <string name="mypage_profile_setting">설정</string>
     <string name="mypage_profile_notice">공지사항</string>
     <string name="mypage_profile_frequently_asked_question">자주 묻는 질문</string>
+    <string name="mypage_profile_privacy_information_terms">개인정보 처리방침</string>
     <string name="mypage_profile_curtaincall_customer_service_center">커튼콜 고객센터</string>
     <string name="mypage_prifile_curtaincall_email">curtaincall.official2023@gmail.com</string>
     <string name="mypage_profile_curtaincall_show_copyright">작품 정보 출처</string>

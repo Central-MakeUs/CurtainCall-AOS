@@ -4,9 +4,7 @@ import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.navigation.NavGraphLabel
@@ -31,8 +29,6 @@ const val MYPAGE = "mypage"
 private const val MYPAGE_LABEL = "MY"
 private const val MYPAGE_SETTING = "mypage_setting"
 private const val MYPAGE_DELETE_MEMBER = "mypage_delete_member"
-private const val MYPAGE_NOTICE = "mypage_notice"
-private const val MYPAGE_NOTICE_DETAIL = "mypage_notice_detail"
 private const val MYPAGE_RECRUITMENT = "mypage_recruitment"
 private const val MYPAGE_PARTICIPATION = "mypage_participantion"
 private const val MYPAGE_QUESTIONS = "mypage_questions"
@@ -51,21 +47,6 @@ sealed interface MyPageDestination2 : CurtainCallDestination {
 
     object DeleteMember : MyPageDestination2 {
         override val route = MYPAGE_DELETE_MEMBER
-    }
-
-    object Notice : MyPageDestination2 {
-        override val route = MYPAGE_NOTICE
-    }
-
-    object NoticeDetail : MyPageDestination2 {
-        override val route = MYPAGE_NOTICE_DETAIL
-        const val noticeIdArg = "noticeId"
-        val routeWithArgs = "$route/{$noticeIdArg}"
-        val arguments = listOf(
-            navArgument(noticeIdArg) {
-                type = NavType.IntType
-            }
-        )
     }
 
     object Recruitment : MyPageDestination2 {
@@ -98,6 +79,9 @@ fun NavGraphBuilder.mypageNavGraph(
                 onNavigateToFavorite = {
                     navHostController.navigate(MyPageDestination.Favorite.route)
                 },
+                onNavigateToNotice = {
+                    navHostController.navigate(MyPageDestination.Notice.route)
+                },
                 onNavigateSetting = {
                     navHostController.navigate(MyPageDestination2.Setting.route)
                 },
@@ -106,9 +90,6 @@ fun NavGraphBuilder.mypageNavGraph(
                 },
                 onNavigateParticipation = {
                     navHostController.navigate(MyPageDestination2.Participation.route)
-                },
-                onNavigateAnnouncement = {
-                    navHostController.navigate(MyPageDestination2.Notice.route)
                 },
                 onNavigateQuestion = {
                     navHostController.navigate(MyPageDestination2.Questions.route)
@@ -139,6 +120,30 @@ fun NavGraphBuilder.mypageNavGraph(
             }
         }
 
+        composable(MyPageDestination.Notice.route) {
+            MyPageNoticeScreen(
+                onNavigateToNoticeDetail = { noticeId ->
+                    navHostController.navigate("${MyPageDestination.NoticeDetail.route}/$noticeId")
+                },
+                onBack = {
+                    navHostController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            route = MyPageDestination.NoticeDetail.routeWithArgs,
+            arguments = MyPageDestination.NoticeDetail.arguments
+        ) { entry ->
+            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination.Notice.route) }
+            val noticeId = entry.arguments?.getInt(MyPageDestination.NoticeDetail.noticeIdArg)
+            MyPageNoticeDetailScreen(
+                myPageNoticeViewModel = hiltViewModel(parentEntry),
+                noticeId = noticeId,
+                onBack = { navHostController.popBackStack() }
+            )
+        }
+
         composable(MyPageDestination2.Setting.route) {
             MyPageSettingScreen(
                 onLogout = onLogout,
@@ -154,28 +159,6 @@ fun NavGraphBuilder.mypageNavGraph(
         composable(MyPageDestination2.DeleteMember.route) {
             MyPageDeleteMemberScreen(
                 onDeleteMember = onDeleteMember,
-                onBack = { navHostController.popBackStack() }
-            )
-        }
-
-        composable(MyPageDestination2.Notice.route) {
-            MyPageNoticeScreen(
-                onNavigateNoticeDetail = {
-                    navHostController.navigate("${MyPageDestination2.NoticeDetail.route}/$it")
-                },
-                onBack = { navHostController.popBackStack() }
-            )
-        }
-
-        composable(
-            route = MyPageDestination2.NoticeDetail.routeWithArgs,
-            arguments = MyPageDestination2.NoticeDetail.arguments
-        ) { entry ->
-            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.Notice.route) }
-            val noticeId = entry.arguments?.getInt(MyPageDestination2.NoticeDetail.noticeIdArg) ?: 0
-            MyPageNoticeDetailScreen(
-                myPageNoticeViewModel = hiltViewModel(parentEntry),
-                noticeId = noticeId,
                 onBack = { navHostController.popBackStack() }
             )
         }

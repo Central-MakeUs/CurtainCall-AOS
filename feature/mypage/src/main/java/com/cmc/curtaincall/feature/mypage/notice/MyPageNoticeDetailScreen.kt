@@ -2,10 +2,8 @@ package com.cmc.curtaincall.feature.mypage.notice
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -15,38 +13,37 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cmc.curtaincall.common.designsystem.R
-import com.cmc.curtaincall.common.designsystem.component.basic.TopAppBarWithBack
-import com.cmc.curtaincall.common.designsystem.component.item.NoticeItem
-import com.cmc.curtaincall.common.designsystem.extensions.toSp
-import com.cmc.curtaincall.common.designsystem.theme.Arsenic
-import com.cmc.curtaincall.common.designsystem.theme.Cultured
-import com.cmc.curtaincall.common.designsystem.theme.Nero
+import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
+import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
+import com.cmc.curtaincall.common.designsystem.custom.my.MyNoticeContent
+import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
+import com.cmc.curtaincall.common.designsystem.theme.Grey2
 import com.cmc.curtaincall.common.designsystem.theme.White
-import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
-import com.cmc.curtaincall.common.utility.extensions.toChangeFullDate
+import com.cmc.curtaincall.common.utility.extensions.convertUIDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MyPageNoticeDetailScreen(
-    myPageNoticeViewModel: MyPageNoticeViewModel,
-    noticeId: Int,
-    onBack: () -> Unit
+    myPageNoticeViewModel: MyPageNoticeViewModel = hiltViewModel(),
+    noticeId: Int?,
+    onBack: () -> Unit = {}
 ) {
+    checkNotNull(noticeId)
+
     LaunchedEffect(Unit) {
         myPageNoticeViewModel.requestNoticeDetail(noticeId)
     }
 
+    SystemUiStatusBar(White)
     Scaffold(
         topBar = {
-            TopAppBarWithBack(
-                title = stringResource(R.string.mypage_announcement),
-                containerColor = White,
-                contentColor = Nero,
-                onClick = onBack
+            CurtainCallCenterTopAppBarWithBack(
+                title = stringResource(R.string.mypage_profile_notice),
+                onBack = onBack
             )
         }
     ) { paddingValues ->
@@ -55,45 +52,39 @@ internal fun MyPageNoticeDetailScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(White)
+                .background(White),
+            onBack = onBack
         )
     }
 }
 
 @Composable
 private fun MyPageNoticeDetailContent(
-    myPageNoticeViewModel: MyPageNoticeViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    myPageNoticeViewModel: MyPageNoticeViewModel = hiltViewModel(),
+    onBack: () -> Unit = {}
 ) {
-    val myPageNoticeDetailUiState by myPageNoticeViewModel.noticeDetailState.collectAsStateWithLifecycle()
+    val noticeDetail by myPageNoticeViewModel.noticeDetail.collectAsStateWithLifecycle()
     Column(modifier) {
         Column(
             modifier = Modifier
+                .padding(vertical = 10.dp)
                 .fillMaxWidth()
-                .padding(top = 12.dp)
         ) {
-            NoticeItem(
-                modifier = Modifier.fillMaxWidth(),
-                title = myPageNoticeDetailUiState.title,
-                date = myPageNoticeDetailUiState.createdAt.toChangeFullDate()
-            )
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .height(1.dp)
-                    .background(Cultured)
+            MyNoticeContent(
+                title = noticeDetail.title,
+                createdAt = noticeDetail.createdAt.convertUIDate(),
+                onClick = onBack
             )
             Text(
-                text = myPageNoticeDetailUiState.content,
+                text = noticeDetail.content,
                 modifier = Modifier
-                    .padding(top = 30.dp)
-                    .padding(horizontal = 20.dp),
-                color = Arsenic,
-                fontSize = 14.dp.toSp(),
-                fontWeight = FontWeight.Medium,
-                fontFamily = spoqahansanseeo,
-                lineHeight = 22.dp.toSp()
+                    .padding(top = 20.dp)
+                    .padding(horizontal = 20.dp)
+                    .fillMaxWidth(),
+                style = CurtainCallTheme.typography.body3.copy(
+                    color = Grey2
+                )
             )
         }
     }

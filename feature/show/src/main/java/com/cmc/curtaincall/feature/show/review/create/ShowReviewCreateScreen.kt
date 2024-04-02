@@ -41,7 +41,7 @@ import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCent
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.buttons.common.CurtainCallFilledButton
 import com.cmc.curtaincall.common.designsystem.component.chips.CurtainCallBasicChip
-import com.cmc.curtaincall.common.designsystem.custom.CurtainCallRatingBar
+import com.cmc.curtaincall.common.designsystem.custom.common.CurtainCallRatingBar
 import com.cmc.curtaincall.common.designsystem.dimension.Paddings
 import com.cmc.curtaincall.common.designsystem.theme.Black
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme

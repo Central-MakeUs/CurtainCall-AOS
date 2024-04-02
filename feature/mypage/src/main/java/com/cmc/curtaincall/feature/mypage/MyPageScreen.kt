@@ -63,10 +63,10 @@ fun MyPageScreen(
     onNavigateToProfile: () -> Unit = {},
     onNavigateToWriting: () -> Unit = {},
     onNavigateToFavorite: () -> Unit = {},
+    onNavigateToNotice: () -> Unit = {},
     onNavigateSetting: () -> Unit,
     onNavigateRecruitment: () -> Unit,
     onNavigateParticipation: () -> Unit,
-    onNavigateAnnouncement: () -> Unit,
     onNavigateQuestion: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -113,7 +113,8 @@ fun MyPageScreen(
         MyPageService(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 30.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            onNavigateToNotice = onNavigateToNotice
         )
         MyPageInformation(
             modifier = Modifier.fillMaxWidth()
@@ -188,7 +189,8 @@ private fun MyPageInformation(
 
 @Composable
 private fun MyPageService(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToNotice: () -> Unit = {}
 ) {
     Column(modifier) {
         Text(
@@ -202,6 +204,25 @@ private fun MyPageService(
                 .clickable {
                     // TODO
                 },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.mypage_profile_setting),
+                style = CurtainCallTheme.typography.body2
+            )
+            Spacer(Modifier.weight(1f))
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_right_pink),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = Black
+            )
+        }
+        Row(
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .fillMaxWidth()
+                .clickable { onNavigateToNotice() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -227,6 +248,27 @@ private fun MyPageService(
         ) {
             Text(
                 text = stringResource(R.string.mypage_the_most_frequently_question),
+                style = CurtainCallTheme.typography.body2
+            )
+            Spacer(Modifier.weight(1f))
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_right_pink),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = Black
+            )
+        }
+        Row(
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .fillMaxWidth()
+                .clickable {
+                    // TODO
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.mypage_profile_privacy_information_terms),
                 style = CurtainCallTheme.typography.body2
             )
             Spacer(Modifier.weight(1f))

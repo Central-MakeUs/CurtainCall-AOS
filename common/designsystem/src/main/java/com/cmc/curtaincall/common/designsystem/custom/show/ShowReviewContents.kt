@@ -40,7 +40,7 @@ import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.buttons.like.CurtainCallReviewLikeButton
 import com.cmc.curtaincall.common.designsystem.component.chips.CurtainCallBasicChip
 import com.cmc.curtaincall.common.designsystem.component.menus.CurtainCallMenu
-import com.cmc.curtaincall.common.designsystem.custom.CurtainCallRatingBar
+import com.cmc.curtaincall.common.designsystem.custom.common.CurtainCallRatingBar
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey3
 import com.cmc.curtaincall.common.designsystem.theme.Grey5
