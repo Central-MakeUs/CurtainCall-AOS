@@ -64,10 +64,10 @@ fun MyPageScreen(
     onNavigateToWriting: () -> Unit = {},
     onNavigateToFavorite: () -> Unit = {},
     onNavigateToNotice: () -> Unit = {},
+    onNavigateToFAQ: () -> Unit = {},
     onNavigateSetting: () -> Unit,
     onNavigateRecruitment: () -> Unit,
     onNavigateParticipation: () -> Unit,
-    onNavigateQuestion: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     val memberInfoModel by myPageViewModel.memberInfoModel.collectAsStateWithLifecycle()
@@ -114,7 +114,8 @@ fun MyPageScreen(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 30.dp)
                 .fillMaxWidth(),
-            onNavigateToNotice = onNavigateToNotice
+            onNavigateToNotice = onNavigateToNotice,
+            onNavigateToFAQ = onNavigateToFAQ
         )
         MyPageInformation(
             modifier = Modifier.fillMaxWidth()
@@ -190,7 +191,8 @@ private fun MyPageInformation(
 @Composable
 private fun MyPageService(
     modifier: Modifier = Modifier,
-    onNavigateToNotice: () -> Unit = {}
+    onNavigateToNotice: () -> Unit = {},
+    onNavigateToFAQ: () -> Unit = {},
 ) {
     Column(modifier) {
         Text(
@@ -241,34 +243,11 @@ private fun MyPageService(
             modifier = Modifier
                 .padding(top = 30.dp)
                 .fillMaxWidth()
-                .clickable {
-                    // TODO
-                },
+                .clickable { onNavigateToFAQ() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = stringResource(R.string.mypage_the_most_frequently_question),
-                style = CurtainCallTheme.typography.body2
-            )
-            Spacer(Modifier.weight(1f))
-            Icon(
-                painter = painterResource(R.drawable.ic_arrow_right_pink),
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = Black
-            )
-        }
-        Row(
-            modifier = Modifier
-                .padding(top = 30.dp)
-                .fillMaxWidth()
-                .clickable {
-                    // TODO
-                },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.mypage_profile_privacy_information_terms),
                 style = CurtainCallTheme.typography.body2
             )
             Spacer(Modifier.weight(1f))

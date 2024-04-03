@@ -12,13 +12,13 @@ import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
 import com.cmc.curtaincall.core.navigation.BottomDestination
 import com.cmc.curtaincall.core.navigation.CurtainCallDestination
+import com.cmc.curtaincall.feature.mypage.faq.MyPageFAQScreen
 import com.cmc.curtaincall.feature.mypage.favorite.MyPageFavoriteScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeDetailScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeScreen
 import com.cmc.curtaincall.feature.mypage.party.participation.MyPageParticipationScreen
 import com.cmc.curtaincall.feature.mypage.party.recruitment.MyPageRecruitmentScreen
 import com.cmc.curtaincall.feature.mypage.profile.MyPageProfileScreen
-import com.cmc.curtaincall.feature.mypage.question.MyPageQuestionScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageDeleteMemberScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageSettingScreen
 import com.cmc.curtaincall.feature.mypage.writing.MyPageWritingScreen
@@ -31,7 +31,6 @@ private const val MYPAGE_SETTING = "mypage_setting"
 private const val MYPAGE_DELETE_MEMBER = "mypage_delete_member"
 private const val MYPAGE_RECRUITMENT = "mypage_recruitment"
 private const val MYPAGE_PARTICIPATION = "mypage_participantion"
-private const val MYPAGE_QUESTIONS = "mypage_questions"
 
 sealed interface MyPageDestination2 : CurtainCallDestination {
     object MyPage : MyPageDestination2, BottomDestination {
@@ -56,10 +55,6 @@ sealed interface MyPageDestination2 : CurtainCallDestination {
     object Participation : MyPageDestination2 {
         override val route = MYPAGE_PARTICIPATION
     }
-
-    object Questions : MyPageDestination2 {
-        override val route = MYPAGE_QUESTIONS
-    }
 }
 
 fun NavGraphBuilder.mypageNavGraph(
@@ -82,6 +77,9 @@ fun NavGraphBuilder.mypageNavGraph(
                 onNavigateToNotice = {
                     navHostController.navigate(MyPageDestination.Notice.route)
                 },
+                onNavigateToFAQ = {
+                    navHostController.navigate(MyPageDestination.FAQ.route)
+                },
                 onNavigateSetting = {
                     navHostController.navigate(MyPageDestination2.Setting.route)
                 },
@@ -90,9 +88,6 @@ fun NavGraphBuilder.mypageNavGraph(
                 },
                 onNavigateParticipation = {
                     navHostController.navigate(MyPageDestination2.Participation.route)
-                },
-                onNavigateQuestion = {
-                    navHostController.navigate(MyPageDestination2.Questions.route)
                 }
             )
         }
@@ -142,6 +137,12 @@ fun NavGraphBuilder.mypageNavGraph(
                 noticeId = noticeId,
                 onBack = { navHostController.popBackStack() }
             )
+        }
+
+        composable(route = MyPageDestination.FAQ.route) {
+            MyPageFAQScreen {
+                navHostController.popBackStack()
+            }
         }
 
         composable(MyPageDestination2.Setting.route) {
@@ -207,10 +208,6 @@ fun NavGraphBuilder.mypageNavGraph(
                     navHostController.popBackStack()
                 }
             )
-        }
-
-        composable(MyPageDestination2.Questions.route) {
-            MyPageQuestionScreen { navHostController.popBackStack() }
         }
     }
 }
