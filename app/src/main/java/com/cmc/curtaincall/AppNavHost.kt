@@ -69,7 +69,7 @@ fun AppNavHost(
                 },
                 onDeleteMember = {
                     navHostController.navigate(AuthDestination.Login.route) {
-                        popUpTo(AuthDestination.Login.route) {
+                        popUpTo(HomeDestination.Home.route) {
                             inclusive = true
                         }
                     }

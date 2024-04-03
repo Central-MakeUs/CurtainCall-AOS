@@ -6,7 +6,10 @@ import com.cmc.curtaincall.domain.model.auth.LoginResultModel
 import com.cmc.curtaincall.domain.repository.MemberRepository
 import com.cmc.curtaincall.domain.repository.TokenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -34,18 +37,19 @@ class MyPageDeleteMemberViewModel @Inject constructor(
     private var _content = MutableStateFlow("")
     val content = _content.asStateFlow()
 
-    private var _isSuccessDelete = MutableStateFlow(false)
-    val isSuccessDelete = _isSuccessDelete.asStateFlow()
+    private var _deleteComplete = MutableSharedFlow<Boolean>()
+    val deleteComplete = _deleteComplete.asSharedFlow()
 
-    fun setDeleteReason(deleteReason: DeleteReason) {
+    fun changeDeleteReason(deleteReason: DeleteReason) {
         _deleteReason.value = deleteReason
         if (deleteReason != DeleteReason.ETC) _content.value = ""
     }
 
-    fun setContent(content: String) {
+    fun changeContent(content: String) {
         _content.value = content
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun deleteMember() {
         tokenRepository.getAccessToken()
             .flatMapLatest { accessToken ->
@@ -54,9 +58,9 @@ class MyPageDeleteMemberViewModel @Inject constructor(
                     reason = deleteReason.value.name,
                     content = content.value
                 )
-            }.onEach { isSuccess ->
-                _isSuccessDelete.value = isSuccess
-                if (isSuccess) tokenRepository.saveToken(LoginResultModel())
+            }.onEach { check ->
+                _deleteComplete.emit(check)
+                if (check) tokenRepository.saveToken(LoginResultModel())
             }.launchIn(viewModelScope)
     }
 }

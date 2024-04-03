@@ -52,4 +52,8 @@ sealed class MyPageDestination : CurtainCallDestination {
     object Setting : MyPageDestination() {
         override val route = NavRouteLabel.MYPAGE_SETTING
     }
+
+    object DeleteMember : MyPageDestination() {
+        override val route = NavRouteLabel.MYPAGE_DELETE
+    }
 }

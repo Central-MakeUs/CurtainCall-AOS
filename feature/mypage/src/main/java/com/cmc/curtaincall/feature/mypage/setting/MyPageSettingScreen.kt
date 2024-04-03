@@ -44,7 +44,9 @@ internal fun MyPageSettingScreen(
     onBack: () -> Unit
 ) {
     var webViewUrl by remember { mutableStateOf("") }
-    val webViewState = rememberWebViewState(url = webViewUrl)
+    val webViewState = rememberWebViewState(
+        url = webViewUrl
+    )
 
     SystemUiStatusBar(White)
     Scaffold(
@@ -142,9 +144,7 @@ private fun MyPageSettingContent(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
                 .fillMaxWidth()
-                .clickable {
-                    // TODO 계정 삭제
-                }
+                .clickable { onNavigateDeleteMember() }
                 .padding(vertical = 15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

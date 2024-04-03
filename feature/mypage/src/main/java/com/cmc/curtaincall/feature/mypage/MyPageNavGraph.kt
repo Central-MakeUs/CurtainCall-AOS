@@ -19,14 +19,10 @@ import com.cmc.curtaincall.feature.mypage.setting.MyPageDeleteMemberScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageSettingScreen
 import com.cmc.curtaincall.feature.mypage.writing.MyPageWritingScreen
 
-private const val MYPAGE_DELETE_MEMBER = "mypage_delete_member"
 private const val MYPAGE_RECRUITMENT = "mypage_recruitment"
 private const val MYPAGE_PARTICIPATION = "mypage_participantion"
 
 sealed interface MyPageDestination2 : CurtainCallDestination {
-    object DeleteMember : MyPageDestination2 {
-        override val route = MYPAGE_DELETE_MEMBER
-    }
 
     object Recruitment : MyPageDestination2 {
         override val route = MYPAGE_RECRUITMENT
@@ -129,7 +125,7 @@ fun NavGraphBuilder.mypageNavGraph(
             MyPageSettingScreen(
                 onLogout = onLogout,
                 onNavigateDeleteMember = {
-                    navHostController.navigate(MyPageDestination2.DeleteMember.route)
+                    navHostController.navigate(MyPageDestination.DeleteMember.route)
                 },
                 onBack = {
                     navHostController.popBackStack()
@@ -137,7 +133,7 @@ fun NavGraphBuilder.mypageNavGraph(
             )
         }
 
-        composable(MyPageDestination2.DeleteMember.route) {
+        composable(MyPageDestination.DeleteMember.route) {
             MyPageDeleteMemberScreen(
                 onDeleteMember = onDeleteMember,
                 onBack = { navHostController.popBackStack() }

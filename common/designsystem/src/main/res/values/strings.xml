@@ -153,6 +153,15 @@
     <string name="mypage_setting_service_usage_terms">서비스 이용약관</string>
     <string name="mypage_setting_terms_view">보기</string>
     <string name="mypage_setting_logout_dialog">로그아웃 할까요?</string>
+    <string name="mypage_setting_delete_member_first_title">커튼콜을 떠나시나요?</string>
+    <string name="mypage_setting_delete_member_first_subtitle">계정을 삭제하려는 이유를 알려주세요.</string>
+    <string name="mypage_setting_delete_member_second_title">꼭 확인해주세요!</string>
+    <string name="mypage_setting_delete_member_second_subtitle">커튼콜 계정을 삭제하면,</string>
+    <string name="mypage_setting_delete_member_second_description1">해당 계정으로 게시한 글과 좋아요한 작품 목록, 톡방 참여 내역 등 데이터가 모두 삭제됩니다.</string>
+    <string name="mypage_setting_delete_member_second_description2">일부 라이브톡 내용, 파티원 톡방 내용은 탈퇴 후에도 유지될 수 있습니다.</string>
+    <string name="mypage_setting_delete_member_second_description3">이후 계정을 복구하고 싶다면, 30일 내 접근 시 계정 복구가 가능합니다.\n단, 30일 이후에는 영구적으로 삭제됩니다.</string>
+    <string name="mypage_setting_delete_member_continue">계속할까요?</string>
+    <string name="mypage_setting_delete_reason_placeholder">자유롭게 작성해주세요.</string>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 

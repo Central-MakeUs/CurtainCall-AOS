@@ -32,4 +32,5 @@ object NavRouteLabel {
     const val MYPAGE_NOTICE_DETAIL = "mypage_notice_detail"
     const val MYPAGE_FAQ = "mypage_faq"
     const val MYPAGE_SETTING = "mypage_setting"
+    const val MYPAGE_DELETE = "mypage_delete"
 }

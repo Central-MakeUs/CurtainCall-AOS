@@ -1,8 +1,7 @@
 package com.cmc.curtaincall.feature.mypage.setting
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,26 +32,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cmc.curtaincall.common.designsystem.R
-import com.cmc.curtaincall.common.designsystem.component.basic.CurtainCallMultiLineTextField
-import com.cmc.curtaincall.common.designsystem.component.basic.CurtainCallRoundedTextButton
-import com.cmc.curtaincall.common.designsystem.component.basic.TopAppBarWithBack
-import com.cmc.curtaincall.common.designsystem.extensions.toSp
-import com.cmc.curtaincall.common.designsystem.theme.Black
-import com.cmc.curtaincall.common.designsystem.theme.Black_Coral
-import com.cmc.curtaincall.common.designsystem.theme.Bright_Gray
-import com.cmc.curtaincall.common.designsystem.theme.Cultured
-import com.cmc.curtaincall.common.designsystem.theme.Me_Pink
-import com.cmc.curtaincall.common.designsystem.theme.Nero
-import com.cmc.curtaincall.common.designsystem.theme.Roman_Silver
-import com.cmc.curtaincall.common.designsystem.theme.Silver_Sand
+import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
+import com.cmc.curtaincall.common.designsystem.component.buttons.common.CurtainCallFilledButton
+import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
+import com.cmc.curtaincall.common.designsystem.theme.Grey1
+import com.cmc.curtaincall.common.designsystem.theme.Grey2
+import com.cmc.curtaincall.common.designsystem.theme.Grey4
+import com.cmc.curtaincall.common.designsystem.theme.Grey6
+import com.cmc.curtaincall.common.designsystem.theme.Grey8
+import com.cmc.curtaincall.common.designsystem.theme.Grey9
+import com.cmc.curtaincall.common.designsystem.theme.Red
 import com.cmc.curtaincall.common.designsystem.theme.White
-import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
 import kotlinx.coroutines.flow.collectLatest
+
+private enum class DeletePhrase {
+    FIRST, SECOND
+}
 
 @Composable
 fun MyPageDeleteMemberScreen(
@@ -57,366 +59,130 @@ fun MyPageDeleteMemberScreen(
     onDeleteMember: () -> Unit,
     onBack: () -> Unit
 ) {
-    var step by remember { mutableStateOf(0) }
+    var phrase by remember { mutableStateOf(DeletePhrase.FIRST) }
     val deleteReason by myPageDeleteMemberViewModel.deleteReason.collectAsStateWithLifecycle()
+    val content by myPageDeleteMemberViewModel.content.collectAsStateWithLifecycle()
 
     LaunchedEffect(myPageDeleteMemberViewModel) {
-        myPageDeleteMemberViewModel.isSuccessDelete.collectLatest { isSuccessDelete ->
-            if (isSuccessDelete) step++
+        myPageDeleteMemberViewModel.deleteComplete.collectLatest { deleteComplete ->
+            if (deleteComplete) {
+                onDeleteMember()
+            }
         }
     }
 
     Scaffold(
         topBar = {
-            if (step < 2) {
-                TopAppBarWithBack(
-                    title = stringResource(R.string.mypage_setting_remove_member),
-                    containerColor = White,
-                    contentColor = Nero,
-                    onClick = {
-                        if (step == 0) {
-                            onBack()
-                        } else {
-                            step--
-                        }
+            CurtainCallCenterTopAppBarWithBack(
+                title = stringResource(R.string.mypage_setting_account_delete),
+                onBack = {
+                    if (phrase == DeletePhrase.FIRST) {
+                        onBack()
+                    } else {
+                        phrase = DeletePhrase.FIRST
                     }
-                )
-            }
+                }
+            )
         },
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
-            CurtainCallRoundedTextButton(
-                onClick = {
-                    if (step == 0) {
-                        step++
-                    } else if (step == 1) {
-                        myPageDeleteMemberViewModel.deleteMember()
-                    } else {
-                        onDeleteMember()
-                    }
-                },
+            CurtainCallFilledButton(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(bottom = 14.dp)
                     .padding(horizontal = 20.dp)
-                    .height(52.dp),
-                title = stringResource(
-                    if (step < 2) {
-                        R.string.mypage_setting_remove_member_next_step
-                    } else {
-                        R.string.mypage_setting_remove_member_complete
-                    }
-                ),
-                fontSize = 16.dp.toSp(),
-                enabled = when (step) {
-                    0 -> deleteReason != DeleteReason.NONE
+                    .fillMaxWidth()
+                    .height(51.dp),
+                text = when (phrase) {
+                    DeletePhrase.FIRST -> stringResource(R.string.next)
+                    DeletePhrase.SECOND -> stringResource(R.string.mypage_setting_account_delete)
+                },
+                enabled = when (phrase) {
+                    DeletePhrase.FIRST -> deleteReason != DeleteReason.NONE
                     else -> true
                 },
-                containerColor = when (step) {
-                    0 -> if (deleteReason == DeleteReason.NONE) Bright_Gray else Me_Pink
-                    else -> Me_Pink
-                },
-                contentColor = when (step) {
-                    0 -> if (deleteReason == DeleteReason.NONE) Silver_Sand else White
-                    else -> White
+                onClick = {
+                    when (phrase) {
+                        DeletePhrase.FIRST -> {
+                            phrase = DeletePhrase.SECOND
+                        }
+
+                        DeletePhrase.SECOND -> {
+                            myPageDeleteMemberViewModel.deleteMember()
+                        }
+                    }
                 }
             )
         }
     ) { paddingValues ->
-        if (step < 2) {
-            MyPageDeleteMemberContent(
-                myPageDeleteMemberViewModel = myPageDeleteMemberViewModel,
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .background(White),
-                step = step
-            )
-        } else {
-            Column(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .background(White),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(Modifier.weight(256f))
-                Image(
-                    painter = painterResource(R.drawable.ic_complete),
-                    contentDescription = null,
-                    modifier = Modifier.size(70.dp, 70.dp)
+        when (phrase) {
+            DeletePhrase.FIRST -> {
+                MyPageDeleteMemberFirstContent(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                        .background(CurtainCallTheme.colors.background),
+                    deleteReason = deleteReason,
+                    onChangeDeleteReason = { myPageDeleteMemberViewModel.changeDeleteReason(it) },
+                    content = content,
+                    onChangeContent = { myPageDeleteMemberViewModel.changeContent(it) }
                 )
-                Text(
-                    text = stringResource(R.string.mypage_setting_remove_member_finish),
-                    modifier = Modifier.padding(top = 18.dp),
-                    color = Nero,
-                    fontSize = 16.dp.toSp(),
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = spoqahansanseeo
+            }
+
+            else -> {
+                MyPageDeleteMemberSecondContent(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                        .background(CurtainCallTheme.colors.background),
                 )
-                Spacer(Modifier.weight(360f))
             }
         }
     }
 }
 
 @Composable
-private fun MyPageDeleteMemberContent(
-    myPageDeleteMemberViewModel: MyPageDeleteMemberViewModel,
-    modifier: Modifier = Modifier,
-    step: Int
+private fun MyPageDeleteMemberSecondContent(
+    modifier: Modifier = Modifier
 ) {
-    val deleteReason by myPageDeleteMemberViewModel.deleteReason.collectAsStateWithLifecycle()
-    val content by myPageDeleteMemberViewModel.content.collectAsStateWithLifecycle()
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 40.dp)
-            .padding(horizontal = 20.dp)
-    ) {
-        if (step == 0) {
+    Column(modifier) {
+        Column(
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .padding(horizontal = 20.dp)
+        ) {
             Text(
-                text = stringResource(R.string.mypage_setting_remove_member_title),
-                color = Black,
-                fontSize = 22.dp.toSp(),
-                fontWeight = FontWeight.Bold,
-                fontFamily = spoqahansanseeo
+                text = stringResource(R.string.mypage_setting_delete_member_second_title),
+                style = CurtainCallTheme.typography.subTitle2
             )
             Text(
-                text = stringResource(R.string.mypage_setting_remove_member_reason),
-                modifier = Modifier.padding(top = 6.dp),
-                color = Roman_Silver,
-                fontSize = 14.dp.toSp(),
-                fontWeight = FontWeight.Medium,
-                fontFamily = spoqahansanseeo
+                text = stringResource(R.string.mypage_setting_delete_member_second_subtitle),
+                modifier = Modifier.padding(top = 14.dp),
+                style = CurtainCallTheme.typography.body3.copy(
+                    color = Grey4
+                )
             )
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(top = 40.dp)
-                    .clickable { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.RECORD_DELETION) },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.RECORD_DELETION) },
-                    modifier = Modifier
-                        .background(if (deleteReason == DeleteReason.RECORD_DELETION) Me_Pink else Bright_Gray, CircleShape)
-                        .size(20.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_check),
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = White
-                    )
-                }
-                Text(
-                    text = DeleteReason.RECORD_DELETION.value,
-                    modifier = Modifier.padding(start = 10.dp),
-                    color = Black_Coral,
-                    fontSize = 15.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo
-                )
-            }
-            Row(
-                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 18.dp)
-                    .clickable { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.INCONVENIENCE_FREQUENT_ERROR) },
-                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
-                    onClick = { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.INCONVENIENCE_FREQUENT_ERROR) },
+                Spacer(
                     modifier = Modifier
-                        .background(if (deleteReason == DeleteReason.INCONVENIENCE_FREQUENT_ERROR) Me_Pink else Bright_Gray, CircleShape)
-                        .size(20.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_check),
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = White
+                        .padding(top = 7.dp)
+                        .size(6.dp)
+                        .background(
+                            color = CurtainCallTheme.colors.primary,
+                            shape = CircleShape
+                        )
+                )
+                Text(
+                    text = stringResource(R.string.mypage_setting_delete_member_second_description1),
+                    modifier = Modifier.padding(start = 8.dp),
+                    style = CurtainCallTheme.typography.body3.copy(
+                        color = Grey2
                     )
-                }
-                Text(
-                    text = DeleteReason.INCONVENIENCE_FREQUENT_ERROR.value,
-                    modifier = Modifier.padding(start = 10.dp),
-                    color = Black_Coral,
-                    fontSize = 15.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo
                 )
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 18.dp)
-                    .clickable { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.BETTER_OTHER_SERVICE) },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.BETTER_OTHER_SERVICE) },
-                    modifier = Modifier
-                        .background(if (deleteReason == DeleteReason.BETTER_OTHER_SERVICE) Me_Pink else Bright_Gray, CircleShape)
-                        .size(20.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_check),
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = White
-                    )
-                }
-                Text(
-                    text = DeleteReason.BETTER_OTHER_SERVICE.value,
-                    modifier = Modifier.padding(start = 10.dp),
-                    color = Black_Coral,
-                    fontSize = 15.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 18.dp)
-                    .clickable { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.LOW_USAGE_FREQUENCY) },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.LOW_USAGE_FREQUENCY) },
-                    modifier = Modifier
-                        .background(if (deleteReason == DeleteReason.LOW_USAGE_FREQUENCY) Me_Pink else Bright_Gray, CircleShape)
-                        .size(20.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_check),
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = White
-                    )
-                }
-                Text(
-                    text = DeleteReason.LOW_USAGE_FREQUENCY.value,
-                    modifier = Modifier.padding(start = 10.dp),
-                    color = Black_Coral,
-                    fontSize = 15.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 18.dp)
-                    .clickable { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.NOT_USEFUL) },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.NOT_USEFUL) },
-                    modifier = Modifier
-                        .background(if (deleteReason == DeleteReason.NOT_USEFUL) Me_Pink else Bright_Gray, CircleShape)
-                        .size(20.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_check),
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = White
-                    )
-                }
-                Text(
-                    text = DeleteReason.NOT_USEFUL.value,
-                    modifier = Modifier.padding(start = 10.dp),
-                    color = Black_Coral,
-                    fontSize = 15.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 18.dp)
-                    .clickable { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.ETC) },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { myPageDeleteMemberViewModel.setDeleteReason(DeleteReason.ETC) },
-                    modifier = Modifier
-                        .background(if (deleteReason == DeleteReason.ETC) Me_Pink else Bright_Gray, CircleShape)
-                        .size(20.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_check),
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = White
-                    )
-                }
-                Text(
-                    text = DeleteReason.ETC.value,
-                    modifier = Modifier.padding(start = 10.dp),
-                    color = Black_Coral,
-                    fontSize = 15.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo
-                )
-            }
-
-            if (deleteReason == DeleteReason.ETC) {
-                CurtainCallMultiLineTextField(
-                    value = content,
-                    onValueChange = {
-                        if (it.length <= 500) {
-                            myPageDeleteMemberViewModel.setContent(it)
-                        }
-                    },
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .fillMaxWidth()
-                        .heightIn(min = 145.dp),
-                    fontSize = 15.dp.toSp(),
-                    shape = RoundedCornerShape(10.dp),
-                    containerColor = Cultured,
-                    contentColor = Nero,
-                    contentModifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
-                    placeholder = stringResource(R.string.mypage_setting_remove_member_reason_example),
-                    placeholderColor = Silver_Sand
-                )
-                Text(
-                    text = String.format(
-                        stringResource(R.string.mypage_setting_remove_member_reason_text_count),
-                        content.length,
-                        500
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    color = Roman_Silver,
-                    fontSize = 12.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo,
-                    textAlign = TextAlign.End
-                )
-            }
-        } else {
-            Text(
-                text = stringResource(R.string.mypage_setting_remove_member_confirm),
-                color = Black,
-                fontSize = 22.dp.toSp(),
-                fontWeight = FontWeight.Bold,
-                fontFamily = spoqahansanseeo
-            )
-            Text(
-                text = stringResource(R.string.mypage_setting_remove_member_if),
-                modifier = Modifier.padding(top = 6.dp),
-                color = Roman_Silver,
-                fontSize = 14.dp.toSp(),
-                fontWeight = FontWeight.Medium,
-                fontFamily = spoqahansanseeo
-            )
             Row(
                 modifier = Modifier
                     .padding(top = 20.dp)
@@ -424,82 +190,154 @@ private fun MyPageDeleteMemberContent(
             ) {
                 Spacer(
                     modifier = Modifier
-                        .padding(top = 9.dp)
-                        .size(4.dp)
-                        .background(Black_Coral, CircleShape)
+                        .padding(top = 7.dp)
+                        .size(6.dp)
+                        .background(
+                            color = CurtainCallTheme.colors.primary,
+                            shape = CircleShape
+                        )
                 )
                 Text(
-                    text = stringResource(R.string.mypage_setting_remove_member_notice1),
-                    modifier = Modifier.padding(start = 6.dp),
-                    color = Black_Coral,
-                    fontSize = 14.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo,
-                    lineHeight = 22.dp.toSp()
+                    text = stringResource(R.string.mypage_setting_delete_member_second_description2),
+                    modifier = Modifier.padding(start = 8.dp),
+                    style = CurtainCallTheme.typography.body3.copy(
+                        color = Grey2
+                    )
                 )
             }
             Row(
                 modifier = Modifier
-                    .padding(top = 16.dp)
+                    .padding(top = 20.dp)
                     .fillMaxWidth()
             ) {
                 Spacer(
                     modifier = Modifier
-                        .padding(top = 9.dp)
-                        .size(4.dp)
-                        .background(Black_Coral, CircleShape)
+                        .padding(top = 7.dp)
+                        .size(6.dp)
+                        .background(
+                            color = CurtainCallTheme.colors.primary,
+                            shape = CircleShape
+                        )
                 )
                 Text(
-                    text = stringResource(R.string.mypage_setting_remove_member_notice2),
-                    modifier = Modifier.padding(start = 6.dp),
-                    color = Black_Coral,
-                    fontSize = 14.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo,
-                    lineHeight = 22.dp.toSp()
+                    text = stringResource(R.string.mypage_setting_delete_member_second_description3),
+                    modifier = Modifier.padding(start = 8.dp),
+                    style = CurtainCallTheme.typography.body3.copy(
+                        color = Grey2
+                    )
                 )
             }
-            Row(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxWidth()
-            ) {
-                Spacer(
-                    modifier = Modifier
-                        .padding(top = 9.dp)
-                        .size(4.dp)
-                        .background(Black_Coral, CircleShape)
+            Text(
+                text = stringResource(R.string.mypage_setting_delete_member_continue),
+                modifier = Modifier.padding(top = 40.dp),
+                style = CurtainCallTheme.typography.subTitle4
+            )
+        }
+    }
+}
+
+@Composable
+private fun MyPageDeleteMemberFirstContent(
+    modifier: Modifier = Modifier,
+    deleteReason: DeleteReason,
+    onChangeDeleteReason: (DeleteReason) -> Unit = {},
+    content: String = "",
+    onChangeContent: (String) -> Unit = {}
+) {
+    val scrollState = rememberScrollState()
+    Column(modifier.verticalScroll(scrollState)) {
+        Column(
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .padding(horizontal = 20.dp)
+                .fillMaxSize()
+        ) {
+            Text(
+                text = stringResource(R.string.mypage_setting_delete_member_first_title),
+                style = CurtainCallTheme.typography.subTitle2
+            )
+            Text(
+                text = stringResource(R.string.mypage_setting_delete_member_first_subtitle),
+                modifier = Modifier.padding(top = 14.dp),
+                style = CurtainCallTheme.typography.body3.copy(
+                    color = Grey4
                 )
-                Text(
-                    text = stringResource(R.string.mypage_setting_remove_member_notice3),
-                    modifier = Modifier.padding(start = 6.dp),
-                    color = Black_Coral,
-                    fontSize = 14.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo,
-                    lineHeight = 22.dp.toSp()
-                )
+            )
+            Spacer(Modifier.height(30.dp))
+            DeleteReason.values().dropLast(1).forEach { reason ->
+                Spacer(Modifier.size(20.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = {
+                            if (deleteReason == reason) {
+                                onChangeDeleteReason(DeleteReason.NONE)
+                            } else {
+                                onChangeDeleteReason(reason)
+                            }
+                        },
+                        modifier = Modifier
+                            .background(
+                                color = if (deleteReason == reason) CurtainCallTheme.colors.primary else Grey8,
+                                shape = RoundedCornerShape(6.dp)
+                            ).size(20.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_check),
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                            tint = White
+                        )
+                    }
+                    Text(
+                        text = reason.value,
+                        modifier = Modifier.padding(start = 10.dp),
+                        style = CurtainCallTheme.typography.body3.copy(
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+                }
             }
-            Row(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxWidth()
-            ) {
-                Spacer(
+            if (deleteReason == DeleteReason.ETC) {
+                BasicTextField(
+                    value = content,
+                    onValueChange = onChangeContent,
                     modifier = Modifier
-                        .padding(top = 8.dp)
-                        .size(4.dp)
-                        .background(Black_Coral, CircleShape)
-                )
-                Text(
-                    text = stringResource(R.string.mypage_setting_remove_member_notice4),
-                    modifier = Modifier.padding(start = 6.dp),
-                    color = Black_Coral,
-                    fontSize = 14.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo,
-                    lineHeight = 22.dp.toSp()
-                )
+                        .padding(top = 12.dp)
+                        .fillMaxWidth()
+                        .background(
+                            color = Grey9,
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .heightIn(min = 130.dp),
+                    textStyle = CurtainCallTheme.typography.body3.copy(
+                        color = Grey1
+                    )
+                ) { innerTextField ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 12.dp)
+                    ) {
+                        if (content.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.mypage_setting_delete_reason_placeholder),
+                                style = CurtainCallTheme.typography.body3.copy(
+                                    color = Grey6
+                                )
+                            )
+                        }
+                    }
+                    innerTextField()
+                }
+                if (content.length > 500) {
+                    Text(
+                        text = stringResource(R.string.party_member_show_content_restrict),
+                        modifier = Modifier.padding(top = 8.dp, start = 14.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            color = Red
+                        )
+                    )
+                }
             }
         }
     }
