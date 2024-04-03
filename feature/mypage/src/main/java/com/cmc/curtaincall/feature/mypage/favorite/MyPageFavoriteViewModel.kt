@@ -55,6 +55,9 @@ class MyPageFavoriteViewModel @Inject constructor(
             .onEach { shows ->
                 _favoriteShows.value = shows.filter { ShowGenreType.valueOf(it.genre) == genreType.value }
             }
+            .filter {
+                it.isNotEmpty()
+            }
             .flatMapLatest { favoriteShows ->
                 favoriteRepository.checkFavoriteShows(
                     favoriteShows.map { it.id }

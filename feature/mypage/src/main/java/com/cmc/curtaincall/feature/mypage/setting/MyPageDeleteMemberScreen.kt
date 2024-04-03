@@ -133,7 +133,7 @@ fun MyPageDeleteMemberScreen(
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
-                        .background(CurtainCallTheme.colors.background),
+                        .background(CurtainCallTheme.colors.background)
                 )
             }
         }
