@@ -8,8 +8,7 @@ data class PartyListResponse(
 )
 
 data class PartyResponse(
-    val content: String,
-    val category: String,
+    val content: String?,
     val createdAt: String,
     val creatorId: Int,
     val creatorImageUrl: String?,
@@ -26,8 +25,7 @@ data class PartyResponse(
     val title: String
 ) {
     fun toModel() = PartyModel(
-        content = content,
-        category = category,
+        content = content ?: "",
         createdAt = createdAt,
         creatorId = creatorId,
         creatorImageUrl = creatorImageUrl,

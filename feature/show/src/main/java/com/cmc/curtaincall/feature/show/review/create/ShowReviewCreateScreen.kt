@@ -38,9 +38,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
+import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.buttons.common.CurtainCallFilledButton
 import com.cmc.curtaincall.common.designsystem.component.chips.CurtainCallBasicChip
-import com.cmc.curtaincall.common.designsystem.custom.CurtainCallRatingBar
+import com.cmc.curtaincall.common.designsystem.custom.common.CurtainCallRatingBar
 import com.cmc.curtaincall.common.designsystem.dimension.Paddings
 import com.cmc.curtaincall.common.designsystem.theme.Black
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
@@ -57,7 +58,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 internal fun ShowReviewCreateScreen(
-    showDetailViewModel: ShowDetailViewModel,
+    showDetailViewModel: ShowDetailViewModel = hiltViewModel(),
     showReviewViewModel: ShowReviewViewModel = hiltViewModel(),
     showId: String?,
     reviewId: Int?,
@@ -70,7 +71,11 @@ internal fun ShowReviewCreateScreen(
     var rating by remember { mutableIntStateOf(0) }
     var reviewText by remember { mutableStateOf("") }
 
-    LaunchedEffect(showDetailViewModel) {
+    if (editMode) {
+        showDetailViewModel.requestShowDetail(showId)
+    }
+
+    LaunchedEffect(showReviewViewModel) {
         showReviewViewModel.effects.collectLatest { effect ->
             when (effect) {
                 is ShowReviewSideEffect.CreateMyReview -> onBack()
@@ -80,6 +85,7 @@ internal fun ShowReviewCreateScreen(
         }
     }
 
+    SystemUiStatusBar(Grey9)
     Scaffold(
         topBar = {
             CurtainCallCenterTopAppBarWithBack(

@@ -1,4 +1,4 @@
-package com.cmc.curtaincall.common.designsystem.custom
+package com.cmc.curtaincall.common.designsystem.custom.common
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

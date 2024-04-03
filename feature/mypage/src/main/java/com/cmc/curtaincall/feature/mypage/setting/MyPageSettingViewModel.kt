@@ -15,13 +15,13 @@ class MyPageSettingViewModel @Inject constructor(
     private val tokenRepository: TokenRepository
 ) : ViewModel() {
 
-    private var _isLogout = MutableStateFlow(false)
-    val isLogout = _isLogout.asStateFlow()
+    private var _logoutComplete = MutableStateFlow(false)
+    val logoutComplete = _logoutComplete.asStateFlow()
 
     fun memberLogout() {
         viewModelScope.launch {
             tokenRepository.saveToken(LoginResultModel())
-            _isLogout.value = true
+            _logoutComplete.value = true
         }
     }
 }

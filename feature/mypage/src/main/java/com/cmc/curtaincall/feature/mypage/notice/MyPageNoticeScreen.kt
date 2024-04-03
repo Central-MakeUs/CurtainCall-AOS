@@ -2,10 +2,8 @@ package com.cmc.curtaincall.feature.mypage.notice
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,70 +14,59 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemsIndexed
+import androidx.paging.compose.items
 import com.cmc.curtaincall.common.designsystem.R
-import com.cmc.curtaincall.common.designsystem.component.basic.TopAppBarWithBack
-import com.cmc.curtaincall.common.designsystem.component.item.NoticeItem
-import com.cmc.curtaincall.common.designsystem.theme.Cultured
-import com.cmc.curtaincall.common.designsystem.theme.Nero
+import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
+import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
+import com.cmc.curtaincall.common.designsystem.custom.my.MyNoticeContent
 import com.cmc.curtaincall.common.designsystem.theme.White
-import com.cmc.curtaincall.common.utility.extensions.toChangeFullDate
+import com.cmc.curtaincall.common.utility.extensions.convertUIDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MyPageNoticeScreen(
-    myPageNoticeViewModel: MyPageNoticeViewModel = hiltViewModel(),
-    onNavigateNoticeDetail: (Int) -> Unit,
+    onNavigateToNoticeDetail: (Int) -> Unit = {},
     onBack: () -> Unit
 ) {
+    SystemUiStatusBar(White)
     Scaffold(
         topBar = {
-            TopAppBarWithBack(
-                title = stringResource(R.string.mypage_announcement),
-                containerColor = White,
-                contentColor = Nero,
-                onClick = onBack
+            CurtainCallCenterTopAppBarWithBack(
+                title = stringResource(R.string.mypage_profile_notice),
+                onBack = onBack
             )
         }
     ) { paddingValues ->
         MyPageNoticeContent(
-            myPageNoticeViewModel = myPageNoticeViewModel,
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
                 .background(White),
-            onNavigateNoticeDetail = onNavigateNoticeDetail
+            onNavigateToNoticeDetail = onNavigateToNoticeDetail
         )
     }
 }
 
 @Composable
 private fun MyPageNoticeContent(
-    myPageNoticeViewModel: MyPageNoticeViewModel,
     modifier: Modifier = Modifier,
-    onNavigateNoticeDetail: (Int) -> Unit
+    myPageNoticeViewModel: MyPageNoticeViewModel = hiltViewModel(),
+    onNavigateToNoticeDetail: (Int) -> Unit = {}
 ) {
-    val noticeItems = myPageNoticeViewModel.noticeItems.collectAsLazyPagingItems()
+    val notices = myPageNoticeViewModel.notices.collectAsLazyPagingItems()
     Column(modifier) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 12.dp)
+                .padding(top = 10.dp)
         ) {
-            itemsIndexed(noticeItems) { index, noticeItem ->
-                noticeItem?.let { notice ->
-                    NoticeItem(
-                        modifier = Modifier.fillMaxWidth(),
+            items(notices.itemCount) { index ->
+                notices[index]?.let { notice ->
+                    MyNoticeContent(
                         title = notice.title,
-                        date = notice.createdAt.toChangeFullDate(),
-                        onClick = { onNavigateNoticeDetail(notice.id) }
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .height(1.dp)
-                            .background(Cultured)
+                        createdAt = notice.createdAt.convertUIDate(),
+                        isLast = index == notices.itemCount - 1,
+                        onClick = { onNavigateToNoticeDetail(notice.id) }
                     )
                 }
             }

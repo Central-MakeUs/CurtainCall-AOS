@@ -19,17 +19,17 @@ import javax.inject.Inject
 class MyPageNoticeViewModel @Inject constructor(
     private val noticeRepository: NoticeRepository
 ) : ViewModel() {
-    val noticeItems: Flow<PagingData<NoticeModel>> = noticeRepository
+
+    val notices: Flow<PagingData<NoticeModel>> = noticeRepository
         .requestNoticeList()
         .cachedIn(viewModelScope)
 
-    private var _noticeDetailState = MutableStateFlow(NoticeDetailModel())
-    val noticeDetailState = _noticeDetailState.asStateFlow()
+    private var _noticeDetail = MutableStateFlow(NoticeDetailModel())
+    val noticeDetail = _noticeDetail.asStateFlow()
 
     fun requestNoticeDetail(noticeId: Int) {
         noticeRepository.requestNoticeDetail(noticeId)
-            .onEach {
-                _noticeDetailState.value = it
-            }.launchIn(viewModelScope)
+            .onEach { _noticeDetail.value = it }
+            .launchIn(viewModelScope)
     }
 }

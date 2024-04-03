@@ -61,14 +61,13 @@ import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
 fun MyPageScreen(
     myPageViewModel: MyPageViewModel = hiltViewModel(),
     onNavigateToProfile: () -> Unit = {},
-    onNavigateSetting: () -> Unit,
-    onNavigateProfileEdit: (String?) -> Unit,
+    onNavigateToWriting: () -> Unit = {},
+    onNavigateToFavorite: () -> Unit = {},
+    onNavigateToNotice: () -> Unit = {},
+    onNavigateToFAQ: () -> Unit = {},
+    onNavigateToSetting: () -> Unit = {},
     onNavigateRecruitment: () -> Unit,
     onNavigateParticipation: () -> Unit,
-    onNavigateSavedPerformance: () -> Unit,
-    onNavigateWrite: () -> Unit,
-    onNavigateAnnouncement: () -> Unit,
-    onNavigateQuestion: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     val memberInfoModel by myPageViewModel.memberInfoModel.collectAsStateWithLifecycle()
@@ -101,7 +100,9 @@ fun MyPageScreen(
         MyPageActivity(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 30.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            onNavigateToWriting = onNavigateToWriting,
+            onNavigateToFavorite = onNavigateToFavorite
         )
         Spacer(
             modifier = Modifier
@@ -112,7 +113,10 @@ fun MyPageScreen(
         MyPageService(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 30.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            onNavigateToNotice = onNavigateToNotice,
+            onNavigateToFAQ = onNavigateToFAQ,
+            onNavigateToSetting = onNavigateToSetting
         )
         MyPageInformation(
             modifier = Modifier.fillMaxWidth()
@@ -187,7 +191,10 @@ private fun MyPageInformation(
 
 @Composable
 private fun MyPageService(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToNotice: () -> Unit = {},
+    onNavigateToFAQ: () -> Unit = {},
+    onNavigateToSetting: () -> Unit = {}
 ) {
     Column(modifier) {
         Text(
@@ -198,9 +205,26 @@ private fun MyPageService(
             modifier = Modifier
                 .padding(top = 30.dp)
                 .fillMaxWidth()
-                .clickable {
-                    // TODO
-                },
+                .clickable { onNavigateToSetting() },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.mypage_profile_setting),
+                style = CurtainCallTheme.typography.body2
+            )
+            Spacer(Modifier.weight(1f))
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_right_pink),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = Black
+            )
+        }
+        Row(
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .fillMaxWidth()
+                .clickable { onNavigateToNotice() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -219,9 +243,7 @@ private fun MyPageService(
             modifier = Modifier
                 .padding(top = 30.dp)
                 .fillMaxWidth()
-                .clickable {
-                    // TODO
-                },
+                .clickable { onNavigateToFAQ() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -241,7 +263,9 @@ private fun MyPageService(
 
 @Composable
 private fun MyPageActivity(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToWriting: () -> Unit = {},
+    onNavigateToFavorite: () -> Unit = {}
 ) {
     Column(modifier) {
         Text(
@@ -271,9 +295,7 @@ private fun MyPageActivity(
         Row(
             modifier = Modifier
                 .padding(top = 30.dp)
-                .clickable {
-                    // TODO
-                },
+                .clickable { onNavigateToWriting() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -291,9 +313,7 @@ private fun MyPageActivity(
         Row(
             modifier = Modifier
                 .padding(top = 30.dp)
-                .clickable {
-                    // TODO
-                },
+                .clickable { onNavigateToFavorite() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

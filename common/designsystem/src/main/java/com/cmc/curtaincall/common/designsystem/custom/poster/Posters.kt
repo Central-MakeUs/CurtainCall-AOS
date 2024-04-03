@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -344,6 +346,54 @@ fun CurtainCallTitlePoster(
             style = CurtainCallTheme.typography.body3.copy(
                 fontWeight = FontWeight.SemiBold,
                 color = Grey1
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+fun CurtainCallFavoritePoster(
+    model: Any?,
+    title: String = "",
+    isFavorite: Boolean = false,
+    onFavoriteClick: () -> Unit = {}
+) {
+    Column(
+        modifier = Modifier.size(153.dp, 250.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(153f / 219)
+                .clip(RoundedCornerShape(12.dp))
+        ) {
+            AsyncImage(
+                model = model,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillBounds,
+                error = painterResource(R.drawable.ic_error_poster),
+                placeholder = painterResource(R.drawable.ic_error_poster)
+            )
+            Icon(
+                painter = painterResource(if (isFavorite) R.drawable.ic_like_filled else R.drawable.ic_like_unfilled),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 10.dp, end = 10.dp)
+                    .size(28.dp)
+                    .clickable { onFavoriteClick() },
+                tint = Color.Unspecified
+            )
+        }
+        Text(
+            text = title,
+            modifier = Modifier.padding(top = 10.dp),
+            style = CurtainCallTheme.typography.body2.copy(
+                fontWeight = FontWeight.SemiBold
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

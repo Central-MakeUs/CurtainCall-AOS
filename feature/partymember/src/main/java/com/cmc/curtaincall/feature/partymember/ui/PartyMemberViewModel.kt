@@ -55,10 +55,9 @@ class PartyMemberViewModel @Inject constructor(
         partyRepository.fetchPartyList(
             startDate = startDate,
             endDate = endDate
-        ).cachedIn(viewModelScope)
-            .onEach {
-                _partyModels.value = it
-            }.launchIn(viewModelScope)
+        ).onEach {
+            _partyModels.value = it
+        }.launchIn(viewModelScope)
     }
 
     private fun checkPartyTooltip() {

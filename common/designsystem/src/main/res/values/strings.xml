@@ -15,6 +15,7 @@
     <string name="finish_select">선택완료</string>
     <string name="finish_write">작성 완료</string>
     <string name="complete">확인</string>
+    <string name="logout">로그아웃</string>
 
     <!-- app -->
     <string name="onboarding_first_banner_title">작품 정보뿐만 아니라 분실물까지!</string>
@@ -130,14 +131,38 @@
     <string name="mypage_profile_write_activity">내가 쓴 글</string>
     <string name="mypage_profile_like_activity">좋아요한 작품 목록</string>
     <string name="mypage_profile_service">서비스</string>
+    <string name="mypage_profile_setting">설정</string>
     <string name="mypage_profile_notice">공지사항</string>
     <string name="mypage_profile_frequently_asked_question">자주 묻는 질문</string>
+    <string name="mypage_profile_privacy_information_terms">개인정보 처리방침</string>
     <string name="mypage_profile_curtaincall_customer_service_center">커튼콜 고객센터</string>
     <string name="mypage_prifile_curtaincall_email">curtaincall.official2023@gmail.com</string>
     <string name="mypage_profile_curtaincall_show_copyright">작품 정보 출처</string>
     <string name="mypage_profile_curtaincall_show_copyright_name">(재)예술경영지원센터 공연예술통합전산망</string>
     <string name="mypage_profile_curtaincall_show_copyright_date">© 2023. Curtain Call all rights reserved.</string>
     <string name="mypage_profile_edit_complete">프로필 변경 완료</string>
+    <string name="mypage_writing">내가 쓴 글</string>
+    <string name="mypage_empty_writing">공연 리뷰가 없어요</string>
+    <string name="mypage_empty_writing_guide">관람한 작품이 있다면,\n공연 리뷰를 작성해보세요!</string>
+    <string name="mypage_favorite_show">좋아요한 작품</string>
+    <string name="mypage_setting_account">계정</string>
+    <string name="mypage_setting_logout">로그아웃</string>
+    <string name="mypage_setting_account_delete">계정 삭제</string>
+    <string name="mypage_setting_information">정보</string>
+    <string name="mypage_setting_privacy_information_terms">개인정보 처리방침</string>
+    <string name="mypage_setting_service_usage_terms">서비스 이용약관</string>
+    <string name="mypage_setting_terms_view">보기</string>
+    <string name="mypage_setting_logout_dialog">로그아웃 할까요?</string>
+    <string name="mypage_setting_delete_member_first_title">커튼콜을 떠나시나요?</string>
+    <string name="mypage_setting_delete_member_first_subtitle">계정을 삭제하려는 이유를 알려주세요.</string>
+    <string name="mypage_setting_delete_member_second_title">꼭 확인해주세요!</string>
+    <string name="mypage_setting_delete_member_second_subtitle">커튼콜 계정을 삭제하면,</string>
+    <string name="mypage_setting_delete_member_second_description1">해당 계정으로 게시한 글과 좋아요한 작품 목록, 톡방 참여 내역 등 데이터가 모두 삭제됩니다.</string>
+    <string name="mypage_setting_delete_member_second_description2">일부 라이브톡 내용, 파티원 톡방 내용은 탈퇴 후에도 유지될 수 있습니다.</string>
+    <string name="mypage_setting_delete_member_second_description3">이후 계정을 복구하고 싶다면, 30일 내 접근 시 계정 복구가 가능합니다.\n단, 30일 이후에는 영구적으로 삭제됩니다.</string>
+    <string name="mypage_setting_delete_member_continue">계속할까요?</string>
+    <string name="mypage_setting_delete_reason_placeholder">자유롭게 작성해주세요.</string>
+
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
     <!-- common -->
@@ -363,8 +388,6 @@
     <string name="mypage_setting_empty_partmember_title">참여 중인 파티원이 없어요.</string>
     <string name="mypage_setting_empty_partymember_subtitle">다양한 파티원 모집에 참여하여\n네트워킹을 즐겨보세요!</string>
     <string name="mypage_setting">설정</string>
-    <string name="mypage_setting_account">계정</string>
-    <string name="mypage_setting_logout">로그아웃</string>
     <string name="mypage_setting_remove_member">계정 삭제</string>
     <string name="mypage_setting_remove_member_next_step">다음</string>
     <string name="mypage_setting_remove_member_complete">완료</string>
@@ -379,7 +402,6 @@
     <string name="mypage_setting_remove_member_notice3">일부 라이브톡 내용, 파티원 톡방 내용은 탈퇴 후에도 유지될 수 있습니다.</string>
     <string name="mypage_setting_remove_member_notice4">한번 삭제된 정보는 다시 복구할 수 없으니 신중하게 결정해주세요. 계속할까요?</string>
     <string name="mypage_setting_remove_member_finish">계정 삭제가 완료되었어요.</string>
-    <string name="mypage_setting_information">정보</string>
     <string name="mypage_setting_privacy_information_policy">개인정보 처리방침</string>
     <string name="mypage_setting_service_use_terms">서비스 이용약관</string>
     <string name="mypage_livetalk_entrance">TALK 입장</string>

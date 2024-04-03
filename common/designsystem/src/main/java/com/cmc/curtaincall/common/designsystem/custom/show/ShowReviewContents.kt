@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,13 +38,15 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.buttons.like.CurtainCallReviewLikeButton
+import com.cmc.curtaincall.common.designsystem.component.chips.CurtainCallBasicChip
 import com.cmc.curtaincall.common.designsystem.component.menus.CurtainCallMenu
-import com.cmc.curtaincall.common.designsystem.custom.CurtainCallRatingBar
+import com.cmc.curtaincall.common.designsystem.custom.common.CurtainCallRatingBar
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey3
 import com.cmc.curtaincall.common.designsystem.theme.Grey5
 import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.utility.extensions.convertUIDate
+import com.cmc.curtaincall.domain.model.member.MemberReviewModel
 import com.cmc.curtaincall.domain.model.review.ShowReviewModel
 
 @Composable
@@ -336,5 +339,69 @@ private fun ShowReviewContentPreview2() {
             onMoreClick = { showMenus = !showMenus },
             isFavorite = true
         )
+    }
+}
+
+@Composable
+fun MyReviewContent(
+    modifier: Modifier = Modifier,
+    memberReviewModel: MemberReviewModel = MemberReviewModel(),
+    onClick: () -> Unit = {}
+) {
+    Card(
+        modifier = modifier.clickable { onClick() },
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = CurtainCallTheme.colors.background
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 12.dp, bottom = 10.dp)
+                .padding(horizontal = 12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CurtainCallBasicChip(
+                    text = memberReviewModel.genreType.value,
+                    isSelect = true
+                )
+                Text(
+                    text = memberReviewModel.showName,
+                    modifier = Modifier.padding(start = 10.dp),
+                    style = CurtainCallTheme.typography.body3.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    maxLines = 1
+                )
+            }
+            CurtainCallRatingBar(
+                modifier = Modifier
+                    .padding(top = 11.dp)
+                    .size(84.dp, 16.dp),
+                rating = memberReviewModel.grade
+            )
+            Text(
+                text = memberReviewModel.content,
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .fillMaxWidth(),
+                style = CurtainCallTheme.typography.body4,
+                maxLines = 1
+            )
+            Text(
+                text = memberReviewModel.createdAt.convertUIDate(),
+                modifier = Modifier.padding(top = 10.dp),
+                style = CurtainCallTheme.typography.body4.copy(
+                    color = Grey5
+                )
+            )
+        }
     }
 }

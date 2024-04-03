@@ -26,4 +26,11 @@ object NavRouteLabel {
 
     const val MYPAGE = "mypage"
     const val MYPAGE_PROFILE = "mypage_profile"
+    const val MYPAGE_WRITING = "mypage_writing"
+    const val MYPAGE_FAVORITE = "mypage_favorite"
+    const val MYPAGE_NOTICE = "mypage_notice"
+    const val MYPAGE_NOTICE_DETAIL = "mypage_notice_detail"
+    const val MYPAGE_FAQ = "mypage_faq"
+    const val MYPAGE_SETTING = "mypage_setting"
+    const val MYPAGE_DELETE = "mypage_delete"
 }

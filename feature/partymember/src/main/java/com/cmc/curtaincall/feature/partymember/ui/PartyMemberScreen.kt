@@ -39,6 +39,7 @@ import com.cmc.curtaincall.common.designsystem.custom.party.PartyEmptyContent
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey8
 import com.kizitonwose.calendar.core.CalendarDay
+import timber.log.Timber
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -126,12 +127,14 @@ private fun PartyMemberContent(
         }
 
         if (partyModels.itemCount == 0) {
+            Timber.d("PartyMemberContent itemCount zero")
             Column(modifier = Modifier.fillMaxSize()) {
                 Spacer(Modifier.weight(200f))
                 PartyEmptyContent(Modifier.align(Alignment.CenterHorizontally))
                 Spacer(Modifier.weight(308f))
             }
         } else {
+            Timber.d("PartyMemberContent itemCount not zero")
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),

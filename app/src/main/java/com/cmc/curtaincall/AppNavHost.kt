@@ -62,14 +62,14 @@ fun AppNavHost(
                 chatClient = chatClient,
                 onLogout = {
                     navHostController.navigate(AuthDestination.Login.route) {
-                        popUpTo(AuthDestination.Login.route) {
+                        popUpTo(HomeDestination.Home.route) {
                             inclusive = true
                         }
                     }
                 },
                 onDeleteMember = {
                     navHostController.navigate(AuthDestination.Login.route) {
-                        popUpTo(AuthDestination.Login.route) {
+                        popUpTo(HomeDestination.Home.route) {
                             inclusive = true
                         }
                     }
