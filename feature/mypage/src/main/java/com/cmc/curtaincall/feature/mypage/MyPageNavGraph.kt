@@ -6,44 +6,24 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.navigation.NavGraphLabel
 import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
-import com.cmc.curtaincall.core.navigation.BottomDestination
 import com.cmc.curtaincall.core.navigation.CurtainCallDestination
 import com.cmc.curtaincall.feature.mypage.faq.MyPageFAQScreen
 import com.cmc.curtaincall.feature.mypage.favorite.MyPageFavoriteScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeDetailScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeScreen
-import com.cmc.curtaincall.feature.mypage.party.participation.MyPageParticipationScreen
-import com.cmc.curtaincall.feature.mypage.party.recruitment.MyPageRecruitmentScreen
 import com.cmc.curtaincall.feature.mypage.profile.MyPageProfileScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageDeleteMemberScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageSettingScreen
 import com.cmc.curtaincall.feature.mypage.writing.MyPageWritingScreen
-import com.cmc.curtaincall.feature.partymember.PartyMemberDestination2
 
-private const val MYPAGE_GRAPH = "mypage_graph"
-const val MYPAGE = "mypage"
-private const val MYPAGE_LABEL = "MY"
-private const val MYPAGE_SETTING = "mypage_setting"
 private const val MYPAGE_DELETE_MEMBER = "mypage_delete_member"
 private const val MYPAGE_RECRUITMENT = "mypage_recruitment"
 private const val MYPAGE_PARTICIPATION = "mypage_participantion"
 
 sealed interface MyPageDestination2 : CurtainCallDestination {
-    object MyPage : MyPageDestination2, BottomDestination {
-        override val route = MYPAGE
-        override val icon = R.drawable.ic_my
-        override val selectIcon = R.drawable.ic_my_sel
-        override val label = MYPAGE_LABEL
-    }
-
-    object Setting : MyPageDestination2 {
-        override val route = MYPAGE_SETTING
-    }
-
     object DeleteMember : MyPageDestination2 {
         override val route = MYPAGE_DELETE_MEMBER
     }
@@ -80,8 +60,8 @@ fun NavGraphBuilder.mypageNavGraph(
                 onNavigateToFAQ = {
                     navHostController.navigate(MyPageDestination.FAQ.route)
                 },
-                onNavigateSetting = {
-                    navHostController.navigate(MyPageDestination2.Setting.route)
+                onNavigateToSetting = {
+                    navHostController.navigate(MyPageDestination.Setting.route)
                 },
                 onNavigateRecruitment = {
                     navHostController.navigate(MyPageDestination2.Recruitment.route)
@@ -145,7 +125,7 @@ fun NavGraphBuilder.mypageNavGraph(
             }
         }
 
-        composable(MyPageDestination2.Setting.route) {
+        composable(MyPageDestination.Setting.route) {
             MyPageSettingScreen(
                 onLogout = onLogout,
                 onNavigateDeleteMember = {
@@ -165,49 +145,49 @@ fun NavGraphBuilder.mypageNavGraph(
         }
 
         composable(MyPageDestination2.Recruitment.route) { entry ->
-            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.MyPage.route) }
-            MyPageRecruitmentScreen(
-                myPageViewModel = hiltViewModel(parentEntry),
-                onNavigateRecruitmentDetail = { partyType, partyId ->
-                    navHostController.navigate(
-                        PartyMemberDestination2.Detail.route + "?" +
-                            "${PartyMemberDestination2.Detail.partyIdArg}=$partyId" + "&" +
-                            "${PartyMemberDestination2.Detail.typeArg}=$partyType" + "&" +
-                            "${PartyMemberDestination2.Detail.myWritingArg}=true" + "&" +
-                            "${PartyMemberDestination2.Detail.fromRecruitmentArg}=true" + "&" +
-                            "${PartyMemberDestination2.Detail.fromParticipationArg}=false"
-                    )
-                },
-                onNavigatePartyMember = {
-                    navHostController.navigate("${PartyMemberDestination2.List.route}/$it")
-                },
-                onBack = {
-                    navHostController.popBackStack()
-                }
-            )
+//            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.MyPage.route) }
+//            MyPageRecruitmentScreen(
+//                myPageViewModel = hiltViewModel(parentEntry),
+//                onNavigateRecruitmentDetail = { partyType, partyId ->
+//                    navHostController.navigate(
+//                        PartyMemberDestination2.Detail.route + "?" +
+//                            "${PartyMemberDestination2.Detail.partyIdArg}=$partyId" + "&" +
+//                            "${PartyMemberDestination2.Detail.typeArg}=$partyType" + "&" +
+//                            "${PartyMemberDestination2.Detail.myWritingArg}=true" + "&" +
+//                            "${PartyMemberDestination2.Detail.fromRecruitmentArg}=true" + "&" +
+//                            "${PartyMemberDestination2.Detail.fromParticipationArg}=false"
+//                    )
+//                },
+//                onNavigatePartyMember = {
+//                    navHostController.navigate("${PartyMemberDestination2.List.route}/$it")
+//                },
+//                onBack = {
+//                    navHostController.popBackStack()
+//                }
+//            )
         }
 
         composable(MyPageDestination2.Participation.route) { entry ->
-            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.MyPage.route) }
-            MyPageParticipationScreen(
-                myPageViewModel = hiltViewModel(parentEntry),
-                onNavigateParticipationDetail = { partyType, partyId ->
-                    navHostController.navigate(
-                        PartyMemberDestination2.Detail.route + "?" +
-                            "${PartyMemberDestination2.Detail.partyIdArg}=$partyId" + "&" +
-                            "${PartyMemberDestination2.Detail.typeArg}=$partyType" + "&" +
-                            "${PartyMemberDestination2.Detail.myWritingArg}=false" + "&" +
-                            "${PartyMemberDestination2.Detail.fromRecruitmentArg}=false" + "&" +
-                            "${PartyMemberDestination2.Detail.fromParticipationArg}=true"
-                    )
-                },
-                onNavigatePartyMember = {
-                    navHostController.navigate("${PartyMemberDestination2.List.route}/$it")
-                },
-                onBack = {
-                    navHostController.popBackStack()
-                }
-            )
+//            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.MyPage.route) }
+//            MyPageParticipationScreen(
+//                myPageViewModel = hiltViewModel(parentEntry),
+//                onNavigateParticipationDetail = { partyType, partyId ->
+//                    navHostController.navigate(
+//                        PartyMemberDestination2.Detail.route + "?" +
+//                            "${PartyMemberDestination2.Detail.partyIdArg}=$partyId" + "&" +
+//                            "${PartyMemberDestination2.Detail.typeArg}=$partyType" + "&" +
+//                            "${PartyMemberDestination2.Detail.myWritingArg}=false" + "&" +
+//                            "${PartyMemberDestination2.Detail.fromRecruitmentArg}=false" + "&" +
+//                            "${PartyMemberDestination2.Detail.fromParticipationArg}=true"
+//                    )
+//                },
+//                onNavigatePartyMember = {
+//                    navHostController.navigate("${PartyMemberDestination2.List.route}/$it")
+//                },
+//                onBack = {
+//                    navHostController.popBackStack()
+//                }
+//            )
         }
     }
 }

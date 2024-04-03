@@ -15,6 +15,7 @@
     <string name="finish_select">선택완료</string>
     <string name="finish_write">작성 완료</string>
     <string name="complete">확인</string>
+    <string name="logout">로그아웃</string>
 
     <!-- app -->
     <string name="onboarding_first_banner_title">작품 정보뿐만 아니라 분실물까지!</string>
@@ -144,6 +145,14 @@
     <string name="mypage_empty_writing">공연 리뷰가 없어요</string>
     <string name="mypage_empty_writing_guide">관람한 작품이 있다면,\n공연 리뷰를 작성해보세요!</string>
     <string name="mypage_favorite_show">좋아요한 작품</string>
+    <string name="mypage_setting_account">계정</string>
+    <string name="mypage_setting_logout">로그아웃</string>
+    <string name="mypage_setting_account_delete">계정 삭제</string>
+    <string name="mypage_setting_information">정보</string>
+    <string name="mypage_setting_privacy_information_terms">개인정보 처리방침</string>
+    <string name="mypage_setting_service_usage_terms">서비스 이용약관</string>
+    <string name="mypage_setting_terms_view">보기</string>
+    <string name="mypage_setting_logout_dialog">로그아웃 할까요?</string>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
@@ -370,8 +379,6 @@
     <string name="mypage_setting_empty_partmember_title">참여 중인 파티원이 없어요.</string>
     <string name="mypage_setting_empty_partymember_subtitle">다양한 파티원 모집에 참여하여\n네트워킹을 즐겨보세요!</string>
     <string name="mypage_setting">설정</string>
-    <string name="mypage_setting_account">계정</string>
-    <string name="mypage_setting_logout">로그아웃</string>
     <string name="mypage_setting_remove_member">계정 삭제</string>
     <string name="mypage_setting_remove_member_next_step">다음</string>
     <string name="mypage_setting_remove_member_complete">완료</string>
@@ -386,7 +393,6 @@
     <string name="mypage_setting_remove_member_notice3">일부 라이브톡 내용, 파티원 톡방 내용은 탈퇴 후에도 유지될 수 있습니다.</string>
     <string name="mypage_setting_remove_member_notice4">한번 삭제된 정보는 다시 복구할 수 없으니 신중하게 결정해주세요. 계속할까요?</string>
     <string name="mypage_setting_remove_member_finish">계정 삭제가 완료되었어요.</string>
-    <string name="mypage_setting_information">정보</string>
     <string name="mypage_setting_privacy_information_policy">개인정보 처리방침</string>
     <string name="mypage_setting_service_use_terms">서비스 이용약관</string>
     <string name="mypage_livetalk_entrance">TALK 입장</string>

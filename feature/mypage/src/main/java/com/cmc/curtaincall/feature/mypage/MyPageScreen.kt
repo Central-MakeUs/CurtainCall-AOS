@@ -65,7 +65,7 @@ fun MyPageScreen(
     onNavigateToFavorite: () -> Unit = {},
     onNavigateToNotice: () -> Unit = {},
     onNavigateToFAQ: () -> Unit = {},
-    onNavigateSetting: () -> Unit,
+    onNavigateToSetting: () -> Unit = {},
     onNavigateRecruitment: () -> Unit,
     onNavigateParticipation: () -> Unit,
 ) {
@@ -115,7 +115,8 @@ fun MyPageScreen(
                 .padding(horizontal = 20.dp, vertical = 30.dp)
                 .fillMaxWidth(),
             onNavigateToNotice = onNavigateToNotice,
-            onNavigateToFAQ = onNavigateToFAQ
+            onNavigateToFAQ = onNavigateToFAQ,
+            onNavigateToSetting = onNavigateToSetting
         )
         MyPageInformation(
             modifier = Modifier.fillMaxWidth()
@@ -193,6 +194,7 @@ private fun MyPageService(
     modifier: Modifier = Modifier,
     onNavigateToNotice: () -> Unit = {},
     onNavigateToFAQ: () -> Unit = {},
+    onNavigateToSetting: () -> Unit = {}
 ) {
     Column(modifier) {
         Text(
@@ -203,9 +205,7 @@ private fun MyPageService(
             modifier = Modifier
                 .padding(top = 30.dp)
                 .fillMaxWidth()
-                .clickable {
-                    // TODO
-                },
+                .clickable { onNavigateToSetting() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
