@@ -17,12 +17,11 @@ import com.cmc.curtaincall.common.navigation.destination.PartyMemberDestination
 import com.cmc.curtaincall.core.navigation.BottomDestination
 import com.cmc.curtaincall.core.navigation.CurtainCallDestination
 import com.cmc.curtaincall.domain.type.ReportType
-import com.cmc.curtaincall.feature.partymember.ui.PartyMemberScreen
-import com.cmc.curtaincall.feature.partymember.ui.create.screen.PartyMemberCreateScreen
-import com.cmc.curtaincall.feature.partymember.ui.detail.PartyMemberDetailScreen
-import com.cmc.curtaincall.feature.partymember.ui.list.PartyMemberListScreen
-import com.cmc.curtaincall.feature.partymember.ui.livetalk.PartyMemberLiveTalkScreen
-import com.cmc.curtaincall.feature.partymember.ui.recruit.screen.PartyMemberRecruitScreen
+import com.cmc.curtaincall.feature.partymember.create.screen.PartyMemberCreateScreen
+import com.cmc.curtaincall.feature.partymember.detail.PartyMemberDetailScreen
+import com.cmc.curtaincall.feature.partymember.list.PartyMemberListScreen
+import com.cmc.curtaincall.feature.partymember.livetalk.PartyMemberLiveTalkScreen
+import com.cmc.curtaincall.feature.partymember.recruit.screen.PartyMemberRecruitScreen
 import io.getstream.chat.android.client.ChatClient
 
 private const val PARTYMEMBER_GRAPH = "partymember_graph"

@@ -159,7 +159,7 @@ fun PartyContent(
             }
             DottedLine(
                 modifier = Modifier.fillMaxWidth(),
-                strokeWidth = 2.dp.value,
+                strokeWidth = 5.dp.value,
                 strokeColor = Grey8
             )
             Canvas(

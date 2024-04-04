@@ -16,6 +16,7 @@
     <string name="finish_write">작성 완료</string>
     <string name="complete">확인</string>
     <string name="logout">로그아웃</string>
+    <string name="clear">초기화</string>
 
     <!-- app -->
     <string name="onboarding_first_banner_title">작품 정보뿐만 아니라 분실물까지!</string>
