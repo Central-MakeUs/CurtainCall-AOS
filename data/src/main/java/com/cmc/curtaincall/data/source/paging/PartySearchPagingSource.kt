@@ -11,7 +11,6 @@ const val PARTY_SEARCH_PAGE_SIZE = 20
 
 class PartySearchPagingSource @Inject constructor(
     private val partyService: PartyService,
-    private val category: String,
     private val keyword: String
 ) : PagingSource<Int, PartyModel>() {
     override fun getRefreshKey(state: PagingState<Int, PartyModel>): Int? {
@@ -27,7 +26,6 @@ class PartySearchPagingSource @Inject constructor(
             val response = partyService.searchPartyList(
                 page = pageKey,
                 size = PARTY_SEARCH_PAGE_SIZE,
-                category = category,
                 keyword = keyword
             )
             val participateParties = partyService.checkParties(response.parties.map { it.id })

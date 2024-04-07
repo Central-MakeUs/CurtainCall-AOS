@@ -1,10 +1,12 @@
 package com.cmc.curtaincall.feature.partymember
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,8 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,31 +35,36 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallSearchTitleTopAppBarWithCalendar
+import com.cmc.curtaincall.common.designsystem.component.appbars.SearchAppBarState
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.buttons.common.CurtainCallFilledButton
 import com.cmc.curtaincall.common.designsystem.component.tooltip.CurtainCallPartyTooltip
 import com.cmc.curtaincall.common.designsystem.custom.common.CurtainCallCalendar
 import com.cmc.curtaincall.common.designsystem.custom.party.PartyContent
 import com.cmc.curtaincall.common.designsystem.custom.party.PartyEmptyContent
+import com.cmc.curtaincall.common.designsystem.custom.search.SearchWordContent
+import com.cmc.curtaincall.common.designsystem.custom.search.SearchWordEmptyContent
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
+import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey8
 import com.kizitonwose.calendar.core.CalendarDay
-import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun PartyMemberScreen(
+    partyMemberViewModel: PartyMemberViewModel = hiltViewModel(),
     onNavigateToRecruit: () -> Unit = {}
 ) {
     var selectedCalendarDays by remember { mutableStateOf<List<CalendarDay>>(listOf()) }
     var isShowCalendar by remember { mutableStateOf(false) }
+    val searchAppBarState by partyMemberViewModel.searchAppBarState.collectAsStateWithLifecycle()
 
     SystemUiStatusBar(Grey8)
     Scaffold(
         topBar = {
             CurtainCallSearchTitleTopAppBarWithCalendar(
                 title = stringResource(R.string.party_member),
+                searchAppBarState = searchAppBarState,
                 containerColor = Grey8,
                 selectedCalendarDays = selectedCalendarDays,
                 onCalendarClick = { isShowCalendar = isShowCalendar.not() }
@@ -79,18 +88,115 @@ fun PartyMemberScreen(
         },
         floatingActionButtonPosition = FabPosition.Center
     ) { paddingValues ->
-        PartyMemberContent(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .background(Grey8),
-            isShowCalendar = isShowCalendar,
-            selectedCalendarDays = selectedCalendarDays,
-            onSelectCalendarDays = {
-                selectedCalendarDays = it
-                isShowCalendar = false
+        if (searchAppBarState.isSearchMode.value) {
+            PartyMemberSearchContent(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .background(Grey8),
+                searchAppBarState = searchAppBarState
+            )
+        } else {
+            PartyMemberContent(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .background(Grey8),
+                isShowCalendar = isShowCalendar,
+                selectedCalendarDays = selectedCalendarDays,
+                onSelectCalendarDays = {
+                    selectedCalendarDays = it
+                    isShowCalendar = false
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun PartyMemberSearchContent(
+    modifier: Modifier = Modifier,
+    partyMemberViewModel: PartyMemberViewModel = hiltViewModel(),
+    searchAppBarState: SearchAppBarState
+) {
+    val partyMemberUiState by partyMemberViewModel.uiState.collectAsStateWithLifecycle()
+    val searchWords = partyMemberUiState.partySearchWords
+    val partyModels = partyMemberUiState.partyModels.collectAsLazyPagingItems()
+    if (searchAppBarState.isDoneSearch.value) {
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 30.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(partyModels.itemCount) { index ->
+                partyModels[index]?.let { partyModel ->
+                    PartyContent(partyModel = partyModel)
+                }
             }
-        )
+        }
+    } else {
+        if (searchWords.isEmpty()) {
+            Column(
+                modifier = modifier
+                    .padding(top = 30.dp)
+                    .padding(horizontal = 20.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.recently_search_word),
+                    style = CurtainCallTheme.typography.body2.copy(
+                        fontWeight = FontWeight.SemiBold
+                    )
+                )
+                Spacer(Modifier.weight(190f))
+                SearchWordEmptyContent(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                )
+                Spacer(Modifier.weight(339f))
+            }
+        } else {
+            LazyColumn(
+                modifier = modifier
+                    .padding(top = 30.dp)
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.recently_search_word),
+                            modifier = Modifier.weight(1f),
+                            style = CurtainCallTheme.typography.body2.copy(
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
+                        if (searchWords.isNotEmpty()) {
+                            Text(
+                                text = stringResource(R.string.delete_all_search_word),
+                                modifier = Modifier.clickable {
+                                    partyMemberViewModel.deleteAllShowSearchWord()
+                                },
+                                style = CurtainCallTheme.typography.body3.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Grey6
+                                )
+                            )
+                        }
+                    }
+                }
+                items(searchWords) { searchWord ->
+                    SearchWordContent(
+                        text = searchWord.word,
+                        onClose = { partyMemberViewModel.deletePartySearchWord(searchWord) },
+                        onClick = { partyMemberViewModel.searchPartyModel(searchWord) }
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -102,24 +208,21 @@ private fun PartyMemberContent(
     selectedCalendarDays: List<CalendarDay> = listOf(),
     onSelectCalendarDays: (List<CalendarDay>) -> Unit = {}
 ) {
-    val partyModels = partyMemberViewModel.partyModel.collectAsLazyPagingItems()
-    val isShowTooltip by partyMemberViewModel.isShowTooltip.collectAsStateWithLifecycle()
+    val partyMemberUiState by partyMemberViewModel.uiState.collectAsStateWithLifecycle()
+    val partyModels = partyMemberUiState.partyModels.collectAsLazyPagingItems()
 
     LaunchedEffect(Unit) {
-        partyMemberViewModel.refreshEffect.collectLatest { refresh ->
-            Timber.d("fetchParyList refreshEffect ")
-            if (refresh) partyModels.refresh()
-        }
+        partyMemberViewModel.fetchPartyList()
     }
 
     Box(modifier) {
-        if (isShowTooltip) {
+        if (partyMemberUiState.isShowTooltip) {
             CurtainCallPartyTooltip(
                 modifier = Modifier
                     .padding(start = 20.dp)
                     .zIndex(1f),
                 text = stringResource(R.string.party_member_tooltip),
-                onClick = { partyMemberViewModel.stopPartyTooltip() }
+                onClick = { partyMemberViewModel.hidePartyTooltip() }
             )
         }
 

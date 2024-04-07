@@ -63,15 +63,15 @@ class PartyRepositoryImpl @Inject constructor(
             parties.map { it.toModel() }
         }
 
-    override fun fetchSearchPartyList(category: String, keyword: String): Flow<PagingData<PartyModel>> {
+    override fun fetchSearchPartyList(keyword: String): Flow<PagingData<PartyModel>> {
         return Pager(
             config = PagingConfig(pageSize = PARTY_SEARCH_PAGE_SIZE),
-            pagingSourceFactory = { PartySearchPagingSource(partyService, category, keyword) }
+            pagingSourceFactory = { PartySearchPagingSource(partyService, keyword) }
         ).flow
     }
 
-    override fun searchPartyList(page: Int, size: Int, category: String, keyword: String): Flow<List<PartyModel>> =
-        partyRemoteSource.searchPartyList(page, size, category, keyword).map { parties ->
+    override fun searchPartyList(page: Int, size: Int, keyword: String): Flow<List<PartyModel>> =
+        partyRemoteSource.searchPartyList(page, size, keyword).map { parties ->
             parties.map { it.toModel() }
         }
 

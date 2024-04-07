@@ -19,7 +19,6 @@ import com.cmc.curtaincall.core.navigation.CurtainCallDestination
 import com.cmc.curtaincall.domain.type.ReportType
 import com.cmc.curtaincall.feature.partymember.create.screen.PartyMemberCreateScreen
 import com.cmc.curtaincall.feature.partymember.detail.PartyMemberDetailScreen
-import com.cmc.curtaincall.feature.partymember.list.PartyMemberListScreen
 import com.cmc.curtaincall.feature.partymember.livetalk.PartyMemberLiveTalkScreen
 import com.cmc.curtaincall.feature.partymember.recruit.screen.PartyMemberRecruitScreen
 import io.getstream.chat.android.client.ChatClient
@@ -59,11 +58,11 @@ sealed interface PartyMemberDestination2 : CurtainCallDestination {
         const val fromRecruitmentArg = "fromRecruitment"
         const val fromParticipationArg = "fromParticipation"
         val routeWithArgs = "$route?" +
-            "$partyIdArg={$partyIdArg}&" +
-            "$myWritingArg={$myWritingArg}&" +
-            "$typeArg={$typeArg}&" +
-            "$fromRecruitmentArg={$fromRecruitmentArg}&" +
-            "$fromParticipationArg={$fromParticipationArg}"
+                "$partyIdArg={$partyIdArg}&" +
+                "$myWritingArg={$myWritingArg}&" +
+                "$typeArg={$typeArg}&" +
+                "$fromRecruitmentArg={$fromRecruitmentArg}&" +
+                "$fromParticipationArg={$fromParticipationArg}"
 
         val arguments = listOf(
             navArgument(partyIdArg) {
@@ -127,21 +126,21 @@ fun NavGraphBuilder.partymemberNavGraph(
         ) { entry ->
             val partyType: PartyType? = getPartyType(entry.arguments)
             if (partyType != null) {
-                PartyMemberListScreen(
-                    partyType = partyType,
-                    onNavigateDetail = { partyType, partyId, myWriting ->
-                        navHostController.navigate(
-                            PartyMemberDestination2.Detail.route + "?" +
-                                "${PartyMemberDestination2.Detail.partyIdArg}=$partyId" + "&" +
-                                "${PartyMemberDestination2.Detail.typeArg}=$partyType" + "&" +
-                                "${PartyMemberDestination2.Detail.myWritingArg}=$myWriting" + "&" +
-                                "${PartyMemberDestination2.Detail.fromRecruitmentArg}=false" + "&" +
-                                "${PartyMemberDestination2.Detail.fromParticipationArg}=false"
-                        )
-                    },
-                    onNavigateCreate = { navHostController.navigate("${PartyMemberDestination2.Create.route}/$it") },
-                    onBack = { navHostController.popBackStack() }
-                )
+//                PartyMemberListScreen(
+//                    partyType = partyType,
+//                    onNavigateDetail = { partyType, partyId, myWriting ->
+//                        navHostController.navigate(
+//                            PartyMemberDestination2.Detail.route + "?" +
+//                                    "${PartyMemberDestination2.Detail.partyIdArg}=$partyId" + "&" +
+//                                    "${PartyMemberDestination2.Detail.typeArg}=$partyType" + "&" +
+//                                    "${PartyMemberDestination2.Detail.myWritingArg}=$myWriting" + "&" +
+//                                    "${PartyMemberDestination2.Detail.fromRecruitmentArg}=false" + "&" +
+//                                    "${PartyMemberDestination2.Detail.fromParticipationArg}=false"
+//                        )
+//                    },
+//                    onNavigateCreate = { navHostController.navigate("${PartyMemberDestination2.Create.route}/$it") },
+//                    onBack = { navHostController.popBackStack() }
+//                )
             }
         }
 

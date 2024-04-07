@@ -1,207 +1,161 @@
 package com.cmc.curtaincall.feature.partymember
 
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.cmc.curtaincall.common.designsystem.component.card.PartyType
+import com.cmc.curtaincall.common.designsystem.component.appbars.SearchAppBarState
 import com.cmc.curtaincall.core.base.BaseViewModel
-import com.cmc.curtaincall.domain.model.party.PartyModel
 import com.cmc.curtaincall.domain.model.party.PartySearchWordModel
 import com.cmc.curtaincall.domain.repository.LaunchRepository
-import com.cmc.curtaincall.domain.repository.MemberRepository
 import com.cmc.curtaincall.domain.repository.PartyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class PartyMemberViewModel @Inject constructor(
     private val partyRepository: PartyRepository,
-    private val memberRepository: MemberRepository,
     private val launchRepository: LaunchRepository
 ) : BaseViewModel<PartyMemberUiState, PartyMemberEvent, Nothing>(
     initialState = PartyMemberUiState()
 ) {
-    var partyModel: Flow<PagingData<PartyModel>>
-
-    private val _isShowTooltip = MutableStateFlow(false)
-    val isShowTooltip = _isShowTooltip.asStateFlow()
-
-    private val _refreshEffect = MutableSharedFlow<Boolean>()
-    val refreshEffect = _refreshEffect.asSharedFlow()
-    // /
-
-    private val _memberId = MutableStateFlow(0)
-    val memberId: StateFlow<Int> = _memberId.asStateFlow()
-
-    private val _searchWords = MutableStateFlow<List<PartySearchWordModel>>(listOf())
-    val searchWords = _searchWords.asStateFlow()
+    private val _searchAppBarState = MutableStateFlow(SearchAppBarState())
+    val searchAppBarState = _searchAppBarState.asStateFlow()
 
     init {
         checkPartyTooltip()
-//        getMemberId()
-//        requestPartySearchWords()
-        partyModel = partyRepository.fetchPartyList(
-            startDate = null,
-            endDate = null
-        ).cachedIn(viewModelScope)
-    }
+        querySearchWords()
 
-    fun fetchPartyList(
-        startDate: String? = null,
-        endDate: String? = null
-    ) {
-        partyModel = partyRepository.fetchPartyList(
-            startDate = startDate,
-            endDate = endDate
+        _searchAppBarState.value = _searchAppBarState.value.copy(
+            onDone = {
+                _searchAppBarState.value.isDoneSearch.value = true
+                insertPartySearchWord(it)
+                fetchSearchPartyList(it)
+            }
         )
     }
 
-    private fun checkPartyTooltip() {
-        launchRepository.isShowPartyTooltip()
-            .onEach { _isShowTooltip.value = it }
-            .launchIn(viewModelScope)
-    }
-
-    fun stopPartyTooltip() {
-        viewModelScope.launch {
-            launchRepository.stopShowPartyTooltip()
-        }
-    }
-
-    // //
-
     override fun reduceState(currentState: PartyMemberUiState, event: PartyMemberEvent): PartyMemberUiState =
         when (event) {
-            is PartyMemberEvent.ChangePartyType -> {
-                currentState.copy(partyType = event.partyType)
+            is PartyMemberEvent.FetchPartyMember -> {
+                currentState.copy(
+                    partyModels = event.partyModels
+                )
             }
 
-            is PartyMemberEvent.ChangeActiveSearch -> {
-                currentState.copy(isActiveSearch = event.isActiveSearch)
+            PartyMemberEvent.ShowTooltip -> {
+                currentState.copy(
+                    isShowTooltip = true
+                )
             }
 
-            is PartyMemberEvent.ChangeDoneSearch -> {
-                currentState.copy(isDoneSearch = event.isDoneSearch)
+            PartyMemberEvent.HideTooltip -> {
+                currentState.copy(
+                    isShowTooltip = false
+                )
             }
 
-            is PartyMemberEvent.SetQueryString -> {
-                currentState.copy(queryString = event.queryString)
-            }
-
-            is PartyMemberEvent.SearchPartyList -> {
-                currentState.copy(partySearchItems = event.partySearchItems)
-            }
-
-            is PartyMemberEvent.LoadWatchingItems -> {
-                currentState.copy(watchingItems = event.watchingItems)
-            }
-
-            is PartyMemberEvent.LoadFoodCafeItems -> {
-                currentState.copy(foodCafeItems = event.foodCafeItems)
-            }
-
-            is PartyMemberEvent.LoadEtcItems -> {
-                currentState.copy(etcItems = event.etcItems)
+            is PartyMemberEvent.QueryPartySearchWord -> {
+                currentState.copy(
+                    partySearchWords = event.partySearchWords
+                )
             }
 
             else -> currentState
         }
 
-    fun loadWatchingItems() {
-//        sendAction(
-// //            PartyMemberEvent.LoadWatchingItems(
-// //                watchingItems = partyRepository.fetchPartyList("WATCHING")
-// //            )
-//        )
-    }
-
-    fun loadFoodCafeItems() {
-//        sendAction(
-// //            PartyMemberEvent.LoadFoodCafeItems(
-// //                foodCafeItems = partyRepository.fetchPartyList("FOOD_CAFE")
-// //            )
-//        )
-    }
-
-    fun loadEtcItems() {
-//        sendAction(
-// //            PartyMemberEvent.LoadEtcItems(
-// //                etcItems = partyRepository.fetchPartyList("ETC")
-// //            )
-//        )
-    }
-
-    private fun getMemberId() {
-        memberRepository.getMemberId()
-            .onEach { _memberId.value = it }
-            .launchIn(viewModelScope)
-    }
-
-    fun changePartType(partyType: PartyType) {
-        sendAction(PartyMemberEvent.ChangePartyType(partyType))
-    }
-
-    fun changeActiveSearch(isActiveSearch: Boolean) {
-        sendAction(PartyMemberEvent.ChangeActiveSearch(isActiveSearch))
-    }
-
-    fun changeDoneSearch(isDoneSearch: Boolean) {
-        sendAction(PartyMemberEvent.ChangeDoneSearch(isDoneSearch))
-    }
-
-    fun setQueryString(query: String) {
-        sendAction(PartyMemberEvent.SetQueryString(query))
-    }
-
-    fun searchPartyList(query: String) {
+    fun fetchPartyList(
+        startDate: String? = null,
+        endDate: String? = null
+    ) {
         sendAction(
-            PartyMemberEvent.SearchPartyList(
-                partySearchItems = partyRepository
-                    .fetchSearchPartyList(
-                        category = uiState.value.partyType.category,
-                        keyword = query
-                    ).cachedIn(viewModelScope)
+            PartyMemberEvent.FetchPartyMember(
+                partyModels = partyRepository.fetchPartyList(
+                    startDate = startDate,
+                    endDate = endDate
+                ).cachedIn(viewModelScope)
             )
         )
     }
 
-    private fun requestPartySearchWords() {
-        partyRepository.getPartySearchWordList()
-            .onEach { _searchWords.value = it }
+    fun fetchSearchPartyList(keyword: String) {
+        sendAction(
+            PartyMemberEvent.FetchPartyMember(
+                partyModels = partyRepository.fetchSearchPartyList(
+                    keyword = keyword
+                )
+            )
+        )
+    }
+
+    private fun checkPartyTooltip() {
+        launchRepository.isShowPartyTooltip()
+            .onEach { check ->
+                sendAction(
+                    if (check) {
+                        PartyMemberEvent.ShowTooltip
+                    } else {
+                        PartyMemberEvent.HideTooltip
+                    }
+                )
+            }
             .launchIn(viewModelScope)
     }
 
-    fun insertPartySearchWord() {
+    fun hidePartyTooltip() {
+        viewModelScope.launch {
+            launchRepository.stopShowPartyTooltip()
+        }
+        sendAction(PartyMemberEvent.HideTooltip)
+    }
+
+    private fun querySearchWords() {
+        partyRepository.getPartySearchWordList()
+            .distinctUntilChanged()
+            .onEach {
+                sendAction(
+                    PartyMemberEvent.QueryPartySearchWord(
+                        partySearchWords = it
+                    )
+                )
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun insertPartySearchWord(word: String) {
         viewModelScope.launch {
             partyRepository.insertPartySearchWord(
                 partySearchWordModel = PartySearchWordModel(
-                    uiState.value.queryString,
-                    System.currentTimeMillis()
+                    word = word,
+                    searchAt = System.currentTimeMillis()
                 )
             )
-            requestPartySearchWords()
+            querySearchWords()
         }
+    }
+
+    fun searchPartyModel(partySearchWordModel: PartySearchWordModel) {
+        _searchAppBarState.value.searchText.value = partySearchWordModel.word
+        _searchAppBarState.value.onDone(partySearchWordModel.word)
     }
 
     fun deletePartySearchWord(partySearchWordModel: PartySearchWordModel) {
         viewModelScope.launch {
             partyRepository.deletePartySearchWord(partySearchWordModel)
-            requestPartySearchWords()
+            querySearchWords()
         }
     }
 
-    fun deletePartySearchWordList() {
+    fun deleteAllShowSearchWord() {
         viewModelScope.launch {
             partyRepository.deletePartySearchWordList()
+            querySearchWords()
         }
     }
 }
