@@ -15,17 +15,18 @@ class TokenRepositoryImpl @Inject constructor(
     override fun getAccessTokenExpiresAt(): Flow<String> =
         tokenLocalSource.getAccessTokenExpiration()
 
-    override fun getIdToken(): Flow<String> =
-        tokenLocalSource.getIdToken()
+    override fun getRefreshToken(): Flow<String> =
+        tokenLocalSource.getRefreshToken()
+
+    override fun getRefreshTokenExpiresAt(): Flow<String> =
+        tokenLocalSource.getRefreshTokenExpiresAt()
 
     override suspend fun saveToken(loginResultModel: LoginResultModel) {
         tokenLocalSource.saveToken(
             accessToken = loginResultModel.accessToken,
-            accessTokenExpiresAt = loginResultModel.accessTokenExpiresAt
+            accessTokenExpiresAt = loginResultModel.accessTokenExpiresAt,
+            refreshToken = loginResultModel.refreshToken,
+            refreshTokenExpiresAt = loginResultModel.refreshTokenExpiresAt
         )
-    }
-
-    override suspend fun saveIdToken(idToken: String) {
-        tokenLocalSource.saveIdToken(idToken = idToken)
     }
 }

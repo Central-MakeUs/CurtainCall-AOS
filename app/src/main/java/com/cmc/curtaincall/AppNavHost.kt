@@ -37,6 +37,13 @@ fun AppNavHost(
                         }
                     }
                 },
+                onNavigateOnLogin = {
+                    navHostController.navigate(AuthDestination.Login.route) {
+                        popUpTo(RootDestination.Splash.route) {
+                            inclusive = true
+                        }
+                    }
+                },
                 onNavigateOnHome = {
                     navHostController.navigate(HomeDestination.Home.route) {
                         popUpTo(RootDestination.Splash.route) {

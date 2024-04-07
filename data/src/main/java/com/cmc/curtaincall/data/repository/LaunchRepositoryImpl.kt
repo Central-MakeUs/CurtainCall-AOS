@@ -9,6 +9,13 @@ class LaunchRepositoryImpl @Inject constructor(
     private val launchLocalSource: LaunchLocalSource
 ) : LaunchRepository {
 
+    override fun getIsFirstEntryOnBoarding(): Flow<Boolean> =
+        launchLocalSource.getIsFirstEntryShowList()
+
+    override suspend fun setIsFirstEntryOnBoarding() {
+        launchLocalSource.setIsFirstEntryOnBoarding()
+    }
+
     override fun getIsFirstEntryShowList(): Flow<Boolean> =
         launchLocalSource.getIsFirstEntryShowList()
 
