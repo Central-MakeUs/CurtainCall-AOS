@@ -53,6 +53,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun PartyMemberScreen(
     partyMemberViewModel: PartyMemberViewModel = hiltViewModel(),
+    onNavigateToDetail: (Int?, String?) -> Unit = { _, _ -> },
     onNavigateToRecruit: () -> Unit = {}
 ) {
     var selectedCalendarDays by remember { mutableStateOf<List<CalendarDay>>(listOf()) }
@@ -94,7 +95,8 @@ fun PartyMemberScreen(
                     .padding(paddingValues)
                     .fillMaxSize()
                     .background(Grey8),
-                searchAppBarState = searchAppBarState
+                searchAppBarState = searchAppBarState,
+                onNavigateToDetail = onNavigateToDetail
             )
         } else {
             PartyMemberContent(
@@ -107,7 +109,8 @@ fun PartyMemberScreen(
                 onSelectCalendarDays = {
                     selectedCalendarDays = it
                     isShowCalendar = false
-                }
+                },
+                onNavigateToDetail = onNavigateToDetail
             )
         }
     }
@@ -117,7 +120,8 @@ fun PartyMemberScreen(
 private fun PartyMemberSearchContent(
     modifier: Modifier = Modifier,
     partyMemberViewModel: PartyMemberViewModel = hiltViewModel(),
-    searchAppBarState: SearchAppBarState
+    searchAppBarState: SearchAppBarState,
+    onNavigateToDetail: (Int?, String?) -> Unit = { _, _ -> }
 ) {
     val partyMemberUiState by partyMemberViewModel.uiState.collectAsStateWithLifecycle()
     val searchWords = partyMemberUiState.partySearchWords
@@ -130,7 +134,10 @@ private fun PartyMemberSearchContent(
         ) {
             items(partyModels.itemCount) { index ->
                 partyModels[index]?.let { partyModel ->
-                    PartyContent(partyModel = partyModel)
+                    PartyContent(
+                        partyModel = partyModel,
+                        onClick = { onNavigateToDetail(partyModel.id, partyModel.showName) }
+                    )
                 }
             }
         }
@@ -206,7 +213,8 @@ private fun PartyMemberContent(
     partyMemberViewModel: PartyMemberViewModel = hiltViewModel(),
     isShowCalendar: Boolean = false,
     selectedCalendarDays: List<CalendarDay> = listOf(),
-    onSelectCalendarDays: (List<CalendarDay>) -> Unit = {}
+    onSelectCalendarDays: (List<CalendarDay>) -> Unit = {},
+    onNavigateToDetail: (Int?, String?) -> Unit = { _, _ -> }
 ) {
     val partyMemberUiState by partyMemberViewModel.uiState.collectAsStateWithLifecycle()
     val partyModels = partyMemberUiState.partyModels.collectAsLazyPagingItems()
@@ -258,7 +266,10 @@ private fun PartyMemberContent(
             ) {
                 items(partyModels.itemCount) { index ->
                     partyModels[index]?.let { partyModel ->
-                        PartyContent(partyModel = partyModel)
+                        PartyContent(
+                            partyModel = partyModel,
+                            onClick = { onNavigateToDetail(partyModel.id, partyModel.showName) }
+                        )
                     }
                 }
             }

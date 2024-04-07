@@ -38,7 +38,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.basic.CurtainCallMultiLineTextField
-import com.cmc.curtaincall.common.designsystem.component.card.PartyType
 import com.cmc.curtaincall.common.designsystem.extensions.toSp
 import com.cmc.curtaincall.common.designsystem.theme.Cetacean_Blue
 import com.cmc.curtaincall.common.designsystem.theme.Chinese_Black
@@ -50,7 +49,7 @@ import com.cmc.curtaincall.common.designsystem.theme.White
 import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
 import com.cmc.curtaincall.common.utility.extensions.toDateInKorea
 import com.cmc.curtaincall.common.utility.extensions.toTimePM
-import com.cmc.curtaincall.feature.partymember.detail.PartyMemberDetailViewModel
+import com.cmc.curtaincall.feature.partymember.test.PartyMemberDetail2ViewModel
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.client.models.Channel
 import io.getstream.chat.android.client.models.User
@@ -66,7 +65,7 @@ import io.getstream.chat.android.compose.viewmodel.messages.MessagesViewModelFac
 
 @Composable
 fun PartyMemberLiveTalkScreen(
-    partyMemberDetailViewModel: PartyMemberDetailViewModel = hiltViewModel(),
+    partyMemberDetailViewModel: PartyMemberDetail2ViewModel = hiltViewModel(),
     chatClient: ChatClient,
     onBack: () -> Unit
 ) {
@@ -80,22 +79,22 @@ fun PartyMemberLiveTalkScreen(
             otherMessagesBackground = Color.Transparent
         )
     ) {
-        PartyMemberLiveTalkContent(
-            partyId = partyMemberDetailState.partyDetailModel.id,
-            showName = if (partyMemberDetailState.partyDetailModel.category == PartyType.ETC.category) {
-                partyMemberDetailState.partyDetailModel.title
-            } else {
-                partyMemberDetailState.partyDetailModel.showName ?: ""
-            },
-            showAt = if (partyMemberDetailState.partyDetailModel.category == PartyType.ETC.category) {
-                partyMemberDetailState.partyDetailModel.createdAt
-            } else {
-                partyMemberDetailState.partyDetailModel.showAt ?: ""
-            },
-            user = partyMemberDetailState.user,
-            chatClient = chatClient,
-            onBack = onBack
-        )
+//        PartyMemberLiveTalkContent(
+//            partyId = partyMemberDetailState.partyDetailModel.id,
+//            showName = if (partyMemberDetailState.partyDetailModel.category == PartyType.ETC.category) {
+//                partyMemberDetailState.partyDetailModel.title
+//            } else {
+//                partyMemberDetailState.partyDetailModel.showName ?: ""
+//            },
+//            showAt = if (partyMemberDetailState.partyDetailModel.category == PartyType.ETC.category) {
+//                partyMemberDetailState.partyDetailModel.createdAt
+//            } else {
+//                partyMemberDetailState.partyDetailModel.showAt ?: ""
+//            },
+//            user = partyMemberDetailState.user,
+//            chatClient = chatClient,
+//            onBack = onBack
+//        )
     }
 }
 

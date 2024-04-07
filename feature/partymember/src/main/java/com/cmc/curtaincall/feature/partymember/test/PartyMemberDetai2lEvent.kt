@@ -1,19 +1,19 @@
-package com.cmc.curtaincall.feature.partymember.detail
+package com.cmc.curtaincall.feature.partymember.test
 
 import com.cmc.curtaincall.core.base.BaseEvent
 import com.cmc.curtaincall.domain.model.party.PartyDetailModel
 import io.getstream.chat.android.client.models.User
 
-sealed class PartyMemberDetailEvent : BaseEvent {
+sealed class PartyMemberDetai2lEvent : BaseEvent {
     data class RequestPartyDetail(
         val partyDetailModel: PartyDetailModel
-    ) : PartyMemberDetailEvent()
+    ) : PartyMemberDetai2lEvent()
 
     data class GetMemberInfo(
         val user: User
-    ) : PartyMemberDetailEvent()
+    ) : PartyMemberDetai2lEvent()
 
     data class ChangeParticipation(
         val isParticipation: Boolean
-    ) : PartyMemberDetailEvent()
+    ) : PartyMemberDetai2lEvent()
 }
