@@ -31,14 +31,12 @@ interface PartyRepository {
     ): Flow<List<PartyModel>>
 
     fun fetchSearchPartyList(
-        category: String,
         keyword: String
     ): Flow<PagingData<PartyModel>>
 
     fun searchPartyList(
         page: Int,
         size: Int,
-        category: String,
         keyword: String
     ): Flow<List<PartyModel>>
 

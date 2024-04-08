@@ -3,7 +3,6 @@ package com.cmc.curtaincall.core.network.service.party.response
 import com.cmc.curtaincall.domain.model.party.PartyDetailModel
 
 data class PartyDetailResponse(
-    val category: String,
     val content: String,
     val createdAt: String,
     val creatorId: Int,
@@ -21,7 +20,6 @@ data class PartyDetailResponse(
     val title: String
 ) {
     fun toModel() = PartyDetailModel(
-        category = category,
         content = content,
         createdAt = createdAt,
         creatorId = creatorId,

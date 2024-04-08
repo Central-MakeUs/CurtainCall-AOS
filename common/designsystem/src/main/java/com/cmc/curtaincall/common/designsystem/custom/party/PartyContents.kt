@@ -2,6 +2,7 @@ package com.cmc.curtaincall.common.designsystem.custom.party
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -80,12 +81,14 @@ fun PartyEmptyContentPreview() {
 @Composable
 fun PartyContent(
     modifier: Modifier = Modifier,
-    partyModel: PartyModel
+    partyModel: PartyModel,
+    onClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
             .size(320.dp, 182.dp)
             .background(CurtainCallTheme.colors.background, RoundedCornerShape(12.dp))
+            .clickable { onClick() }
     ) {
         Row(
             modifier = Modifier
@@ -159,7 +162,7 @@ fun PartyContent(
             }
             DottedLine(
                 modifier = Modifier.fillMaxWidth(),
-                strokeWidth = 2.dp.value,
+                strokeWidth = 5.dp.value,
                 strokeColor = Grey8
             )
             Canvas(

@@ -39,6 +39,7 @@ import com.cmc.curtaincall.common.designsystem.theme.Blue
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey1
 import com.cmc.curtaincall.common.designsystem.theme.Grey4
+import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey8
 import com.cmc.curtaincall.common.designsystem.theme.Red
 import com.cmc.curtaincall.common.designsystem.theme.White
@@ -57,11 +58,13 @@ private val UnSelectedCalendarDay = CalendarDay(LocalDate.MIN, DayPosition.InDat
 @Composable
 fun CurtainCallCalendar(
     modifier: Modifier = Modifier,
+    prevSelectedDays: List<CalendarDay> = listOf(),
     onSelectDays: (List<CalendarDay>) -> Unit = {},
     startDay: CalendarDay? = null,
     endDay: CalendarDay? = null,
     count: Int = 2,
-    canSelectDayOfWeeks: List<DayOfWeek> = DayOfWeek.values().toList()
+    canSelectDayOfWeeks: List<DayOfWeek> = DayOfWeek.values().toList(),
+    hasClear: Boolean = false
 ) {
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
     val startMonth = remember { currentMonth.minusMonths(12) }
@@ -75,7 +78,7 @@ fun CurtainCallCalendar(
         firstDayOfWeek = firstDayOfWeek
     )
 
-    var selectedDays: List<CalendarDay> by remember { mutableStateOf(listOf()) }
+    var selectedDays: List<CalendarDay> by remember { mutableStateOf(prevSelectedDays) }
     Card(
         modifier = modifier.padding(bottom = 10.dp),
         shape = RoundedCornerShape(16.dp),
@@ -119,20 +122,68 @@ fun CurtainCallCalendar(
                 )
             }
         )
-        CurtainCallFilledButton(
-            text = stringResource(R.string.finish_select),
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 20.dp)
-                .fillMaxWidth()
-                .height(46.dp),
-            containerColor = CurtainCallTheme.colors.secondary,
-            contentColor = CurtainCallTheme.colors.primary,
-            textStyle = CurtainCallTheme.typography.body2.copy(
-                fontWeight = FontWeight.SemiBold
-            ),
-            onClick = { onSelectDays(selectedDays) }
-        )
+        if (hasClear) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 20.dp)
+                    .fillMaxWidth()
+                    .height(46.dp)
+            ) {
+                CurtainCallFilledButton(
+                    text = stringResource(R.string.clear),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    containerColor = Grey8,
+                    contentColor = Grey4,
+                    enabled = selectedDays.isNotEmpty(),
+                    disabledContainerColor = Grey8,
+                    disabledContentColor = Grey6,
+                    textStyle = CurtainCallTheme.typography.body2.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    onClick = {
+                        selectedDays = listOf()
+                        onSelectDays(selectedDays)
+                    }
+                )
+                CurtainCallFilledButton(
+                    text = stringResource(R.string.finish_select),
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .weight(2f)
+                        .fillMaxHeight(),
+                    containerColor = CurtainCallTheme.colors.secondary,
+                    contentColor = CurtainCallTheme.colors.primary,
+                    enabled = selectedDays.isNotEmpty(),
+                    disabledContainerColor = Grey8,
+                    disabledContentColor = Grey6,
+                    textStyle = CurtainCallTheme.typography.body2.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    onClick = { onSelectDays(selectedDays) }
+                )
+            }
+        } else {
+            CurtainCallFilledButton(
+                text = stringResource(R.string.finish_select),
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 20.dp)
+                    .fillMaxWidth()
+                    .height(46.dp),
+                containerColor = CurtainCallTheme.colors.secondary,
+                contentColor = CurtainCallTheme.colors.primary,
+                enabled = selectedDays.isNotEmpty(),
+                disabledContainerColor = Grey8,
+                disabledContentColor = Grey6,
+                textStyle = CurtainCallTheme.typography.body2.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
+                onClick = { onSelectDays(selectedDays) }
+            )
+        }
     }
 }
 
@@ -233,13 +284,8 @@ private fun CurtainCallDay(
     ) {
         if (day.position == DayPosition.MonthDate) {
             if (selectedCalendarDays.size == 2) {
-                val hasStartRadius = day.date == selectedCalendarDays[0].date ||
-                    day.date.dayOfWeek == DayOfWeek.SUNDAY ||
-                    day.date.dayOfMonth == 1
-
-                val hasEndRadius = day.date == selectedCalendarDays[1].date ||
-                    day.date.dayOfWeek == DayOfWeek.SATURDAY ||
-                    day.date.dayOfMonth == day.date.lengthOfMonth()
+                val hasStartRadius = day.date == selectedCalendarDays[0].date || day.date.dayOfWeek == DayOfWeek.SUNDAY || day.date.dayOfMonth == 1
+                val hasEndRadius = day.date == selectedCalendarDays[1].date || day.date.dayOfWeek == DayOfWeek.SATURDAY || day.date.dayOfMonth == day.date.lengthOfMonth()
 
                 Row(
                     modifier = Modifier

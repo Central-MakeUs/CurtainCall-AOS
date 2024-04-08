@@ -457,6 +457,7 @@ fun CurtainCallSearchTitleTopAppBarWithCalendar(
                 Box(
                     modifier = Modifier
                         .background(CurtainCallTheme.colors.secondary, RoundedCornerShape(6.dp))
+                        .clickable { onCalendarClick() }
                         .padding(horizontal = Paddings.medium, vertical = Paddings.small),
                     contentAlignment = Alignment.Center
                 ) {

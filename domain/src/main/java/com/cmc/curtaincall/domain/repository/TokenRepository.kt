@@ -7,9 +7,10 @@ interface TokenRepository {
     fun getAccessToken(): Flow<String>
 
     fun getAccessTokenExpiresAt(): Flow<String>
-    fun getIdToken(): Flow<String>
+
+    fun getRefreshToken(): Flow<String>
+
+    fun getRefreshTokenExpiresAt(): Flow<String>
 
     suspend fun saveToken(loginResultModel: LoginResultModel)
-
-    suspend fun saveIdToken(idToken: String)
 }

@@ -30,7 +30,6 @@ interface PartyService {
     suspend fun searchPartyList(
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("category") category: String,
         @Query("keyword") keyword: String
     ): PartyListResponse
 

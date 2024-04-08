@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.buttons.common.CurtainCallFilledButton
@@ -78,6 +79,7 @@ internal fun OnBoardingScreen(
 @Composable
 private fun OnBoardingContent(
     modifier: Modifier = Modifier,
+    onBoardingViewModel: OnBoardingViewModel = hiltViewModel(),
     bannerInfo: OnBoardingBannerInfo,
     pagerState: PagerState,
     onNavigateLoginUp: () -> Unit = {}
@@ -146,6 +148,7 @@ private fun OnBoardingContent(
             ),
             onClick = {
                 if (pagerState.currentPage + 1 == pagerState.pageCount) {
+                    onBoardingViewModel.setIsFirstEntryOnBoarding()
                     onNavigateLoginUp()
                 } else {
                     coroutineScope.launch {

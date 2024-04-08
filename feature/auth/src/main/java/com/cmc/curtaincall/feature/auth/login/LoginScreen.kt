@@ -10,16 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cmc.curtaincall.common.designsystem.R
@@ -92,21 +88,6 @@ fun LoginScreen(
                 onNavigateHome = onNavigateHome
             )
         }
-        Spacer(Modifier.weight(160f))
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = stringResource(R.string.login_start_without_login),
-                style = CurtainCallTheme.typography.body3.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    color = CurtainCallTheme.colors.onPrimary
-                )
-            )
-            Divider(
-                modifier = Modifier
-                    .padding(top = Paddings.small)
-                    .size(116.dp, 1.dp)
-            )
-        }
-        Spacer(Modifier.weight(91f))
+        Spacer(Modifier.weight(275f))
     }
 }

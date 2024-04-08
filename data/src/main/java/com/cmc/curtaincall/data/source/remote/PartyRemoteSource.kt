@@ -33,14 +33,12 @@ class PartyRemoteSource @Inject constructor(
     fun searchPartyList(
         page: Int,
         size: Int,
-        category: String,
         keyword: String
     ): Flow<List<PartyResponse>> = flow {
         emit(
             partyService.searchPartyList(
                 page = page,
                 size = size,
-                category = category,
                 keyword = keyword
             ).parties
         )
