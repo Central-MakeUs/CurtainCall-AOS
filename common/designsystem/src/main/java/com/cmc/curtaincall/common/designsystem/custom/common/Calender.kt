@@ -284,13 +284,8 @@ private fun CurtainCallDay(
     ) {
         if (day.position == DayPosition.MonthDate) {
             if (selectedCalendarDays.size == 2) {
-                val hasStartRadius = day.date == selectedCalendarDays[0].date ||
-                        day.date.dayOfWeek == DayOfWeek.SUNDAY ||
-                        day.date.dayOfMonth == 1
-
-                val hasEndRadius = day.date == selectedCalendarDays[1].date ||
-                        day.date.dayOfWeek == DayOfWeek.SATURDAY ||
-                        day.date.dayOfMonth == day.date.lengthOfMonth()
+                val hasStartRadius = day.date == selectedCalendarDays[0].date || day.date.dayOfWeek == DayOfWeek.SUNDAY || day.date.dayOfMonth == 1
+                val hasEndRadius = day.date == selectedCalendarDays[1].date || day.date.dayOfWeek == DayOfWeek.SATURDAY || day.date.dayOfMonth == day.date.lengthOfMonth()
 
                 Row(
                     modifier = Modifier

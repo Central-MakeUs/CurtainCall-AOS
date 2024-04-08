@@ -44,11 +44,7 @@ class TokenLocalSource @Inject constructor(
     ) {
         dataStore.edit { preferences ->
             Timber.d(
-                "saveToken " +
-                        "accessToken: $accessToken " +
-                        "accessTokenExpiresAt: $accessTokenExpiresAt " +
-                        "refreshToken: $refreshToken" +
-                        "refreshTokenExpiresAt: $refreshTokenExpiresAt"
+                "saveToken " + "accessToken: $accessToken " + "accessTokenExpiresAt: $accessTokenExpiresAt " + "refreshToken: $refreshToken" + "refreshTokenExpiresAt: $refreshTokenExpiresAt"
             )
             preferences[ACCESS_TOKEN] = accessToken
             preferences[ACCESS_TOKEN_EXPIRESAT] = accessTokenExpiresAt

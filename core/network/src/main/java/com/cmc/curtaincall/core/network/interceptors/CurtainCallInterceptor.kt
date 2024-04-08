@@ -30,13 +30,13 @@ class CurtainCallInterceptor @Inject constructor(
         if (accessTokenExpiresAt < today) {
             Timber.d("CurtainCallInterceptor token Expire, So refresh token")
             try {
-                val result = runBlocking { authRepository.requestReissue(refreshToken).first() }
+                val result = runBlocking { authRepository.requestRefresh(refreshToken).first() }
                 accessToken = result.accessToken
                 runBlocking {
                     tokenRepository.saveToken(result)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.e("CurtainCallInterceptor ${e.localizedMessage}")
             }
         }
 

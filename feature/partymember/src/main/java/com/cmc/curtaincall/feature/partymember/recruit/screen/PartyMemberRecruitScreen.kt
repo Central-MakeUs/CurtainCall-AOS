@@ -137,14 +137,11 @@ fun PartyMemberRecruitScreen(
                         }
 
                         2 -> {
-                            partyMemberRecruitUiState.selectShowDate.isNotEmpty() &&
-                                    partyMemberRecruitUiState.selectShowTime.isNotEmpty()
+                            partyMemberRecruitUiState.selectShowDate.isNotEmpty() && partyMemberRecruitUiState.selectShowTime.isNotEmpty()
                         }
 
                         else -> {
-                            partyMemberRecruitUiState.title.isNotEmpty() &&
-                                    partyMemberRecruitUiState.content.isNotEmpty() &&
-                                    partyMemberRecruitUiState.content.length < 500
+                            partyMemberRecruitUiState.title.isNotEmpty() && partyMemberRecruitUiState.content.isNotEmpty() && partyMemberRecruitUiState.content.length < 500
                         }
                     },
                     onClick = {

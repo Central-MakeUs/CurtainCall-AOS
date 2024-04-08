@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     fun requestLogin(provider: String, token: String): Flow<LoginResultModel>
-    fun requestReissue(refreshToken: String): Flow<LoginResultModel>
+    fun requestRefresh(refreshToken: String): Flow<LoginResultModel>
     fun requestLogout(accessToken: String): Flow<Boolean>
 }

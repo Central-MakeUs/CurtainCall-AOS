@@ -2,6 +2,7 @@ package com.cmc.curtaincall.data.source.remote
 
 import com.cmc.curtaincall.core.network.service.auth.AuthService
 import com.cmc.curtaincall.core.network.service.auth.request.LoginRequest
+import com.cmc.curtaincall.core.network.service.auth.request.RefreshRequest
 import com.cmc.curtaincall.core.network.service.auth.response.LoginResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -14,8 +15,14 @@ class AuthRemoteSource @Inject constructor(
         emit(authService.requestLogin(provider, LoginRequest(token)))
     }
 
-    fun requestReissue(refreshToken: String): Flow<LoginResponse> = flow {
-        emit(authService.requestReissue("Bearer $refreshToken"))
+    fun requestRefresh(refreshToken: String): Flow<LoginResponse> = flow {
+        emit(
+            authService.requestRefresh(
+                refreshRequest = RefreshRequest(
+                    token = refreshToken
+                )
+            )
+        )
     }
 
     fun requestLogout(accessToken: String): Flow<Boolean> = flow {

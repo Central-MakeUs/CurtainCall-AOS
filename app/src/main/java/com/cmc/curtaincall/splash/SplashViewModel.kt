@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,8 +55,8 @@ class SplashViewModel @Inject constructor(
                 loginResultModel.copy(
                     memberId = memberId
                 )
-            }
-            .onEach { loginResult ->
+            }.onEach { loginResult ->
+                Timber.d("isValidationToken $loginResult")
                 if (loginResult.accessToken.isEmpty()) {
                     sendSideEffect(SplashSideEffect.NeedLogin)
                 } else {
@@ -82,7 +83,7 @@ class SplashViewModel @Inject constructor(
 
     private fun refreshToken(token: String) {
         refreshCount++
-        authRepository.requestReissue(
+        authRepository.requestRefresh(
             refreshToken = token
         ).onEach {
             tokenRepository.saveToken(it)

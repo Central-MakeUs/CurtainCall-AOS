@@ -1,6 +1,7 @@
 package com.cmc.curtaincall.core.network.service.auth
 
 import com.cmc.curtaincall.core.network.service.auth.request.LoginRequest
+import com.cmc.curtaincall.core.network.service.auth.request.RefreshRequest
 import com.cmc.curtaincall.core.network.service.auth.response.LoginResponse
 import com.cmc.curtaincall.core.network.service.auth.response.LogoutResponse
 import retrofit2.http.Body
@@ -15,9 +16,9 @@ interface AuthService {
         @Body loginRequest: LoginRequest
     ): LoginResponse
 
-    @POST("login/reissue")
-    suspend fun requestReissue(
-        @Header("Authorization") refreshToken: String
+    @POST("login/refresh")
+    suspend fun requestRefresh(
+        @Body refreshRequest: RefreshRequest
     ): LoginResponse
 
     @POST("logout")
