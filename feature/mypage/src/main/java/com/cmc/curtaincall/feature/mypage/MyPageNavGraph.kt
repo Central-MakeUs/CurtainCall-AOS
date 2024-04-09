@@ -86,9 +86,14 @@ fun NavGraphBuilder.mypageNavGraph(
         }
 
         composable(route = MyPageDestination.Favorite.route) {
-            MyPageFavoriteScreen {
-                navHostController.popBackStack()
-            }
+            MyPageFavoriteScreen(
+                onNavigateToShowDetail = { showId ->
+                    navHostController.navigate("${ShowDestination.Detail.route}/$showId")
+                },
+                onBack = {
+                    navHostController.popBackStack()
+                }
+            )
         }
 
         composable(MyPageDestination.Notice.route) {

@@ -358,10 +358,13 @@ fun CurtainCallFavoritePoster(
     model: Any?,
     title: String = "",
     isFavorite: Boolean = false,
-    onFavoriteClick: () -> Unit = {}
+    onFavoriteClick: () -> Unit = {},
+    onClick: () -> Unit = {}
 ) {
     Column(
-        modifier = Modifier.size(153.dp, 250.dp),
+        modifier = Modifier
+            .size(153.dp, 250.dp)
+            .clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(

@@ -77,8 +77,13 @@ internal fun MyPageSettingScreen(
             WebView(
                 state = webViewState,
                 modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 30.dp)
                     .fillMaxSize()
+                    .background(White)
+                    .padding(vertical = 50.dp),
+                onCreated = {
+                    it.settings.javaScriptEnabled = true
+                    it.settings.domStorageEnabled = true
+                }
             )
         }
     }
