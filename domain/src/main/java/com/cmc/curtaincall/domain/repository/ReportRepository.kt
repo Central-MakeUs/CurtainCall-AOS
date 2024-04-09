@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 interface ReportRepository {
 
     fun requestReport(
-        reportId: Int,
+        idToReport: Int,
         type: String,
         reason: String,
         content: String

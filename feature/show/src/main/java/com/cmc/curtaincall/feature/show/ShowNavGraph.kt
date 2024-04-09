@@ -20,7 +20,7 @@ import com.cmc.curtaincall.feature.show.search.ShowSearchScreen
 
 fun NavGraphBuilder.showNavGraph(
     navHostController: NavHostController,
-    onNavigateReport: (Int, ReportType) -> Unit
+    onNavigateToReport: (Int, ReportType) -> Unit
 ) {
     navigation(
         startDestination = ShowDestination.Search.route,
@@ -64,7 +64,7 @@ fun NavGraphBuilder.showNavGraph(
                 onNavigateToReviewCreate = { reviewId ->
                     navHostController.navigate("${ShowDestination.ReviewCreate.route}/$showIdArg/$reviewId")
                 },
-                onNavigateReport = onNavigateReport,
+                onNavigateToReport = onNavigateToReport,
                 onBack = {
                     navHostController.popBackStack()
                 }
@@ -133,7 +133,7 @@ fun NavGraphBuilder.showNavGraph(
             ShowLostPropertyDetailScreen(
                 lostPropertyId = lostPropertyIdArg,
                 fromCreate = fromCreateArg,
-                onNavigateReport = onNavigateReport,
+                onNavigateReport = onNavigateToReport,
                 onBack = { navHostController.popBackStack() }
             )
         }

@@ -54,7 +54,7 @@ internal fun ShowReviewScreen(
     showReviewViewModel: ShowReviewViewModel = hiltViewModel(),
     showId: String?,
     onNavigateToReviewCreate: (Int) -> Unit = {},
-    onNavigateReport: (Int, ReportType) -> Unit = { _, _ -> },
+    onNavigateToReport: (Int, ReportType) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
     requireNotNull(showId)
@@ -114,7 +114,8 @@ internal fun ShowReviewScreen(
                 .fillMaxSize()
                 .background(Grey9),
             showId = showId,
-            onNavigateToReviewCreate = onNavigateToReviewCreate
+            onNavigateToReviewCreate = onNavigateToReviewCreate,
+            onNavigateToReport = onNavigateToReport
         )
     }
 }
@@ -125,6 +126,7 @@ private fun ShowReviewContent(
     showReviewViewModel: ShowReviewViewModel = hiltViewModel(),
     showId: String,
     onNavigateToReviewCreate: (Int) -> Unit = {},
+    onNavigateToReport: (Int, ReportType) -> Unit = { _, _ -> }
 ) {
     val showReviewUiState by showReviewViewModel.uiState.collectAsStateWithLifecycle()
     val showReviewModels = showReviewUiState.showReviewModels.collectAsLazyPagingItems()
@@ -252,7 +254,13 @@ private fun ShowReviewContent(
                                 )
                             },
                             onEditClick = { onNavigateToReviewCreate(showReviewModel.id) },
-                            onDeleteClick = { deleteReviewId = showReviewModel.id }
+                            onDeleteClick = { deleteReviewId = showReviewModel.id },
+                            onReportClick = {
+                                onNavigateToReport(
+                                    showReviewModel.id,
+                                    ReportType.SHOW_REVIEW
+                                )
+                            }
                         )
                     }
                     HorizontalDivider(

@@ -73,6 +73,47 @@ fun CurtainCallTitleTopAppBar(
     }
 }
 
+@Composable
+fun CurtainCallCloseTopAppBar(
+    title: String,
+    containerColor: Color = CurtainCallTheme.colors.background,
+    contentColor: Color = Black,
+    onClose: () -> Unit = {}
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(TopAppBarHeight),
+        color = containerColor
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_appbar_close),
+                contentDescription = TopAppBarBackIconDescription,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 14.dp)
+                    .size(TopAppBarBackIconSize)
+                    .clickable { onClose() },
+                tint = contentColor
+            )
+            Text(
+                text = title,
+                modifier = Modifier.width(180.dp),
+                style = CurtainCallTheme.typography.subTitle4.copy(
+                    color = contentColor
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurtainCallCenterTopAppBarWithBack(

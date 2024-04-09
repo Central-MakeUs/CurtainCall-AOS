@@ -10,7 +10,7 @@ class ReportRemoteSource @Inject constructor(
     private val reportService: ReportService
 ) {
     fun requestReport(
-        reportId: Int,
+        idToReport: Int,
         type: String,
         reason: String,
         content: String
@@ -18,7 +18,7 @@ class ReportRemoteSource @Inject constructor(
         emit(
             reportService.requestReport(
                 reportRequest = ReportRequest(
-                    idToReport = reportId,
+                    idToReport = idToReport,
                     type = type,
                     reason = reason,
                     content = content
