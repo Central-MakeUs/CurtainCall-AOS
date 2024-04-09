@@ -9,7 +9,6 @@ import com.cmc.curtaincall.core.navigation.CurtainCallDestination
 
 private const val SHOW_LABEL = "작품"
 private const val SHOW_ID_ARG = "showId"
-private const val REVIEW_COUNT_ARG = "reviewCount"
 private const val REVIEW_ID_ARG = "reviewId"
 private const val FACILITY_ID_ARG = "facilityId"
 private const val FACILITY_NAME_ARG = "facilityName"
@@ -40,14 +39,10 @@ sealed class ShowDestination : CurtainCallDestination {
     object Review : ShowDestination() {
         override val route = NavRouteLabel.SHOW_REVIEW
         const val showIdArg = SHOW_ID_ARG
-        const val reviewCountArg = REVIEW_COUNT_ARG
-        val routeWithArgs = "$route/{$showIdArg}/{$reviewCountArg}"
+        val routeWithArgs = "$route/{$showIdArg}"
         val arguments = listOf(
             navArgument(showIdArg) {
                 type = NavType.StringType
-            },
-            navArgument(reviewCountArg) {
-                type = NavType.IntType
             }
         )
     }
@@ -104,9 +99,9 @@ sealed class ShowDestination : CurtainCallDestination {
         const val facilityIdArg = FACILITY_ID_ARG
         const val facilityNameArg = FACILITY_NAME_ARG
         val routeWithArg = "$route?" +
-            "${LostPropertyCreate.lostPropertyIdArg}={${LostPropertyCreate.lostPropertyIdArg}}&" +
-            "${LostPropertyCreate.facilityIdArg}={${LostPropertyCreate.facilityIdArg}}&" +
-            "${LostPropertyCreate.facilityNameArg}={${LostPropertyCreate.facilityNameArg}}"
+                "${LostPropertyCreate.lostPropertyIdArg}={${LostPropertyCreate.lostPropertyIdArg}}&" +
+                "${LostPropertyCreate.facilityIdArg}={${LostPropertyCreate.facilityIdArg}}&" +
+                "${LostPropertyCreate.facilityNameArg}={${LostPropertyCreate.facilityNameArg}}"
 
         val arguments = listOf(
             navArgument(lostPropertyIdArg) {

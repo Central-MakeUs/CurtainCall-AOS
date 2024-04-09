@@ -53,13 +53,11 @@ import com.cmc.curtaincall.domain.type.ReportType
 internal fun ShowReviewScreen(
     showReviewViewModel: ShowReviewViewModel = hiltViewModel(),
     showId: String?,
-    reviewCount: Int?,
     onNavigateToReviewCreate: (Int) -> Unit = {},
     onNavigateReport: (Int, ReportType) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
     requireNotNull(showId)
-    requireNotNull(reviewCount)
 
     LaunchedEffect(Unit) {
         showReviewViewModel.fetchShowReviewList(showId)
@@ -116,7 +114,6 @@ internal fun ShowReviewScreen(
                 .fillMaxSize()
                 .background(Grey9),
             showId = showId,
-            reviewCount = reviewCount,
             onNavigateToReviewCreate = onNavigateToReviewCreate
         )
     }
@@ -127,7 +124,6 @@ private fun ShowReviewContent(
     modifier: Modifier = Modifier,
     showReviewViewModel: ShowReviewViewModel = hiltViewModel(),
     showId: String,
-    reviewCount: Int,
     onNavigateToReviewCreate: (Int) -> Unit = {},
 ) {
     val showReviewUiState by showReviewViewModel.uiState.collectAsStateWithLifecycle()
@@ -192,10 +188,10 @@ private fun ShowReviewContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = if (reviewCount == 0) {
+                text = if (showReviewModels.itemCount == 0) {
                     stringResource(R.string.show_review_empty_list)
                 } else {
-                    String.format(stringResource(R.string.show_review_count_format), reviewCount)
+                    String.format(stringResource(R.string.show_review_count_format), showReviewModels.itemCount)
                 },
                 modifier = Modifier.weight(1f),
                 style = CurtainCallTheme.typography.subTitle4.copy(

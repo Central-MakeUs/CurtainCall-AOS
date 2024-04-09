@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
@@ -97,6 +98,7 @@ class ShowReviewViewModel @Inject constructor(
     ) {
         reviewRepository.deleteShowReview(reviewId)
             .onEach { sendSideEffect(ShowReviewSideEffect.DeleteMyReview) }
+            .onCompletion { checkMyReview(showId) }
             .launchIn(viewModelScope)
     }
 
