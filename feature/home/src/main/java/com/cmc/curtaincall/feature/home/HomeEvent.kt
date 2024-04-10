@@ -3,6 +3,7 @@ package com.cmc.curtaincall.feature.home
 import com.cmc.curtaincall.core.base.BaseEvent
 import com.cmc.curtaincall.domain.model.member.MyParticipationModel
 import com.cmc.curtaincall.domain.model.member.MyRecruitmentModel
+import com.cmc.curtaincall.domain.model.show.CostEffectiveShowModel
 import com.cmc.curtaincall.domain.model.show.LiveTalkShowModel
 import com.cmc.curtaincall.domain.model.show.ShowInfoModel
 import com.cmc.curtaincall.domain.model.show.ShowRankModel
@@ -44,5 +45,9 @@ sealed class HomeEvent : BaseEvent {
 
     data class RequestShowRecommendations(
         val showRecommendations: List<ShowRecommendationModel>
+    ) : HomeEvent()
+
+    data class RequestCostEffectiveShows(
+        val costEffectiveShows: List<CostEffectiveShowModel>
     ) : HomeEvent()
 }

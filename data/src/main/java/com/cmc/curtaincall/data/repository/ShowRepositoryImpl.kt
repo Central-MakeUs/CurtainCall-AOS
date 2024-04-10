@@ -11,6 +11,7 @@ import com.cmc.curtaincall.data.source.paging.SHOW_SEARCH_PAGE_SIZE
 import com.cmc.curtaincall.data.source.paging.ShowPagingSource
 import com.cmc.curtaincall.data.source.paging.ShowSearchPagingSource
 import com.cmc.curtaincall.data.source.remote.ShowRemoteSource
+import com.cmc.curtaincall.domain.model.show.CostEffectiveShowModel
 import com.cmc.curtaincall.domain.model.show.FacilityDetailModel
 import com.cmc.curtaincall.domain.model.show.LiveTalkShowModel
 import com.cmc.curtaincall.domain.model.show.ShowDetailModel
@@ -111,6 +112,13 @@ class ShowRepositoryImpl @Inject constructor(
         ).map { response ->
             response.map { it.toModel() }
         }
+    }
+
+    override fun requestCostEffectiveShows(genre: String): Flow<List<CostEffectiveShowModel>> {
+        return showRemoteSource.requestCostEffectiveShows(genre)
+            .map { response ->
+                response.map { it.toModel() }
+            }
     }
 
     override fun requestShowRecommendation(): Flow<List<ShowRecommendationModel>> {

@@ -1,6 +1,7 @@
 package com.cmc.curtaincall.data.source.remote
 
 import com.cmc.curtaincall.core.network.service.show.ShowService
+import com.cmc.curtaincall.core.network.service.show.response.CostEffectiveShowResponse
 import com.cmc.curtaincall.core.network.service.show.response.FacilityDetailResponse
 import com.cmc.curtaincall.core.network.service.show.response.LiveTalkShowResponse
 import com.cmc.curtaincall.core.network.service.show.response.ShowDetailResponse
@@ -132,6 +133,14 @@ class ShowRemoteSource @Inject constructor(
                 size = size,
                 baseDateTime = baseDateTime
             ).liveTalks
+        )
+    }
+
+    fun requestCostEffectiveShows(genre: String): Flow<List<CostEffectiveShowResponse>> = flow {
+        emit(
+            showService.requestCostEffectiveShows(
+                genre = genre
+            ).shows
         )
     }
 

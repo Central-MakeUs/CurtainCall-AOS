@@ -36,7 +36,9 @@ import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey1
 import com.cmc.curtaincall.common.designsystem.theme.Grey5
 import com.cmc.curtaincall.domain.enums.ShowGenreType
+import java.text.DecimalFormat
 
+// 홈 인기작품
 @Composable
 fun CurtainCallPopularPoster(
     model: Any?,
@@ -105,6 +107,7 @@ fun CurtainCallPopularPoster(
     }
 }
 
+// 홈 오픈예정
 @Composable
 fun CurtainCallOpenShowPoster(
     model: Any?,
@@ -165,7 +168,7 @@ fun CurtainCallOpenShowPoster(
         }
         Text(
             text = text,
-            modifier = Modifier.padding(top = 6.dp),
+            modifier = Modifier.padding(top = 8.dp),
             style = CurtainCallTheme.typography.body3.copy(
                 fontWeight = FontWeight.SemiBold
             ),
@@ -181,6 +184,7 @@ fun CurtainCallOpenShowPoster(
     }
 }
 
+// 홈 마감임박
 @Composable
 fun CurtainCallEndShowPoster(
     model: Any?,
@@ -241,7 +245,7 @@ fun CurtainCallEndShowPoster(
         }
         Text(
             text = text,
-            modifier = Modifier.padding(top = 6.dp),
+            modifier = Modifier.padding(top = 8.dp),
             style = CurtainCallTheme.typography.body3.copy(
                 fontWeight = FontWeight.SemiBold
             ),
@@ -257,6 +261,71 @@ fun CurtainCallEndShowPoster(
     }
 }
 
+// 홈 가성비
+@Composable
+fun CurtainCallCostEffectiveShowPoster(
+    model: Any?,
+    name: String = "",
+    minPrice: Int = 0,
+    genreType: ShowGenreType = ShowGenreType.PLAY,
+    onClick: () -> Unit = {}
+) {
+    Column(
+        modifier = Modifier
+            .size(120.dp, 244.dp)
+            .clickable { onClick() }
+    ) {
+        AsyncImage(
+            model = model,
+            contentDescription = null,
+            error = painterResource(R.drawable.ic_error_poster),
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(120 / 160f)
+                .clip(RoundedCornerShape(10.dp)),
+            contentScale = ContentScale.FillBounds
+        )
+        Box(
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .background(CurtainCallTheme.colors.primary, RoundedCornerShape(20.dp))
+                .padding(horizontal = Paddings.medium, vertical = Paddings.small),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = genreType.value,
+                style = CurtainCallTheme.typography.caption.copy(
+                    color = CurtainCallTheme.colors.onPrimary
+                )
+            )
+        }
+        Text(
+            text = name,
+            modifier = Modifier.padding(top = 8.dp),
+            style = CurtainCallTheme.typography.body3.copy(
+                fontWeight = FontWeight.SemiBold
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Box(
+            modifier = Modifier
+                .padding(top = 4.dp)
+                .border(1.dp, CurtainCallTheme.colors.systemRed, RoundedCornerShape(4.dp))
+                .padding(horizontal = 4.dp, vertical = 2.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = if (minPrice == 0) "무료~" else DecimalFormat("#,###원~").format(minPrice),
+                style = CurtainCallTheme.typography.caption.copy(
+                    color = CurtainCallTheme.colors.systemRed
+                )
+            )
+        }
+    }
+}
+
+// 작품 목록
 @Composable
 fun CurtainCallShowPoster(
     model: Any?,
@@ -310,6 +379,7 @@ fun CurtainCallShowPoster(
     }
 }
 
+// 파티원 모집
 @Composable
 fun CurtainCallTitlePoster(
     model: Any?,
@@ -353,6 +423,7 @@ fun CurtainCallTitlePoster(
     }
 }
 
+// 좋아요한 작품 목록
 @Composable
 fun CurtainCallFavoritePoster(
     model: Any?,

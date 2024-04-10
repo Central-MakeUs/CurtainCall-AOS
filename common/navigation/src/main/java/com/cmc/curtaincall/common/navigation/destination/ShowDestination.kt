@@ -98,10 +98,7 @@ sealed class ShowDestination : CurtainCallDestination {
         const val lostPropertyIdArg = LOST_PROPERTY_ID_ARG
         const val facilityIdArg = FACILITY_ID_ARG
         const val facilityNameArg = FACILITY_NAME_ARG
-        val routeWithArg = "$route?" +
-                "${LostPropertyCreate.lostPropertyIdArg}={${LostPropertyCreate.lostPropertyIdArg}}&" +
-                "${LostPropertyCreate.facilityIdArg}={${LostPropertyCreate.facilityIdArg}}&" +
-                "${LostPropertyCreate.facilityNameArg}={${LostPropertyCreate.facilityNameArg}}"
+        val routeWithArg = "$route?"
 
         val arguments = listOf(
             navArgument(lostPropertyIdArg) {

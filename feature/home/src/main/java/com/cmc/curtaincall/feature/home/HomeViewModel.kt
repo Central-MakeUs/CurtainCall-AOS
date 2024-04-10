@@ -3,6 +3,7 @@ package com.cmc.curtaincall.feature.home
 import androidx.lifecycle.viewModelScope
 import com.cmc.curtaincall.common.utility.extensions.convertDDay
 import com.cmc.curtaincall.core.base.BaseViewModel
+import com.cmc.curtaincall.domain.enums.ShowGenreType
 import com.cmc.curtaincall.domain.repository.ChattingRepository
 import com.cmc.curtaincall.domain.repository.MemberRepository
 import com.cmc.curtaincall.domain.repository.ShowRepository
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -29,7 +31,6 @@ class HomeViewModel @Inject constructor(
 ) : BaseViewModel<HomeState, HomeEvent, Nothing>(
     initialState = HomeState()
 ) {
-
     private val _user = MutableStateFlow(User())
     private val _token = MutableStateFlow("")
 
@@ -73,6 +74,10 @@ class HomeViewModel @Inject constructor(
 
             is HomeEvent.RequestShowRecommendations -> {
                 currentState.copy(showRecommendations = event.showRecommendations)
+            }
+
+            is HomeEvent.RequestCostEffectiveShows -> {
+                currentState.copy(costEffectiveShows = event.costEffectiveShows)
             }
 
             else -> currentState
@@ -159,6 +164,21 @@ class HomeViewModel @Inject constructor(
                 sendAction(HomeEvent.RequestEndShowList(it.shuffled().take(10).sortedByDescending { it.endDate.convertDDay() }))
             }
             .launchIn(viewModelScope)
+    }
+
+    fun requestCostEffectiveShows() {
+        showRepository.requestCostEffectiveShows(genre = ShowGenreType.PLAY.name)
+            .zip(showRepository.requestCostEffectiveShows(genre = ShowGenreType.MUSICAL.name)) { plays, musicals ->
+                (plays + musicals)
+                    .sortedWith(compareBy({ it.minTicketPrice }, { it.endDate }))
+                    .take(10)
+            }.onEach {
+                sendAction(
+                    HomeEvent.RequestCostEffectiveShows(
+                        costEffectiveShows = it
+                    )
+                )
+            }.launchIn(viewModelScope)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

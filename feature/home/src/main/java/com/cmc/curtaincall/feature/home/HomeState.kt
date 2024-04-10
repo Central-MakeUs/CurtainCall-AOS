@@ -3,6 +3,7 @@ package com.cmc.curtaincall.feature.home
 import com.cmc.curtaincall.core.base.BaseState
 import com.cmc.curtaincall.domain.model.member.MyParticipationModel
 import com.cmc.curtaincall.domain.model.member.MyRecruitmentModel
+import com.cmc.curtaincall.domain.model.show.CostEffectiveShowModel
 import com.cmc.curtaincall.domain.model.show.LiveTalkShowModel
 import com.cmc.curtaincall.domain.model.show.ShowInfoModel
 import com.cmc.curtaincall.domain.model.show.ShowRankModel
@@ -18,5 +19,6 @@ data class HomeState(
     val openShowInfos: List<ShowInfoModel> = listOf(),
     val endShowInfos: List<ShowInfoModel> = listOf(),
     val searchWords: List<ShowSearchWordModel> = listOf(),
-    val showRecommendations: List<ShowRecommendationModel> = listOf()
+    val showRecommendations: List<ShowRecommendationModel> = listOf(),
+    val costEffectiveShows: List<CostEffectiveShowModel> = listOf()
 ) : BaseState

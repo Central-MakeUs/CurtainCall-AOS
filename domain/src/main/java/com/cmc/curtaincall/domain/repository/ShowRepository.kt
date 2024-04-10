@@ -1,6 +1,7 @@
 package com.cmc.curtaincall.domain.repository
 
 import androidx.paging.PagingData
+import com.cmc.curtaincall.domain.model.show.CostEffectiveShowModel
 import com.cmc.curtaincall.domain.model.show.FacilityDetailModel
 import com.cmc.curtaincall.domain.model.show.LiveTalkShowModel
 import com.cmc.curtaincall.domain.model.show.ShowDetailModel
@@ -82,6 +83,10 @@ interface ShowRepository {
         size: Int?,
         baseDateTime: String
     ): Flow<List<LiveTalkShowModel>>
+
+    fun requestCostEffectiveShows(
+        genre: String
+    ): Flow<List<CostEffectiveShowModel>>
 
     fun requestShowRecommendation(): Flow<List<ShowRecommendationModel>>
 }

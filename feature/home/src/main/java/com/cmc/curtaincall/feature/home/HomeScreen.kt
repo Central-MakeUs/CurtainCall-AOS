@@ -4,6 +4,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -28,6 +29,7 @@ import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallTitleTopAppBar
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
+import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallCostEffectiveShowPoster
 import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallEndShowPoster
 import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallOpenShowPoster
 import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallPopularPoster
@@ -82,9 +84,9 @@ private fun HomeContent(
 
     LaunchedEffect(homeViewModel) {
         homeViewModel.requestShowRecommendations()
-        // homeViewModel.requestPopularShowList()
         homeViewModel.requestOpenShowList()
         homeViewModel.requestEndShowList()
+        homeViewModel.requestCostEffectiveShows()
     }
 
     Column(modifier.verticalScroll(scrollState)) {
@@ -153,6 +155,24 @@ private fun HomeContent(
                             endDate = endShowInfo.endDate.convertSimpleDate(),
                             genreType = translateShowGenreType(endShowInfo.genre),
                             onClick = { onNavigateToPerformanceDetail(endShowInfo.id) }
+                        )
+                    }
+                }
+            }
+            if (homeUiState.costEffectiveShows.isNotEmpty()) {
+                HomeContentsLazyRow(
+                    modifier = Modifier
+                        .padding(top = 50.dp)
+                        .fillMaxWidth(),
+                    text = stringResource(R.string.home_contents_cost_effective)
+                ) {
+                    items(homeUiState.costEffectiveShows) { costEffectiveShow ->
+                        CurtainCallCostEffectiveShowPoster(
+                            model = costEffectiveShow.poster,
+                            name = costEffectiveShow.name,
+                            minPrice = costEffectiveShow.minTicketPrice,
+                            genreType = translateShowGenreType(costEffectiveShow.genre),
+                            onClick = { onNavigateToPerformanceDetail(costEffectiveShow.id) }
                         )
                     }
                 }
