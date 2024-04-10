@@ -18,6 +18,8 @@
     <string name="logout">로그아웃</string>
     <string name="clear">초기화</string>
     <string name="participate">참여하기</string>
+    <string name="enter_livetalk">TALK 입장</string>
+    <string name="cancel_participate">참여 취소</string>
 
     <!-- app -->
     <string name="onboarding_first_banner_title">작품 정보뿐만 아니라 분실물까지!</string>
@@ -141,6 +143,13 @@
     <string name="party_member_detail_show_time">공연 시간</string>
     <string name="party_member_detail_show_location">공연 장소</string>
     <string name="party_member_detail_number_of_participation">참여 인원</string>
+    <string name="party_member_full_number_of_member">모집 인원 마감</string>
+    <string name="party_member_participate_popup_title">해당 모집 글에 참여할까요?</string>
+    <string name="party_member_participate_popup_description">참여 후, 파티원 톡방에서 이야기를 더 나눠봐요!</string>
+    <string name="party_member_participate_popup_positive">네, 참여할래요</string>
+    <string name="party_member_cancel_participate_popup_title">해당 모집 글에 취소할까요?</string>
+    <string name="party_member_cancel_participate_popup_description">참여 취소 시, 톡방에서 자동으로 나가게 돼요!</string>
+    <string name="party_member_cancel_participate_popup_positive">네, 취소할래요</string>
 
     <!-- mypage -->
     <string name="mypage_profile_edit">프로필 변경</string>

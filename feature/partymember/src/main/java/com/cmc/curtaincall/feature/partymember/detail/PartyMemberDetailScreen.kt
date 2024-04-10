@@ -2,9 +2,11 @@ package com.cmc.curtaincall.feature.partymember.detail
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,11 +47,14 @@ import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCent
 import com.cmc.curtaincall.common.designsystem.component.basic.DottedLine
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.buttons.common.CurtainCallFilledButton
+import com.cmc.curtaincall.common.designsystem.component.dialogs.CurtainCallSelectDialog
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey1
+import com.cmc.curtaincall.common.designsystem.theme.Grey4
 import com.cmc.curtaincall.common.designsystem.theme.Grey5
 import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey7
+import com.cmc.curtaincall.common.designsystem.theme.Grey8
 import com.cmc.curtaincall.common.designsystem.theme.Primary
 import com.cmc.curtaincall.common.utility.extensions.convertUIDate
 
@@ -59,8 +68,42 @@ fun PartyMemberDetailScreen(
     checkNotNull(partyId)
     checkNotNull(showName)
 
+    val partyDetailModel by partyMemberDetailViewModel.partyDetailModel.collectAsStateWithLifecycle()
+    val isParticipated by partyMemberDetailViewModel.isParticipated.collectAsStateWithLifecycle()
+    val isMyWriting by partyMemberDetailViewModel.isMyWriting.collectAsStateWithLifecycle()
+    var showParticipatePopup by remember { mutableStateOf(false) }
+    var showCancelPopup by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         partyMemberDetailViewModel.requestPartyDetail(partyId)
+    }
+
+    if (showParticipatePopup) {
+        CurtainCallSelectDialog(
+            title = stringResource(R.string.party_member_participate_popup_title),
+            description = stringResource(R.string.party_member_participate_popup_description),
+            cancelButtonText = stringResource(R.string.dismiss),
+            actionButtonText = stringResource(R.string.party_member_participate_popup_positive),
+            onAction = {
+                partyMemberDetailViewModel.participateParty(partyId)
+                showParticipatePopup = false
+            },
+            onCancel = { showParticipatePopup = false },
+            onDismiss = { showParticipatePopup = false }
+        )
+    }
+
+    if (showCancelPopup) {
+        CurtainCallSelectDialog(
+            title = stringResource(R.string.party_member_cancel_participate_popup_title),
+            description = stringResource(R.string.party_member_cancel_participate_popup_description),
+            cancelButtonText = stringResource(R.string.dismiss),
+            actionButtonText = stringResource(R.string.party_member_cancel_participate_popup_positive),
+            onAction = {
+            },
+            onCancel = { showCancelPopup = false },
+            onDismiss = { showCancelPopup = false }
+        )
     }
 
     SystemUiStatusBar(CurtainCallTheme.colors.primary)
@@ -75,19 +118,73 @@ fun PartyMemberDetailScreen(
         },
         floatingActionButton = {
             // TODO 파티원 참여 여부에 따라 분기처리
-            CurtainCallFilledButton(
-                text = stringResource(R.string.participate),
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 14.dp)
-                    .fillMaxWidth()
-                    .height(51.dp),
-                containerColor = CurtainCallTheme.colors.secondary,
-                contentColor = CurtainCallTheme.colors.primary,
-                onClick = {
-                    // TODO 라이브톡 진입
+            if (isMyWriting) {
+                CurtainCallFilledButton(
+                    text = stringResource(R.string.enter_livetalk),
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 14.dp)
+                        .fillMaxWidth()
+                        .height(51.dp),
+                    containerColor = CurtainCallTheme.colors.secondary,
+                    contentColor = CurtainCallTheme.colors.primary,
+                    onClick = {
+                        // TODO 라이브톡 진입
+                    }
+                )
+            } else {
+                if (isParticipated) {
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .padding(bottom = 14.dp)
+                            .fillMaxWidth()
+                            .height(51.dp)
+                    ) {
+                        CurtainCallFilledButton(
+                            text = stringResource(R.string.cancel_participate),
+                            modifier = Modifier
+                                .weight(104f)
+                                .fillMaxHeight(),
+                            containerColor = Grey8,
+                            contentColor = Grey4,
+                            onClick = { showCancelPopup = true }
+                        )
+                        CurtainCallFilledButton(
+                            text = stringResource(R.string.enter_livetalk),
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .padding(bottom = 14.dp)
+                                .weight(206f)
+                                .fillMaxHeight(),
+                            containerColor = CurtainCallTheme.colors.secondary,
+                            contentColor = CurtainCallTheme.colors.primary,
+                            onClick = {
+                                // TODO 라이브톡 진입
+                            }
+                        )
+                    }
+                } else {
+                    CurtainCallFilledButton(
+                        text = stringResource(
+                            if (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum) {
+                                R.string.party_member_full_number_of_member
+                            } else {
+                                R.string.participate
+                            }
+                        ),
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .padding(bottom = 14.dp)
+                            .fillMaxWidth()
+                            .height(51.dp),
+                        enabled = partyDetailModel.curMemberNum != partyDetailModel.maxMemberNum,
+                        containerColor = CurtainCallTheme.colors.secondary,
+                        contentColor = CurtainCallTheme.colors.primary,
+                        onClick = { showParticipatePopup = true }
+                    )
                 }
-            )
+            }
         },
         floatingActionButtonPosition = FabPosition.Center
     ) { paddingValues ->
@@ -107,6 +204,7 @@ private fun PartyMemberDetailContent(
 ) {
     val scrollState = rememberScrollState()
     val partyDetailModel by partyMemberDetailViewModel.partyDetailModel.collectAsStateWithLifecycle()
+    val isMyWriting by partyMemberDetailViewModel.isMyWriting.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.verticalScroll(scrollState)) {
         Column(
@@ -150,21 +248,24 @@ private fun PartyMemberDetailContent(
                     ) {
                         Text(
                             text = partyDetailModel.creatorNickname,
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.width(159.dp),
                             style = CurtainCallTheme.typography.body3.copy(
                                 fontWeight = FontWeight.SemiBold
                             ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        Text(
-                            text = stringResource(R.string.report),
-                            modifier = Modifier.padding(start = 32.dp),
-                            style = CurtainCallTheme.typography.body4.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                color = Grey6
+                        if (!isMyWriting) {
+                            Text(
+                                text = stringResource(R.string.report),
+                                modifier = Modifier.fillMaxWidth(),
+                                style = CurtainCallTheme.typography.body4.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Grey6
+                                ),
+                                textAlign = TextAlign.End
                             )
-                        )
+                        }
                     }
                     Text(
                         text = partyDetailModel.createdAt.convertUIDate(),
@@ -192,14 +293,15 @@ private fun PartyMemberDetailContent(
                     color = Grey1
                 )
             )
-            Row(
+            Box(
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                contentAlignment = Alignment.CenterStart
             ) {
                 Canvas(
                     modifier = Modifier
+                        .align(Alignment.CenterStart)
                         .size(16.dp)
                         .offset(x = (-8).dp)
                 ) {
@@ -211,14 +313,17 @@ private fun PartyMemberDetailContent(
                     )
                 }
                 DottedLine(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth(),
                     strokeWidth = 5.dp.value,
                     strokeColor = Grey7
                 )
                 Canvas(
                     modifier = Modifier
+                        .align(Alignment.CenterEnd)
                         .size(16.dp)
-                        .offset(x = 6.dp)
+                        .offset(x = 8.dp)
                 ) {
                     drawArc(
                         color = Primary,
@@ -347,7 +452,7 @@ private fun PartyMemberDetailContent(
                         )
                     }
                     Text(
-                        text = String.format("+%02d명", partyDetailModel.curMemberNum - 3),
+                        text = String.format("+%d명", partyDetailModel.curMemberNum - 3),
                         modifier = Modifier.padding(start = 4.dp),
                         style = CurtainCallTheme.typography.body4.copy(
                             color = Grey1
