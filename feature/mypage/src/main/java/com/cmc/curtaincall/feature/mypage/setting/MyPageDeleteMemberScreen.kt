@@ -308,16 +308,13 @@ private fun MyPageDeleteMemberFirstContent(
                             color = Grey9,
                             shape = RoundedCornerShape(10.dp)
                         )
-                        .heightIn(min = 130.dp),
+                        .heightIn(min = 130.dp)
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
                     textStyle = CurtainCallTheme.typography.body3.copy(
                         color = Grey1
                     )
                 ) { innerTextField ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 12.dp)
-                    ) {
+                    Box(modifier = Modifier.fillMaxWidth()) {
                         if (content.isEmpty()) {
                             Text(
                                 text = stringResource(R.string.mypage_setting_delete_reason_placeholder),

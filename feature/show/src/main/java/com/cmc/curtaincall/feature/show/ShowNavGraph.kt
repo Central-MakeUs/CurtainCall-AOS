@@ -14,13 +14,13 @@ import com.cmc.curtaincall.feature.show.detail.ShowDetailScreen
 import com.cmc.curtaincall.feature.show.lostproperty.ShowLostPropertyScreen
 import com.cmc.curtaincall.feature.show.lostproperty.create.ShowLostPropertyCreateScreen
 import com.cmc.curtaincall.feature.show.lostproperty.detail.ShowLostPropertyDetailScreen
-import com.cmc.curtaincall.feature.show.review.create.ShowReviewCreateScreen
 import com.cmc.curtaincall.feature.show.review.ShowReviewScreen
+import com.cmc.curtaincall.feature.show.review.create.ShowReviewCreateScreen
 import com.cmc.curtaincall.feature.show.search.ShowSearchScreen
 
 fun NavGraphBuilder.showNavGraph(
     navHostController: NavHostController,
-    onNavigateReport: (Int, ReportType) -> Unit
+    onNavigateToReport: (Int, ReportType) -> Unit
 ) {
     navigation(
         startDestination = ShowDestination.Search.route,
@@ -39,8 +39,8 @@ fun NavGraphBuilder.showNavGraph(
             val showIdArg = entry.arguments?.getString(ShowDestination.Detail.showIdArg)
             ShowDetailScreen(
                 showId = showIdArg,
-                onNavigateToReview = { showId, reviewCount ->
-                    navHostController.navigate("${ShowDestination.Review.route}/$showId/$reviewCount")
+                onNavigateToReview = { showId ->
+                    navHostController.navigate("${ShowDestination.Review.route}/$showId")
                 },
                 onNavigateToReviewCreate = {
                     navHostController.navigate("${ShowDestination.ReviewCreate.route}/$showIdArg/$DEFAULT_REVIEW_ID")
@@ -59,14 +59,12 @@ fun NavGraphBuilder.showNavGraph(
             arguments = ShowDestination.Review.arguments
         ) { entry ->
             val showIdArg = entry.arguments?.getString(ShowDestination.Review.showIdArg)
-            val reviewCountArg = entry.arguments?.getInt(ShowDestination.Review.reviewCountArg)
             ShowReviewScreen(
                 showId = showIdArg,
-                reviewCount = reviewCountArg,
                 onNavigateToReviewCreate = { reviewId ->
                     navHostController.navigate("${ShowDestination.ReviewCreate.route}/$showIdArg/$reviewId")
                 },
-                onNavigateReport = onNavigateReport,
+                onNavigateToReport = onNavigateToReport,
                 onBack = {
                     navHostController.popBackStack()
                 }
@@ -78,12 +76,20 @@ fun NavGraphBuilder.showNavGraph(
         ) { entry ->
             val showIdArg = entry.arguments?.getString(ShowDestination.ReviewCreate.showIdArg)
             val reviewIdArg = entry.arguments?.getInt(ShowDestination.ReviewCreate.reviewIdArg)
-            if (navHostController.previousBackStackEntry?.destination?.route == ShowDestination.Review.route) {
+            if (navHostController.previousBackStackEntry?.destination?.route == ShowDestination.Review.routeWithArgs) {
                 val showDetailEntry = remember(entry) { navHostController.getBackStackEntry(ShowDestination.Detail.routeWithArgs) }
                 val reviewEntry = remember(entry) { navHostController.getBackStackEntry(ShowDestination.Review.routeWithArgs) }
                 ShowReviewCreateScreen(
                     showDetailViewModel = hiltViewModel(showDetailEntry),
                     showReviewViewModel = hiltViewModel(reviewEntry),
+                    showId = showIdArg,
+                    reviewId = reviewIdArg,
+                    onBack = { navHostController.popBackStack() }
+                )
+            } else if (navHostController.previousBackStackEntry?.destination?.route == ShowDestination.Detail.routeWithArgs) {
+                val showDetailEntry = remember(entry) { navHostController.getBackStackEntry(ShowDestination.Detail.routeWithArgs) }
+                ShowReviewCreateScreen(
+                    showDetailViewModel = hiltViewModel(showDetailEntry),
                     showId = showIdArg,
                     reviewId = reviewIdArg,
                     onBack = { navHostController.popBackStack() }
@@ -127,7 +133,7 @@ fun NavGraphBuilder.showNavGraph(
             ShowLostPropertyDetailScreen(
                 lostPropertyId = lostPropertyIdArg,
                 fromCreate = fromCreateArg,
-                onNavigateReport = onNavigateReport,
+                onNavigateReport = onNavigateToReport,
                 onBack = { navHostController.popBackStack() }
             )
         }

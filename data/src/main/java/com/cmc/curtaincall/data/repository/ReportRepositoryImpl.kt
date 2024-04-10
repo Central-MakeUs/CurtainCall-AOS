@@ -8,9 +8,9 @@ import javax.inject.Inject
 class ReportRepositoryImpl @Inject constructor(
     private val reportRemoteSource: ReportRemoteSource
 ) : ReportRepository {
-    override fun requestReport(reportId: Int, type: String, reason: String, content: String): Flow<Boolean> =
+    override fun requestReport(idToReport: Int, type: String, reason: String, content: String): Flow<Boolean> =
         reportRemoteSource.requestReport(
-            reportId = reportId,
+            idToReport = idToReport,
             type = type,
             reason = reason,
             content = content

@@ -1,5 +1,6 @@
 package com.cmc.curtaincall.core.network.service.show
 
+import com.cmc.curtaincall.core.network.service.show.response.CostEffectiveShowsResponse
 import com.cmc.curtaincall.core.network.service.show.response.FacilityDetailResponse
 import com.cmc.curtaincall.core.network.service.show.response.LiveTalkShowsResponse
 import com.cmc.curtaincall.core.network.service.show.response.ShowDetailResponse
@@ -74,6 +75,11 @@ interface ShowService {
         @Query("size") size: Int?,
         @Query("baseDateTime") baseDateTime: String
     ): LiveTalkShowsResponse
+
+    @GET("cost-effective-shows")
+    suspend fun requestCostEffectiveShows(
+        @Query("genre") genre: String?
+    ): CostEffectiveShowsResponse
 
     @GET("show-recommendations")
     suspend fun requestShowRecommendations(): ShowRecommendationsResponse

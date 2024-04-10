@@ -1,7 +1,7 @@
 package com.cmc.curtaincall.feature.home.report
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,45 +11,50 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cmc.curtaincall.common.designsystem.R
-import com.cmc.curtaincall.common.designsystem.component.basic.CurtainCallMultiLineTextField
-import com.cmc.curtaincall.common.designsystem.component.basic.CurtainCallRoundedTextButton
-import com.cmc.curtaincall.common.designsystem.component.basic.TopAppBarWithClose
-import com.cmc.curtaincall.common.designsystem.extensions.toSp
-import com.cmc.curtaincall.common.designsystem.theme.Black_Coral
-import com.cmc.curtaincall.common.designsystem.theme.Bright_Gray
-import com.cmc.curtaincall.common.designsystem.theme.Chinese_Black
-import com.cmc.curtaincall.common.designsystem.theme.Cultured
-import com.cmc.curtaincall.common.designsystem.theme.Me_Pink
-import com.cmc.curtaincall.common.designsystem.theme.Nero
-import com.cmc.curtaincall.common.designsystem.theme.Roman_Silver
-import com.cmc.curtaincall.common.designsystem.theme.Silver_Sand
+import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCloseTopAppBar
+import com.cmc.curtaincall.common.designsystem.component.basic.CurtainCallSnackbar
+import com.cmc.curtaincall.common.designsystem.component.basic.CurtainCallSnackbarHost
+import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
+import com.cmc.curtaincall.common.designsystem.component.buttons.common.CurtainCallFilledButton
+import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
+import com.cmc.curtaincall.common.designsystem.theme.Grey1
+import com.cmc.curtaincall.common.designsystem.theme.Grey2
+import com.cmc.curtaincall.common.designsystem.theme.Grey3
+import com.cmc.curtaincall.common.designsystem.theme.Grey6
+import com.cmc.curtaincall.common.designsystem.theme.Grey8
+import com.cmc.curtaincall.common.designsystem.theme.Grey9
+import com.cmc.curtaincall.common.designsystem.theme.Red
 import com.cmc.curtaincall.common.designsystem.theme.White
-import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
 import com.cmc.curtaincall.domain.type.ReportType
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeReportScreen(
@@ -62,149 +67,136 @@ fun HomeReportScreen(
     requireNotNull(reportId)
     requireNotNull(reportType)
 
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    var snackbarPainter by remember { mutableIntStateOf(R.drawable.ic_complete_green) }
+    var isShowFAB by remember { mutableStateOf(true) }
     val homeReportUiState by homeReportViewModel.uiState.collectAsStateWithLifecycle()
-    val currentStep = homeReportUiState.step
-    LaunchedEffect(homeReportViewModel) {
-        homeReportViewModel.isCompleted.collectLatest { isCompleted ->
-            if (isCompleted) {
-                homeReportViewModel.goNextStep()
-            }
-        }
-    }
-
+    SystemUiStatusBar(White)
     Scaffold(
         topBar = {
-            if (currentStep < 2) {
-                TopAppBarWithClose(
-                    title = stringResource(R.string.appbar_report_title),
-                    containerColor = White,
-                    contentColor = Nero,
-                    onClose = {
-                        if (currentStep == 0) {
-                            onBack()
-                        } else {
-                            homeReportViewModel.goPrevStep()
-                        }
-                    }
+            CurtainCallCloseTopAppBar(
+                title = stringResource(R.string.report),
+                onClose = onBack
+            )
+        },
+        snackbarHost = {
+            CurtainCallSnackbarHost(snackbarHostState = snackbarHostState) { snackbarData ->
+                CurtainCallSnackbar(
+                    modifier = Modifier.fillMaxWidth(),
+                    snackbarData = snackbarData,
+                    painter = painterResource(snackbarPainter)
                 )
             }
         },
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
-            CurtainCallRoundedTextButton(
-                onClick = {
-                    if (currentStep == 0) {
-                        homeReportViewModel.goNextStep()
-                    } else if (currentStep == 1) {
-                        homeReportViewModel.requestReport(
-                            reportId = reportId,
-                            type = reportType
-                        )
+            if (isShowFAB) {
+                CurtainCallFilledButton(
+                    modifier = Modifier
+                        .padding(bottom = 14.dp)
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
+                        .height(51.dp),
+                    text = if (homeReportUiState.phrase == 1) {
+                        stringResource(R.string.next)
                     } else {
-                        onNavigateHome()
+                        stringResource(R.string.report)
+                    },
+                    enabled = if (homeReportUiState.phrase == 1) {
+                        homeReportUiState.reportReason != HomeReportReason.NONE
+                    } else {
+                        homeReportUiState.content.isNotEmpty()
+                    },
+                    onClick = {
+                        if (homeReportUiState.phrase == 1) {
+                            homeReportViewModel.movePhrase(homeReportUiState.phrase + 1)
+                        } else {
+                            homeReportViewModel.requestReport(
+                                idToReport = reportId,
+                                type = reportType
+                            )
+                        }
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .height(52.dp),
-                title = when (currentStep) {
-                    0 -> "다음"
-                    1 -> "신고하기"
-                    else -> "홈으로 이동"
-                },
-                fontSize = 16.dp.toSp(),
-                enabled = when (currentStep) {
-                    0 -> homeReportUiState.reportReason != HomeReportReason.NONE
-                    else -> true
-                },
-                containerColor = when (currentStep) {
-                    0 -> if (homeReportUiState.reportReason == HomeReportReason.NONE) Bright_Gray else Me_Pink
-                    else -> Me_Pink
-                },
-                contentColor = when (currentStep) {
-                    0 -> if (homeReportUiState.reportReason == HomeReportReason.NONE) Silver_Sand else White
-                    else -> White
-                }
-            )
+                )
+            }
         }
     ) { paddingValues ->
-        if (currentStep < 2) {
-            HomeReportContent(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .background(White),
-                content = homeReportUiState.content,
-                reportReason = homeReportUiState.reportReason,
-                step = currentStep
-            )
-        } else {
-            Column(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .background(White),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(Modifier.weight(280f))
-                Icon(
-                    painter = painterResource(R.drawable.ic_complete),
-                    contentDescription = null,
-                    modifier = Modifier.size(70.dp),
-                    tint = Color.Unspecified
-                )
-                Text(
-                    text = stringResource(R.string.home_report_complete),
-                    modifier = Modifier.padding(top = 8.dp),
-                    color = Nero,
-                    fontSize = 16.dp.toSp(),
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = spoqahansanseeo
-                )
-                Spacer(Modifier.weight(360f))
+        HomeReportContent(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(CurtainCallTheme.colors.background)
+        )
+    }
+
+    LaunchedEffect(homeReportViewModel) {
+        homeReportViewModel.reportSuccess.collectLatest { isSuccess ->
+            isShowFAB = false
+            snackbarPainter = if (isSuccess) {
+                R.drawable.ic_complete_green
+            } else {
+                R.drawable.ic_error_snackbar
             }
+
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    context.getString(
+                        if (isSuccess) {
+                            R.string.home_report_success
+                        } else {
+                            R.string.home_report_failure
+                        }
+                    )
+                )
+            }
+            delay(2000)
+            onBack()
         }
     }
 }
 
 @Composable
 private fun HomeReportContent(
-    homeReportViewModel: HomeReportViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
-    content: String,
-    reportReason: HomeReportReason,
-    step: Int
+    homeReportViewModel: HomeReportViewModel = hiltViewModel()
 ) {
-    val verticalScrollState = rememberScrollState()
-    Column(modifier.verticalScroll(verticalScrollState)) {
-        if (step == 0) {
-            Column(
+    val homeReportUiState by homeReportViewModel.uiState.collectAsStateWithLifecycle()
+    val reportReason = homeReportUiState.reportReason
+
+    Column(modifier) {
+        if (homeReportUiState.phrase == 1) {
+            Text(
+                text = stringResource(R.string.home_report_first_phrase_title),
                 modifier = Modifier
                     .padding(top = 30.dp)
                     .padding(horizontal = 20.dp)
-                    .fillMaxSize()
-            ) {
-                Text(
-                    text = stringResource(R.string.home_report_reason_title),
-                    color = Chinese_Black,
-                    fontSize = 18.dp.toSp(),
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = spoqahansanseeo,
-                    lineHeight = 26.dp.toSp()
-                )
+                    .fillMaxWidth(),
+                style = CurtainCallTheme.typography.subTitle2
+            )
+            Spacer(Modifier.size(50.dp))
+            HomeReportReason.values().dropLast(1).forEach { reason ->
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 25.dp)
-                        .clickable { homeReportViewModel.changeReportReason(HomeReportReason.SPAM) },
+                        .padding(bottom = 20.dp)
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = { homeReportViewModel.changeReportReason(HomeReportReason.SPAM) },
+                        onClick = {
+                            if (reportReason == reason) {
+                                homeReportViewModel.changeReportReason(HomeReportReason.NONE)
+                            } else {
+                                homeReportViewModel.changeReportReason(reason)
+                            }
+                        },
                         modifier = Modifier
-                            .background(if (reportReason == HomeReportReason.SPAM) Me_Pink else Bright_Gray, CircleShape)
-                            .size(20.dp)
+                            .background(
+                                color = if (reportReason == reason) CurtainCallTheme.colors.primary else Grey8,
+                                shape = RoundedCornerShape(6.dp)
+                            ).size(20.dp)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_check),
@@ -214,186 +206,11 @@ private fun HomeReportContent(
                         )
                     }
                     Text(
-                        text = HomeReportReason.SPAM.value,
+                        text = reason.value,
                         modifier = Modifier.padding(start = 10.dp),
-                        color = Black_Coral,
-                        fontSize = 15.dp.toSp(),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = spoqahansanseeo
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 19.dp)
-                        .clickable { homeReportViewModel.changeReportReason(HomeReportReason.HATE_SPEECH) },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { homeReportViewModel.changeReportReason(HomeReportReason.HATE_SPEECH) },
-                        modifier = Modifier
-                            .background(if (reportReason == HomeReportReason.HATE_SPEECH) Me_Pink else Bright_Gray, CircleShape)
-                            .size(20.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_check),
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = White
+                        style = CurtainCallTheme.typography.body3.copy(
+                            fontWeight = FontWeight.SemiBold
                         )
-                    }
-                    Text(
-                        text = HomeReportReason.HATE_SPEECH.value,
-                        modifier = Modifier.padding(start = 10.dp),
-                        color = Black_Coral,
-                        fontSize = 15.dp.toSp(),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = spoqahansanseeo
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 19.dp)
-                        .clickable { homeReportViewModel.changeReportReason(HomeReportReason.ILLEGAL) },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { homeReportViewModel.changeReportReason(HomeReportReason.ILLEGAL) },
-                        modifier = Modifier
-                            .background(if (reportReason == HomeReportReason.ILLEGAL) Me_Pink else Bright_Gray, CircleShape)
-                            .size(20.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_check),
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = White
-                        )
-                    }
-                    Text(
-                        text = HomeReportReason.ILLEGAL.value,
-                        modifier = Modifier.padding(start = 10.dp),
-                        color = Black_Coral,
-                        fontSize = 15.dp.toSp(),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = spoqahansanseeo
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 19.dp)
-                        .clickable { homeReportViewModel.changeReportReason(HomeReportReason.BAD_MANNERS) },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { homeReportViewModel.changeReportReason(HomeReportReason.BAD_MANNERS) },
-                        modifier = Modifier
-                            .background(if (reportReason == HomeReportReason.BAD_MANNERS) Me_Pink else Bright_Gray, CircleShape)
-                            .size(20.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_check),
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = White
-                        )
-                    }
-                    Text(
-                        text = HomeReportReason.BAD_MANNERS.value,
-                        modifier = Modifier.padding(start = 10.dp),
-                        color = Black_Coral,
-                        fontSize = 15.dp.toSp(),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = spoqahansanseeo
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 19.dp)
-                        .clickable { homeReportViewModel.changeReportReason(HomeReportReason.HARMFUL_TO_TEENAGER) },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { homeReportViewModel.changeReportReason(HomeReportReason.HARMFUL_TO_TEENAGER) },
-                        modifier = Modifier
-                            .background(if (reportReason == HomeReportReason.HARMFUL_TO_TEENAGER) Me_Pink else Bright_Gray, CircleShape)
-                            .size(20.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_check),
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = White
-                        )
-                    }
-                    Text(
-                        text = HomeReportReason.HARMFUL_TO_TEENAGER.value,
-                        modifier = Modifier.padding(start = 10.dp),
-                        color = Black_Coral,
-                        fontSize = 15.dp.toSp(),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = spoqahansanseeo
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 19.dp)
-                        .clickable { homeReportViewModel.changeReportReason(HomeReportReason.PERSONAL_INFORMATION_DISCLOSURE) },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { homeReportViewModel.changeReportReason(HomeReportReason.PERSONAL_INFORMATION_DISCLOSURE) },
-                        modifier = Modifier
-                            .background(if (reportReason == HomeReportReason.PERSONAL_INFORMATION_DISCLOSURE) Me_Pink else Bright_Gray, CircleShape)
-                            .size(20.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_check),
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = White
-                        )
-                    }
-                    Text(
-                        text = HomeReportReason.PERSONAL_INFORMATION_DISCLOSURE.value,
-                        modifier = Modifier.padding(start = 10.dp),
-                        color = Black_Coral,
-                        fontSize = 15.dp.toSp(),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = spoqahansanseeo
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 19.dp)
-                        .clickable { homeReportViewModel.changeReportReason(HomeReportReason.ETC) },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { homeReportViewModel.changeReportReason(HomeReportReason.ETC) },
-                        modifier = Modifier
-                            .background(if (reportReason == HomeReportReason.ETC) Me_Pink else Bright_Gray, CircleShape)
-                            .size(20.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_check),
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = White
-                        )
-                    }
-                    Text(
-                        text = HomeReportReason.ETC.value,
-                        modifier = Modifier.padding(start = 10.dp),
-                        color = Black_Coral,
-                        fontSize = 15.dp.toSp(),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = spoqahansanseeo
                     )
                 }
             }
@@ -401,123 +218,113 @@ private fun HomeReportContent(
             Column(
                 modifier = Modifier
                     .padding(top = 30.dp)
+                    .padding(horizontal = 20.dp)
                     .fillMaxSize()
             ) {
                 Text(
-                    text = stringResource(R.string.home_report_reason_description_title),
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    color = Chinese_Black,
-                    fontSize = 18.dp.toSp(),
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = spoqahansanseeo
+                    text = stringResource(R.string.home_report_second_phrase_title),
+                    style = CurtainCallTheme.typography.subTitle2
                 )
-                CurtainCallMultiLineTextField(
-                    value = content,
-                    onValueChange = {
-                        if (it.length <= 400) homeReportViewModel.setContent(it)
-                    },
+                BasicTextField(
+                    value = homeReportUiState.content,
+                    onValueChange = { homeReportViewModel.setContent(it) },
                     modifier = Modifier
-                        .padding(top = 17.dp)
-                        .padding(horizontal = 20.dp)
+                        .padding(top = 12.dp)
                         .fillMaxWidth()
-                        .heightIn(min = 222.dp),
-                    fontSize = 15.dp.toSp(),
-                    shape = RoundedCornerShape(10.dp),
-                    containerColor = Cultured,
-                    contentColor = Nero,
-                    contentModifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
-                    placeholder = stringResource(R.string.mypage_setting_remove_member_reason_example),
-                    placeholderColor = Silver_Sand
-                )
+                        .background(
+                            color = Grey9,
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .heightIn(min = 130.dp)
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    textStyle = CurtainCallTheme.typography.body3.copy(
+                        color = Grey1
+                    )
+                ) { innerTextField ->
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        if (homeReportUiState.content.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.home_report_content_placeholder),
+                                style = CurtainCallTheme.typography.body3.copy(
+                                    color = Grey6
+                                )
+                            )
+                        }
+                    }
+                    innerTextField()
+                }
+                if (homeReportUiState.content.length > 400) {
+                    Text(
+                        text = stringResource(R.string.home_report_content_restrict),
+                        modifier = Modifier.padding(top = 8.dp, start = 14.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            color = Red
+                        )
+                    )
+                }
                 Text(
-                    text = String.format(
-                        stringResource(R.string.mypage_setting_remove_member_reason_text_count),
-                        content.length,
-                        400
-                    ),
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .padding(horizontal = 20.dp)
-                        .fillMaxWidth(),
-                    color = Roman_Silver,
-                    fontSize = 12.dp.toSp(),
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = spoqahansanseeo,
-                    textAlign = TextAlign.End
-                )
-                Spacer(
-                    modifier = Modifier
-                        .padding(vertical = 30.dp)
-                        .fillMaxWidth()
-                        .height(7.dp)
-                        .background(Cultured)
+                    text = stringResource(R.string.home_report_rule_title),
+                    modifier = Modifier.padding(top = 40.dp),
+                    style = CurtainCallTheme.typography.body2.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = Grey2
+                    )
                 )
                 Row(
                     modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(top = 12.dp)
+                        .fillMaxWidth()
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_error_report),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = Color.Unspecified
+                    Text(
+                        text = "*",
+                        style = CurtainCallTheme.typography.body4.copy(
+                            color = Grey3
+                        )
                     )
                     Text(
                         text = stringResource(R.string.home_report_rule1),
-                        modifier = Modifier.padding(start = 8.dp),
-                        color = Black_Coral,
-                        fontSize = 13.dp.toSp(),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = spoqahansanseeo,
-                        lineHeight = 20.dp.toSp()
+                        modifier = Modifier.padding(start = 6.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            color = Grey3
+                        )
                     )
                 }
                 Row(
                     modifier = Modifier
-                        .padding(horizontal = 20.dp)
+                        .padding(top = 12.dp)
                         .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    verticalAlignment = Alignment.Top
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_error_report),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = Color.Unspecified
+                    Text(
+                        text = "*",
+                        style = CurtainCallTheme.typography.body4.copy(
+                            color = Grey3
+                        )
                     )
                     Text(
                         text = stringResource(R.string.home_report_rule2),
-                        modifier = Modifier.padding(start = 8.dp),
-                        color = Black_Coral,
-                        fontSize = 13.dp.toSp(),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = spoqahansanseeo,
-                        lineHeight = 20.dp.toSp()
+                        modifier = Modifier.padding(start = 6.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            color = Grey3
+                        )
                     )
                 }
                 Row(
                     modifier = Modifier
-                        .padding(horizontal = 20.dp)
+                        .padding(top = 12.dp)
                         .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    verticalAlignment = Alignment.Top
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_error_report),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = Color.Unspecified
+                    Text(
+                        text = "*",
+                        style = CurtainCallTheme.typography.body4.copy(
+                            color = Grey3
+                        )
                     )
                     Text(
                         text = stringResource(R.string.home_report_rule3),
-                        modifier = Modifier.padding(start = 8.dp),
-                        color = Black_Coral,
-                        fontSize = 13.dp.toSp(),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = spoqahansanseeo,
-                        lineHeight = 20.dp.toSp()
+                        modifier = Modifier.padding(start = 6.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            color = Grey3
+                        )
                     )
                 }
             }

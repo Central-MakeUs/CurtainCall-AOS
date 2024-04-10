@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,6 +30,7 @@ import com.cmc.curtaincall.domain.enums.ShowGenreType
 
 @Composable
 internal fun MyPageFavoriteScreen(
+    onNavigateToShowDetail: (String) -> Unit = {},
     onBack: () -> Unit = {}
 ) {
     SystemUiStatusBar(White)
@@ -44,7 +46,8 @@ internal fun MyPageFavoriteScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(CurtainCallTheme.colors.background)
+                .background(CurtainCallTheme.colors.background),
+            onNavigateToShowDetail = onNavigateToShowDetail
         )
     }
 }
@@ -52,8 +55,13 @@ internal fun MyPageFavoriteScreen(
 @Composable
 private fun MyPageFavoriteContent(
     modifier: Modifier = Modifier,
-    myPageFavoriteViewModel: MyPageFavoriteViewModel = hiltViewModel()
+    myPageFavoriteViewModel: MyPageFavoriteViewModel = hiltViewModel(),
+    onNavigateToShowDetail: (String) -> Unit = {}
 ) {
+    LaunchedEffect(true) {
+        myPageFavoriteViewModel.requestFavoriteShows()
+    }
+
     val genreType by myPageFavoriteViewModel.genreType.collectAsStateWithLifecycle()
     val favoriteShows by myPageFavoriteViewModel.favoriteShows.collectAsStateWithLifecycle()
     Column(modifier) {
@@ -90,6 +98,9 @@ private fun MyPageFavoriteContent(
                         } else {
                             myPageFavoriteViewModel.requestFavoriteShow(it.id)
                         }
+                    },
+                    onClick = {
+                        onNavigateToShowDetail(it.id)
                     }
                 )
             }

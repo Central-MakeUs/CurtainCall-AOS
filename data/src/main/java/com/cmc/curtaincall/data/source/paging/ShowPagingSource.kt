@@ -5,6 +5,7 @@ import androidx.paging.PagingState
 import com.cmc.curtaincall.core.network.service.favorite.FavoriteService
 import com.cmc.curtaincall.core.network.service.show.ShowService
 import com.cmc.curtaincall.domain.model.show.ShowInfoModel
+import timber.log.Timber
 import javax.inject.Inject
 
 private const val SHOW_STARTING_KEY = 0
@@ -42,9 +43,10 @@ class ShowPagingSource @Inject constructor(
                 )
             }
 
+            Timber.d("ShowPagingSource $pageKey")
             return LoadResult.Page(
                 result,
-                prevKey = null,
+                prevKey = if (pageKey == SHOW_STARTING_KEY) null else pageKey - 1,
                 nextKey = if (result.isEmpty()) null else pageKey + 1
             )
         } catch (e: Exception) {

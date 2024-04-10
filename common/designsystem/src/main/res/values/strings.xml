@@ -71,7 +71,18 @@
     <string name="home_banner_recommendation">추천</string>
     <string name="home_contents_popular_show">TOP10 인기 작품</string>
     <string name="home_contents_open_show">티켓 오픈 예정</string>
-    <string name="home_contents_end_show">마감 임박 공연</string>
+    <string name="home_contents_end_show">티켓 마감 임박</string>
+    <string name="home_contents_cost_effective">가성비 좋은 공연</string>
+    <string name="home_report_first_phrase_title">해당 게시물을 신고하는 이유를\n선택해주세요.</string>
+    <string name="home_report_second_phrase_title">신고 내용을 상세하게 적어주세요.</string>
+    <string name="home_report_content_placeholder">자유롭게 작성해주세요.</string>
+    <string name="home_report_content_restrict">400자 이내로 작성해주세요</string>
+    <string name="home_report_rule_title">주의사항</string>
+    <string name="home_report_rule1">허위 신고 시 운영정책에 따라 조치될 수 있습니다.</string>
+    <string name="home_report_rule2">이 회원이 신고 대상에 해당하는지 다시 한번 확인하여 주시기 바랍니다.</string>
+    <string name="home_report_rule3">신고자 정보 및 신고 내용은 신고 대상에게 공개되지 않으나, 사실 관계 확인에 꼭 필요한 신고 내용의 일부는 언급될 수 있습니다.</string>
+    <string name="home_report_success">신고가 접수됐어요</string>
+    <string name="home_report_failure">오류로 인해 신고가 실패했어요</string>
 
     <!-- show-->
     <string name="show_coach_mark">인기순은 현재 상영 중인 작품 50개만 볼 수 있어요!</string>
@@ -356,12 +367,6 @@
     <string name="home_guide_etc_menu">기타</string>
     <string name="home_guide_before_ticketing">티켓팅 이전</string>
     <string name="home_guide_after_tickketing">티켓팅 이후</string>
-    <string name="home_report_reason_title">해당 게시물을 신고하는 이유를\n선택해주세요.</string>
-    <string name="home_report_reason_description_title">신고 내용을 상세하게 적어주세요.</string>
-    <string name="home_report_rule1">허위 신고 시 운영정책에 따라 조치될 수 있습니다.</string>
-    <string name="home_report_rule2">이 회원이 신고 대상에 해당하는지 다시 한번 확인하여 주시기 바랍니다.</string>
-    <string name="home_report_rule3">신고자 정보 및 신고 내용은 신고 대상에게 공개되지 않으나, 사실 관계 확인에 꼭 필요한 신고 내용의 일부는 언급될 수 있습니다.</string>
-    <string name="home_report_complete">신고가 접수되었어요</string>
 
     <!-- mypage -->
     <string name="mypage_title">MY"</string>

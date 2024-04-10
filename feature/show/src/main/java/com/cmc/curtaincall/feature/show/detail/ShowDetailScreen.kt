@@ -26,28 +26,27 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
-import com.cmc.curtaincall.common.designsystem.component.tooltip.CurtainCallShowLiveTalkTooltip
 import com.cmc.curtaincall.common.designsystem.component.cards.ShowDetailCard
 import com.cmc.curtaincall.common.designsystem.component.divider.HorizontalDivider
+import com.cmc.curtaincall.common.designsystem.component.tooltip.CurtainCallShowLiveTalkTooltip
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey8
 import com.cmc.curtaincall.domain.enums.MenuTabType
 import com.cmc.curtaincall.domain.model.show.ShowDetailModel
-import com.cmc.curtaincall.feature.show.detail.menu.ShowLostPropertyTabContent
 import com.cmc.curtaincall.feature.show.detail.menu.ShowDetailMenuTabContent
 import com.cmc.curtaincall.feature.show.detail.menu.ShowReviewTabContent
+import timber.log.Timber
 
 @Composable
 internal fun ShowDetailScreen(
     showDetailViewModel: ShowDetailViewModel = hiltViewModel(),
     showId: String?,
-    onNavigateToReview: (String, Int) -> Unit = { _, _ -> },
+    onNavigateToReview: (String) -> Unit = {},
     onNavigateToReviewCreate: () -> Unit = {},
     onNavigateToLostProperty: (String, String) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
     requireNotNull(showId)
-
     val scrollState = rememberScrollState()
     val showDetailUiState by showDetailViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -55,6 +54,7 @@ internal fun ShowDetailScreen(
         showDetailViewModel.requestShowDetail(showId)
         showDetailViewModel.checkFavoriteShow(showId)
     }
+    Timber.d("ShowDetailScreen ${showDetailViewModel.hashCode()}")
 
     SystemUiStatusBar(CurtainCallTheme.colors.primary)
     Column(
@@ -87,7 +87,7 @@ private fun ShowDetailMenuTab(
     modifier: Modifier = Modifier,
     showDetailViewModel: ShowDetailViewModel = hiltViewModel(),
     showId: String = "",
-    onNavigateToReview: (String, Int) -> Unit = { _, _ -> },
+    onNavigateToReview: (String) -> Unit = {},
     onNavigateToReviewCreate: () -> Unit = {},
     onNavigateToLostProperty: (String, String) -> Unit = { _, _ -> }
 ) {
@@ -156,17 +156,17 @@ private fun ShowDetailMenuTab(
                 )
             }
 
-            MenuTabType.LOST_PROPERTY -> {
-                ShowLostPropertyTabContent(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(CurtainCallTheme.colors.background),
-                    lostProperties = showDetailUiState.lostProperties,
-                    facilityId = showDetailUiState.showDetailModel.facilityId,
-                    facilityName = showDetailUiState.showDetailModel.facilityName,
-                    onNavigateToLostProperty = onNavigateToLostProperty
-                )
-            }
+//            MenuTabType.LOST_PROPERTY -> {
+//                ShowLostPropertyTabContent(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .background(CurtainCallTheme.colors.background),
+//                    lostProperties = showDetailUiState.lostProperties,
+//                    facilityId = showDetailUiState.showDetailModel.facilityId,
+//                    facilityName = showDetailUiState.showDetailModel.facilityName,
+//                    onNavigateToLostProperty = onNavigateToLostProperty
+//                )
+//            }
         }
     }
 }

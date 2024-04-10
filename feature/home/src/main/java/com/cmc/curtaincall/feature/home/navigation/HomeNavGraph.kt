@@ -98,7 +98,7 @@ fun HomeNavHost(
 
             showNavGraph(
                 navHostController = navHostController,
-                onNavigateReport = { id, type ->
+                onNavigateToReport = { id, type ->
                     navHostController.navigate("${HomeDestination.Report.route}/$id/$type")
                 }
             )

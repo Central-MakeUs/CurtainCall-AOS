@@ -3,14 +3,16 @@ package com.cmc.curtaincall.feature.home.report
 import com.cmc.curtaincall.core.base.BaseEvent
 
 sealed class HomeReportEvent : BaseEvent {
-    object NextStep : HomeReportEvent()
-    object PrevStep : HomeReportEvent()
+
+    data class MovePhrase(
+        val phrase: Int
+    ) : HomeReportEvent()
 
     data class SelectReportReason(
         val reportReason: HomeReportReason
     ) : HomeReportEvent()
 
-    data class InputContent(
+    data class SetReportContent(
         val content: String
     ) : HomeReportEvent()
 }
