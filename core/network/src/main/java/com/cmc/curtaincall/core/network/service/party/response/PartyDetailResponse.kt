@@ -10,13 +10,13 @@ data class PartyDetailResponse(
     val creatorNickname: String,
     val curMemberNum: Int,
     val facilityId: String?,
-    val facilityName: String?,
+    val facilityName: String,
     val id: Int,
     val maxMemberNum: Int,
-    val showAt: String?,
+    val showAt: String,
     val showId: String?,
     val showPoster: String?,
-    val showName: String?,
+    val showName: String,
     val title: String
 ) {
     fun toModel() = PartyDetailModel(
@@ -32,6 +32,7 @@ data class PartyDetailResponse(
         maxMemberNum = maxMemberNum,
         showAt = showAt,
         showId = showId,
+        showPoster = showPoster,
         showName = showName,
         title = title
     )
