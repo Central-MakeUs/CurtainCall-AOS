@@ -25,9 +25,9 @@ import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallSearchTitleTopAppBar
 import com.cmc.curtaincall.common.designsystem.component.appbars.SearchAppBarState
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
-import com.cmc.curtaincall.common.designsystem.component.tooltip.CurtainCallShowSortTooltip
 import com.cmc.curtaincall.common.designsystem.component.chips.CurtainCallBasicChip
 import com.cmc.curtaincall.common.designsystem.component.sheets.bottom.CurtainCallShowSortBottomSheet
+import com.cmc.curtaincall.common.designsystem.component.tooltip.CurtainCallShowSortTooltip
 import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallShowPoster
 import com.cmc.curtaincall.common.designsystem.custom.search.SearchWordContent
 import com.cmc.curtaincall.common.designsystem.custom.search.SearchWordEmptyContent
@@ -44,6 +44,7 @@ fun ShowSearchScreen(
 ) {
     val showSearchUiState by showSearchViewModel.uiState.collectAsStateWithLifecycle()
     val searchAppBarState by showSearchViewModel.searchAppBarState.collectAsStateWithLifecycle()
+
     SystemUiStatusBar(White)
     Scaffold(
         topBar = {
@@ -194,10 +195,6 @@ private fun ShowListContent(
     var isShowBottomSheet by remember { mutableStateOf(false) }
     val lazyGridState = rememberLazyGridState()
 
-    LaunchedEffect(Unit) {
-        showSearchViewModel.fetchShowList()
-    }
-
     LaunchedEffect(showSearchViewModel) {
         showSearchViewModel.isRefresh.collect { isRefresh ->
             Timber.d("ShowListContent isRefresh: $isRefresh")
@@ -279,6 +276,7 @@ private fun ShowListContent(
                 onClick = { showSearchViewModel.setFirstEntry() }
             )
         }
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
@@ -288,7 +286,7 @@ private fun ShowListContent(
             verticalArrangement = Arrangement.spacedBy(26.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            items(showInfoModels.itemCount) { index ->
+            items(count = showInfoModels.itemCount) { index ->
                 showInfoModels[index]?.let { showItem ->
                     CurtainCallShowPoster(
                         model = showItem.poster,

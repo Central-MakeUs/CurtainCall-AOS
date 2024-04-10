@@ -120,8 +120,7 @@ class ShowSearchViewModel @Inject constructor(
                 .launchIn(viewModelScope)
         }
     }
-
-    fun fetchShowList() {
+    private fun fetchShowList() {
         showRepository.fetchShowList(genreType.value.name, sortType.value.code)
             .distinctUntilChanged()
             .cachedIn(viewModelScope)
