@@ -2,6 +2,7 @@ package com.cmc.curtaincall.feature.partymember.detail
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,12 +58,14 @@ import com.cmc.curtaincall.common.designsystem.theme.Grey7
 import com.cmc.curtaincall.common.designsystem.theme.Grey8
 import com.cmc.curtaincall.common.designsystem.theme.Primary
 import com.cmc.curtaincall.common.utility.extensions.convertUIDate
+import com.cmc.curtaincall.domain.type.ReportType
 
 @Composable
 fun PartyMemberDetailScreen(
     partyMemberDetailViewModel: PartyMemberDetailViewModel = hiltViewModel(),
     partyId: Int?,
     showName: String?,
+    onNavigateToReport: (Int, ReportType) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
     checkNotNull(partyId)
@@ -192,7 +195,8 @@ fun PartyMemberDetailScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(CurtainCallTheme.colors.primary)
+                .background(CurtainCallTheme.colors.primary),
+            onNavigateToReport = onNavigateToReport
         )
     }
 }
@@ -200,7 +204,8 @@ fun PartyMemberDetailScreen(
 @Composable
 private fun PartyMemberDetailContent(
     modifier: Modifier = Modifier,
-    partyMemberDetailViewModel: PartyMemberDetailViewModel = hiltViewModel()
+    partyMemberDetailViewModel: PartyMemberDetailViewModel = hiltViewModel(),
+    onNavigateToReport: (Int, ReportType) -> Unit = { _, _ -> },
 ) {
     val scrollState = rememberScrollState()
     val partyDetailModel by partyMemberDetailViewModel.partyDetailModel.collectAsStateWithLifecycle()
@@ -258,7 +263,9 @@ private fun PartyMemberDetailContent(
                         if (!isMyWriting) {
                             Text(
                                 text = stringResource(R.string.report),
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onNavigateToReport(partyDetailModel.id, ReportType.PARTY) },
                                 style = CurtainCallTheme.typography.body4.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     color = Grey6
@@ -443,7 +450,7 @@ private fun PartyMemberDetailContent(
                     )
                 )
                 if (partyDetailModel.curMemberNum > 3) {
-                    (0 until 3).forEach {
+                    for (i in 0..2) {
                         Icon(
                             painter = painterResource(R.drawable.ic_default_profile),
                             contentDescription = null,

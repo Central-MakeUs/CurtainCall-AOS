@@ -109,7 +109,7 @@ fun HomeNavHost(
             partymemberNavGraph(
                 navHostController = navHostController,
                 chatClient = chatClient,
-                onNavigateReport = { id, type ->
+                onNavigateToReport = { id, type ->
                     navHostController.navigate("${HomeDestination.Report.route}/$id/$type")
                 }
             )
