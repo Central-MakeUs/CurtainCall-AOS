@@ -11,6 +11,7 @@ import com.cmc.curtaincall.domain.repository.TokenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
@@ -56,7 +57,7 @@ class SplashViewModel @Inject constructor(
                     memberId = memberId
                 )
             }.onEach { loginResult ->
-                Timber.d("isValidationToken $loginResult")
+                Timber.d("isValidationToken $loginResult refreshCount $refreshCount")
                 if (loginResult.accessToken.isEmpty()) {
                     sendSideEffect(SplashSideEffect.NeedLogin)
                 } else {
@@ -85,7 +86,9 @@ class SplashViewModel @Inject constructor(
         refreshCount++
         authRepository.requestRefresh(
             refreshToken = token
-        ).onEach {
+        ).catch {
+            sendSideEffect(SplashSideEffect.NeedLogin)
+        }.onEach {
             tokenRepository.saveToken(it)
             isValidationToken()
         }.launchIn(viewModelScope)

@@ -58,8 +58,19 @@ class PartyMemberDetailViewModel @Inject constructor(
 
     fun participateParty(partyId: Int) {
         partyRepository.participateParty(partyId)
-            .onEach {
-                _isParticipated.value = it
+            .onEach { check ->
+                if (check) {
+                    requestPartyDetail(partyId)
+                }
+            }.launchIn(viewModelScope)
+    }
+
+    fun cancelParty(partyId: Int) {
+        partyRepository.cancelParty(partyId)
+            .onEach { check ->
+                if (check) {
+                    requestPartyDetail(partyId)
+                }
             }.launchIn(viewModelScope)
     }
 }

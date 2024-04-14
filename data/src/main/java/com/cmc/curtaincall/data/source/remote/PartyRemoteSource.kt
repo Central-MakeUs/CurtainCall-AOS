@@ -104,6 +104,14 @@ class PartyRemoteSource @Inject constructor(
         )
     }
 
+    fun cancelParty(
+        partyId: Int
+    ): Flow<Boolean> = flow {
+        emit(
+            partyService.cancelParty(partyId).isSuccessful
+        )
+    }
+
     fun checkParty(
         partyId: Int
     ): Flow<CheckPartyResponse> = flow {

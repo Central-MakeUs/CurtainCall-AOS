@@ -103,6 +103,8 @@ fun PartyMemberDetailScreen(
             cancelButtonText = stringResource(R.string.dismiss),
             actionButtonText = stringResource(R.string.party_member_cancel_participate_popup_positive),
             onAction = {
+                partyMemberDetailViewModel.cancelParty(partyId)
+                showCancelPopup = false
             },
             onCancel = { showCancelPopup = false },
             onDismiss = { showCancelPopup = false }
@@ -156,8 +158,7 @@ fun PartyMemberDetailScreen(
                         CurtainCallFilledButton(
                             text = stringResource(R.string.enter_livetalk),
                             modifier = Modifier
-                                .padding(horizontal = 20.dp)
-                                .padding(bottom = 14.dp)
+                                .padding(start = 10.dp)
                                 .weight(206f)
                                 .fillMaxHeight(),
                             containerColor = CurtainCallTheme.colors.secondary,
