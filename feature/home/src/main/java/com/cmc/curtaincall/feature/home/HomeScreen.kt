@@ -116,7 +116,7 @@ private fun HomeContent(
                         CurtainCallPopularPoster(
                             model = showRank.poster,
                             text = showRank.name,
-                            rank = showRank.rank,
+                            rank = index + 1,
                             genreType = translateShowGenreType(showRank.genre),
                             onClick = { onNavigateToPerformanceDetail(showRank.id) }
                         )

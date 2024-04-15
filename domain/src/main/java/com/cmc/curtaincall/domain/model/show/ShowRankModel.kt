@@ -9,6 +9,7 @@ data class ShowRankModel(
     val facilityName: String = "",
     val poster: String = "",
     val genre: String = "",
+    val showTimes: List<ShowTimeModel> = listOf(),
     val runtime: String = "",
     val reviewCount: Int = 0,
     val reviewGradeSum: Int = 0,

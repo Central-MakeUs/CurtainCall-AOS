@@ -6,6 +6,7 @@ import com.cmc.curtaincall.core.base.BaseViewModel
 import com.cmc.curtaincall.domain.enums.ShowGenreType
 import com.cmc.curtaincall.domain.enums.ShowSortType
 import com.cmc.curtaincall.domain.model.show.ShowTimeModel
+import com.cmc.curtaincall.domain.repository.LaunchRepository
 import com.cmc.curtaincall.domain.repository.PartyRepository
 import com.cmc.curtaincall.domain.repository.ShowRepository
 import com.kizitonwose.calendar.core.CalendarDay
@@ -16,13 +17,16 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class PartyMemberRecruitViewModel @Inject constructor(
     private val showRepository: ShowRepository,
-    private val partyRepository: PartyRepository
+    private val partyRepository: PartyRepository,
+    private val launchRepository: LaunchRepository
 ) : BaseViewModel<PartyMemberRecruitUiState, PartyMemberRecruitEvent, PartyMemberRecruitSideEffect>(
     initialState = PartyMemberRecruitUiState()
 ) {
@@ -30,6 +34,7 @@ class PartyMemberRecruitViewModel @Inject constructor(
     val searchAppBarState = _searchAppBarState.asStateFlow()
 
     init {
+        checkShowPartySortTooltip()
         fetchShowInfoModels()
         _searchAppBarState.value = _searchAppBarState.value.copy(
             onSearch = {
@@ -67,6 +72,10 @@ class PartyMemberRecruitViewModel @Inject constructor(
 
             is PartyMemberRecruitEvent.ChangeShowSortType -> {
                 currentState.copy(sortType = event.sortType)
+            }
+
+            is PartyMemberRecruitEvent.GetPopularShowRankModels -> {
+                currentState.copy(popularShowRankModels = event.popularShowRankModels)
             }
 
             is PartyMemberRecruitEvent.GetShowInfoModels -> {
@@ -144,6 +153,24 @@ class PartyMemberRecruitViewModel @Inject constructor(
             }
         }
 
+    private fun checkShowPartySortTooltip() {
+        launchRepository.isShowPartySortTooltip()
+            .onEach { isShow ->
+                if (isShow) {
+                    sendAction(PartyMemberRecruitEvent.ShowTooltip)
+                } else {
+                    sendAction(PartyMemberRecruitEvent.HideTooltip)
+                }
+            }.launchIn(viewModelScope)
+    }
+
+    fun hideShowTooltip() {
+        viewModelScope.launch {
+            launchRepository.stopShowPartySortTooltip()
+            sendAction(PartyMemberRecruitEvent.HideTooltip)
+        }
+    }
+
     fun changeShowGenreType(genreType: ShowGenreType) {
         sendAction(
             PartyMemberRecruitEvent.ChangeShowGenreType(
@@ -162,23 +189,35 @@ class PartyMemberRecruitViewModel @Inject constructor(
         fetchShowInfoModels()
     }
 
-    fun showTooltip() {
-        sendAction(PartyMemberRecruitEvent.ShowTooltip)
-    }
-
-    fun hideTooltip() {
-        sendAction(PartyMemberRecruitEvent.HideTooltip)
-    }
-
     private fun fetchShowInfoModels() {
-        sendAction(
-            PartyMemberRecruitEvent.GetShowInfoModels(
-                showInfoModels = showRepository.fetchShowList(
-                    genre = uiState.value.genreType.name,
-                    sort = uiState.value.sortType.code
+        if (uiState.value.sortType == ShowSortType.POPULAR) {
+            fetchPopularShowRankModels()
+        } else {
+            sendAction(
+                PartyMemberRecruitEvent.GetShowInfoModels(
+                    showInfoModels = showRepository.fetchShowList(
+                        genre = uiState.value.genreType.name,
+                        sort = uiState.value.sortType.code
+                    )
                 )
             )
-        )
+        }
+    }
+
+    private fun fetchPopularShowRankModels() {
+        val type = "DAY"
+        val baseDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now().minusDays(1))
+        showRepository.requestPopularShowList(
+            type = type,
+            genre = uiState.value.genreType.name,
+            baseDate = baseDate
+        ).onEach {
+            sendAction(
+                PartyMemberRecruitEvent.GetPopularShowRankModels(
+                    popularShowRankModels = it
+                )
+            )
+        }.launchIn(viewModelScope)
     }
 
     fun selectShowPoster(

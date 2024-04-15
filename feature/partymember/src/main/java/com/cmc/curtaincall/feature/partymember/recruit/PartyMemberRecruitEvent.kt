@@ -5,6 +5,7 @@ import com.cmc.curtaincall.core.base.BaseEvent
 import com.cmc.curtaincall.domain.enums.ShowGenreType
 import com.cmc.curtaincall.domain.enums.ShowSortType
 import com.cmc.curtaincall.domain.model.show.ShowInfoModel
+import com.cmc.curtaincall.domain.model.show.ShowRankModel
 import com.cmc.curtaincall.domain.model.show.ShowTimeModel
 import kotlinx.coroutines.flow.Flow
 
@@ -21,6 +22,9 @@ sealed class PartyMemberRecruitEvent : BaseEvent {
         val sortType: ShowSortType
     ) : PartyMemberRecruitEvent()
 
+    data class GetPopularShowRankModels(
+        val popularShowRankModels: List<ShowRankModel>
+    ) : PartyMemberRecruitEvent()
     data class GetShowInfoModels(
         val showInfoModels: Flow<PagingData<ShowInfoModel>>
     ) : PartyMemberRecruitEvent()
