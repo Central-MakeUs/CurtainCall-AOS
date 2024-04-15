@@ -11,6 +11,7 @@ import com.cmc.curtaincall.domain.model.show.ShowRecommendationModel
 import com.cmc.curtaincall.domain.model.show.ShowSearchWordModel
 
 data class HomeState(
+    val isShowTooltip: Boolean = false,
     val nickname: String = "",
     val myRecruitments: List<MyRecruitmentModel> = listOf(),
     val myParticipations: List<MyParticipationModel> = listOf(),

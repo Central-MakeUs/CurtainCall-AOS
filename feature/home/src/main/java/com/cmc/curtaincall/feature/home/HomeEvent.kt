@@ -11,6 +11,10 @@ import com.cmc.curtaincall.domain.model.show.ShowRecommendationModel
 import com.cmc.curtaincall.domain.model.show.ShowSearchWordModel
 
 sealed class HomeEvent : BaseEvent {
+
+    object ShowTooltip : HomeEvent()
+
+    object HideTooltip : HomeEvent()
     data class GetNickname(
         val nickname: String
     ) : HomeEvent()

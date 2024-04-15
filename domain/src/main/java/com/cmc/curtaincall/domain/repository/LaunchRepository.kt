@@ -13,4 +13,12 @@ interface LaunchRepository {
     fun isShowPartyTooltip(): Flow<Boolean>
 
     suspend fun stopShowPartyTooltip()
+
+    fun isShowPartySortTooltip(): Flow<Boolean>
+
+    suspend fun stopShowPartySortTooltip()
+
+    fun isShowHomeTooltip(): Flow<Boolean>
+
+    suspend fun stopShowHomeTooltip()
 }

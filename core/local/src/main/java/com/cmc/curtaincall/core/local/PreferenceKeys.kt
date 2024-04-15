@@ -16,4 +16,6 @@ object PreferenceKeys {
     val IS_FIRST_ENTRY_ONBOARDING = booleanPreferencesKey("IS_FIRST_ENTRY_ONBOARDING")
     val IS_FIRST_ENTRY_SHOW_LIST = booleanPreferencesKey("IS_FIRST_ENTRY_SHOW_LIST")
     val IS_SHOW_PARTY_TOOLTIPS = booleanPreferencesKey("IS_SHOW_PARTY_TOOLTIPS")
+    val IS_SHOW_PARTY_SORT_TOOLTIP = booleanPreferencesKey("IS_SHOW_PARTY_SORT_TOOLTIP")
+    val IS_SHOW_HOME_TOOLTIP = booleanPreferencesKey("IS_SHOW_HOME_TOOLTIP")
 }

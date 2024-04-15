@@ -85,6 +85,7 @@
     <string name="home_report_rule3">신고자 정보 및 신고 내용은 신고 대상에게 공개되지 않으나, 사실 관계 확인에 꼭 필요한 신고 내용의 일부는 언급될 수 있습니다.</string>
     <string name="home_report_success">신고가 접수됐어요</string>
     <string name="home_report_failure">오류로 인해 신고가 실패했어요</string>
+    <string name="home_cost_effective_tooltip">연극은 3만원 이하, 뮤지컬은 5만원 이하의 공연들이에요</string>
 
     <!-- show-->
     <string name="show_coach_mark">인기순은 현재 상영 중인 작품 50개만 볼 수 있어요!</string>

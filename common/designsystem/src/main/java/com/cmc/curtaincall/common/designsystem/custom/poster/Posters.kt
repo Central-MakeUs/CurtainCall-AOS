@@ -56,6 +56,7 @@ fun CurtainCallPopularPoster(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(120 / 160f)
+                .clip(RoundedCornerShape(10.dp))
         ) {
             AsyncImage(
                 model = model,
@@ -97,7 +98,7 @@ fun CurtainCallPopularPoster(
         }
         Text(
             text = text,
-            modifier = Modifier.padding(top = 6.dp),
+            modifier = Modifier.padding(top = 8.dp),
             style = CurtainCallTheme.typography.body3.copy(
                 fontWeight = FontWeight.SemiBold
             ),

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -34,7 +35,8 @@ import com.cmc.curtaincall.common.designsystem.custom.search.SearchWordEmptyCont
 import com.cmc.curtaincall.common.designsystem.dimension.Paddings
 import com.cmc.curtaincall.common.designsystem.theme.*
 import com.cmc.curtaincall.domain.enums.ShowGenreType
-import timber.log.Timber
+import com.cmc.curtaincall.domain.enums.ShowSortType
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,18 +80,13 @@ fun ShowSearchScreen(
 @Composable
 private fun ShowSearchContent(
     modifier: Modifier = Modifier,
-    showListViewModel: ShowSearchViewModel = hiltViewModel(),
+    showSearchViewModel: ShowSearchViewModel = hiltViewModel(),
     searchAppBarState: SearchAppBarState = SearchAppBarState(),
     onNavigateDetail: (String) -> Unit = {}
 ) {
-    val showSearchWords by showListViewModel.showSearchWords.collectAsStateWithLifecycle()
-    val searchShowInfoModels = showListViewModel.searchShowInfoModels.collectAsLazyPagingItems()
-
-    LaunchedEffect(showListViewModel) {
-        showListViewModel.isRefresh.collect { isRefresh ->
-            if (isRefresh) searchShowInfoModels.refresh()
-        }
-    }
+    val showSearchUiState by showSearchViewModel.uiState.collectAsStateWithLifecycle()
+    val showSearchWords = showSearchUiState.showSearchWords
+    val searchShowInfoModels = showSearchUiState.showInfoModels.collectAsLazyPagingItems()
 
     if (searchAppBarState.isDoneSearch.value) {
         LazyVerticalGrid(
@@ -98,6 +95,7 @@ private fun ShowSearchContent(
                 .padding(top = 30.dp)
                 .padding(horizontal = 20.dp)
                 .fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 26.dp),
             verticalArrangement = Arrangement.spacedBy(26.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
@@ -108,7 +106,7 @@ private fun ShowSearchContent(
                         text = searchShowInfoModel.name,
                         isLike = searchShowInfoModel.favorite,
                         onLikeClick = {
-                            showListViewModel.checkShowLike(
+                            showSearchViewModel.checkShowLike(
                                 showId = searchShowInfoModel.id,
                                 isLike = !searchShowInfoModel.favorite
                             )
@@ -161,7 +159,7 @@ private fun ShowSearchContent(
                         if (showSearchWords.isNotEmpty()) {
                             Text(
                                 text = stringResource(R.string.delete_all_search_word),
-                                modifier = Modifier.clickable { showListViewModel.deleteAllShowSearchWord() },
+                                modifier = Modifier.clickable { showSearchViewModel.deleteAllShowSearchWord() },
                                 style = CurtainCallTheme.typography.body3.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     color = Grey6
@@ -173,8 +171,8 @@ private fun ShowSearchContent(
                 items(showSearchWords) { showSearchWord ->
                     SearchWordContent(
                         text = showSearchWord.word,
-                        onClose = { showListViewModel.deleteShowSearchWord(showSearchWord) },
-                        onClick = { showListViewModel.searchRecentlyWord(showSearchWord) }
+                        onClose = { showSearchViewModel.deleteShowSearchWord(showSearchWord) },
+                        onClick = { showSearchViewModel.searchRecentlyWord(showSearchWord) }
                     )
                 }
             }
@@ -188,31 +186,33 @@ private fun ShowListContent(
     showSearchViewModel: ShowSearchViewModel = hiltViewModel(),
     onNavigateDetail: (String) -> Unit
 ) {
-    val sortType by showSearchViewModel.sortType.collectAsStateWithLifecycle()
-    val genreType by showSearchViewModel.genreType.collectAsStateWithLifecycle()
-    val showInfoModels = showSearchViewModel.showInfoModels.collectAsLazyPagingItems()
-    val isFirstEntry by showSearchViewModel.isFirstEntry.collectAsStateWithLifecycle()
+    val showSearchUiState by showSearchViewModel.uiState.collectAsStateWithLifecycle()
+    val showInfoModels = showSearchUiState.showInfoModels.collectAsLazyPagingItems()
+    val popularShowInfoModels = showSearchUiState.popularShowRankModels
     var isShowBottomSheet by remember { mutableStateOf(false) }
     val lazyGridState = rememberLazyGridState()
 
     LaunchedEffect(showSearchViewModel) {
-        showSearchViewModel.isRefresh.collect { isRefresh ->
-            Timber.d("ShowListContent isRefresh: $isRefresh")
-            if (isRefresh) showInfoModels.refresh()
-        }
-    }
+        showSearchViewModel.effects.collectLatest { effect ->
+            when (effect) {
+                ShowSearchEffect.RefreshShowList -> {
+                    if (showSearchUiState.sortType == ShowSortType.POPULAR) {
+                        showSearchViewModel.fetchPopularShowList()
+                    } else {
+                        showInfoModels.refresh()
+                    }
+                }
 
-    LaunchedEffect(showSearchViewModel) {
-        showSearchViewModel.isChange.collect { isChange ->
-            Timber.d("ShowListContent isChange: $isChange")
-            if (isChange) lazyGridState.animateScrollToItem(0)
+                ShowSearchEffect.ScrollFirstInList -> {
+                    lazyGridState.animateScrollToItem(0)
+                }
+            }
         }
     }
-    val performanceUiState by showSearchViewModel.uiState.collectAsStateWithLifecycle()
 
     if (isShowBottomSheet) {
         CurtainCallShowSortBottomSheet(
-            showSortType = sortType,
+            showSortType = showSearchUiState.sortType,
             onSelectSortType = {
                 showSearchViewModel.selectSortType(it)
                 isShowBottomSheet = false
@@ -236,14 +236,14 @@ private fun ShowListContent(
                 CurtainCallBasicChip(
                     text = ShowGenreType.PLAY.value,
                     textStyle = CurtainCallTheme.typography.body2,
-                    isSelect = genreType == ShowGenreType.PLAY,
+                    isSelect = showSearchUiState.genreType == ShowGenreType.PLAY,
                     onClick = { showSearchViewModel.selectGenreType(ShowGenreType.PLAY) }
                 )
                 CurtainCallBasicChip(
                     modifier = Modifier.padding(start = Paddings.medium),
                     text = ShowGenreType.MUSICAL.value,
                     textStyle = CurtainCallTheme.typography.body2,
-                    isSelect = genreType == ShowGenreType.MUSICAL,
+                    isSelect = showSearchUiState.genreType == ShowGenreType.MUSICAL,
                     onClick = { showSearchViewModel.selectGenreType(ShowGenreType.MUSICAL) }
                 )
                 Spacer(Modifier.weight(1f))
@@ -252,7 +252,7 @@ private fun ShowListContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = sortType.value,
+                        text = showSearchUiState.sortType.value,
                         style = CurtainCallTheme.typography.body3
                     )
                     Icon(
@@ -266,7 +266,7 @@ private fun ShowListContent(
                 }
             }
         }
-        if (isFirstEntry) {
+        if (showSearchUiState.isShowTooltip && showSearchUiState.sortType == ShowSortType.POPULAR) {
             CurtainCallShowSortTooltip(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -283,23 +283,41 @@ private fun ShowListContent(
                 .padding(top = 67.dp)
                 .fillMaxSize(),
             state = lazyGridState,
+            contentPadding = PaddingValues(bottom = 26.dp),
             verticalArrangement = Arrangement.spacedBy(26.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            items(count = showInfoModels.itemCount) { index ->
-                showInfoModels[index]?.let { showItem ->
+            if (showSearchUiState.sortType == ShowSortType.POPULAR) {
+                items(popularShowInfoModels) { showRankModel ->
                     CurtainCallShowPoster(
-                        model = showItem.poster,
-                        text = showItem.name,
-                        isLike = showItem.favorite,
+                        model = showRankModel.poster,
+                        text = showRankModel.name,
+                        isLike = showRankModel.favorite,
                         onLikeClick = {
                             showSearchViewModel.checkShowLike(
-                                showId = showItem.id,
-                                isLike = !showItem.favorite
+                                showId = showRankModel.id,
+                                isLike = !showRankModel.favorite
                             )
                         },
-                        onClick = { onNavigateDetail(showItem.id) }
+                        onClick = { onNavigateDetail(showRankModel.id) }
                     )
+                }
+            } else {
+                items(count = showInfoModels.itemCount) { index ->
+                    showInfoModels[index]?.let { showItem ->
+                        CurtainCallShowPoster(
+                            model = showItem.poster,
+                            text = showItem.name,
+                            isLike = showItem.favorite,
+                            onLikeClick = {
+                                showSearchViewModel.checkShowLike(
+                                    showId = showItem.id,
+                                    isLike = !showItem.favorite
+                                )
+                            },
+                            onClick = { onNavigateDetail(showItem.id) }
+                        )
+                    }
                 }
             }
         }

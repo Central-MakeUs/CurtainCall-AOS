@@ -1,26 +1,26 @@
 package com.cmc.curtaincall.feature.show.search
 
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.cmc.curtaincall.common.designsystem.component.appbars.SearchAppBarState
 import com.cmc.curtaincall.core.base.BaseViewModel
-import com.cmc.curtaincall.domain.model.show.ShowInfoModel
+import com.cmc.curtaincall.domain.enums.ShowGenreType
+import com.cmc.curtaincall.domain.enums.ShowSortType
 import com.cmc.curtaincall.domain.model.show.ShowSearchWordModel
 import com.cmc.curtaincall.domain.repository.FavoriteRepository
 import com.cmc.curtaincall.domain.repository.LaunchRepository
 import com.cmc.curtaincall.domain.repository.ShowRepository
-import com.cmc.curtaincall.domain.enums.ShowGenreType
-import com.cmc.curtaincall.domain.enums.ShowSortType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,51 +28,23 @@ class ShowSearchViewModel @Inject constructor(
     private val showRepository: ShowRepository,
     private val favoriteRepository: FavoriteRepository,
     private val launchRepository: LaunchRepository
-) : BaseViewModel<ShowSearchUiState, ShowSearchEvent, Nothing>(
+) : BaseViewModel<ShowSearchUiState, ShowSearchEvent, ShowSearchEffect>(
     initialState = ShowSearchUiState()
 ) {
-    private val _sortType = MutableStateFlow(ShowSortType.POPULAR)
-    val sortType = _sortType.asStateFlow()
-
-    private val _genreType = MutableStateFlow(ShowGenreType.PLAY)
-    val genreType = _genreType.asStateFlow()
-
-    private var _showInfoModels = MutableStateFlow<PagingData<ShowInfoModel>>(PagingData.empty())
-    val showInfoModels = _showInfoModels.asStateFlow()
-
-    // PagingData 갱신 여부
-    private val _isRefresh = MutableSharedFlow<Boolean>()
-    val isRefresh = _isRefresh.asSharedFlow()
-
-    // 최초 작품 진입 여부
-    private val _isFirstEntry = MutableStateFlow(false)
-    val isFirstEntry = _isFirstEntry.asStateFlow()
-
-    private val _isChange = MutableSharedFlow<Boolean>()
-    val isChange = _isChange.asSharedFlow()
-
-    private val _showSearchWords = MutableStateFlow<List<ShowSearchWordModel>>(listOf())
-    val showSearchWords = _showSearchWords.asStateFlow()
-
-    private val _searchShowInfoModels = MutableStateFlow<PagingData<ShowInfoModel>>(PagingData.empty())
-    val searchShowInfoModels = _searchShowInfoModels.asStateFlow()
-
     private val _searchAppBarState = MutableStateFlow(SearchAppBarState())
     val searchAppBarState = _searchAppBarState.asStateFlow()
-
-    // ///////////////////////////////////////////////////////////////////////////////
-
-    private var _searchWords = MutableStateFlow<List<ShowSearchWordModel>>(listOf())
-    val searchWords = _searchWords.asStateFlow()
-
-    private var _showSearchItems = MutableStateFlow<PagingData<ShowInfoModel>>(PagingData.empty())
-    val showSearchItems = _showSearchItems.asStateFlow()
 
     init {
         checkIsFirstEntry()
         queryShowSearchWords()
         fetchShowList()
         _searchAppBarState.value = _searchAppBarState.value.copy(
+            onCancel = {
+                _searchAppBarState.value.searchText.value = ""
+                _searchAppBarState.value.isSearchMode.value = false
+                _searchAppBarState.value.isDoneSearch.value = false
+                fetchShowList()
+            },
             onDone = {
                 _searchAppBarState.value.isDoneSearch.value = true
                 insertShowSearchWord(it)
@@ -80,30 +52,153 @@ class ShowSearchViewModel @Inject constructor(
         )
     }
 
+    override fun reduceState(currentState: ShowSearchUiState, event: ShowSearchEvent): ShowSearchUiState =
+        when (event) {
+            ShowSearchEvent.ShowTooltip -> {
+                currentState.copy(
+                    isShowTooltip = true
+                )
+            }
+
+            ShowSearchEvent.HideTooltip -> {
+                currentState.copy(
+                    isShowTooltip = false
+                )
+            }
+
+            is ShowSearchEvent.SelectSortType -> {
+                currentState.copy(
+                    sortType = event.sortType
+                )
+            }
+
+            is ShowSearchEvent.SelectGenreType -> {
+                currentState.copy(
+                    genreType = event.genreType
+                )
+            }
+
+            is ShowSearchEvent.QueryShowSearchWords -> {
+                currentState.copy(
+                    showSearchWords = event.showSearchWords
+                )
+            }
+
+            is ShowSearchEvent.GetShowInfoModels -> {
+                currentState.copy(
+                    showInfoModels = event.showInfoModels
+                )
+            }
+
+            is ShowSearchEvent.GetPopularShowRankModels -> {
+                currentState.copy(
+                    popularShowRankModels = event.showRankModels
+                )
+            }
+        }
+
     private fun checkIsFirstEntry() {
         launchRepository.getIsFirstEntryShowList()
-            .onEach { _isFirstEntry.value = it }
+            .onEach { isShow ->
+                sendAction(
+                    if (isShow) {
+                        ShowSearchEvent.ShowTooltip
+                    } else {
+                        ShowSearchEvent.HideTooltip
+                    }
+                )
+            }
             .launchIn(viewModelScope)
     }
 
     fun setFirstEntry() {
         viewModelScope.launch {
             launchRepository.setIsFirstEntryShowList()
+            sendAction(ShowSearchEvent.HideTooltip)
         }
     }
 
-    fun selectSortType(sort: ShowSortType) {
-        if (_sortType.value != sort) {
-            _sortType.value = sort
+    private fun queryShowSearchWords() {
+        showRepository.getShowSearchWordList()
+            .distinctUntilChanged()
+            .onEach {
+                sendAction(
+                    ShowSearchEvent.QueryShowSearchWords(
+                        showSearchWords = it
+                    )
+                )
+            }
+            .launchIn(viewModelScope)
+    }
+
+    fun selectSortType(sortType: ShowSortType) {
+        if (uiState.value.sortType != sortType) {
+            sendAction(
+                ShowSearchEvent.SelectSortType(
+                    sortType = sortType
+                )
+            )
             fetchShowList()
         }
     }
 
-    fun selectGenreType(genre: ShowGenreType) {
-        if (_genreType.value != genre) {
-            _genreType.value = genre
+    fun selectGenreType(genreType: ShowGenreType) {
+        if (uiState.value.genreType != genreType) {
+            sendAction(
+                ShowSearchEvent.SelectGenreType(
+                    genreType = genreType
+                )
+            )
             fetchShowList()
         }
+    }
+
+    private fun fetchShowList() {
+        if (uiState.value.sortType == ShowSortType.POPULAR) {
+            fetchPopularShowList()
+        } else {
+            sendAction(
+                ShowSearchEvent.GetShowInfoModels(
+                    showInfoModels = showRepository.fetchShowList(
+                        genre = uiState.value.genreType.name,
+                        sort = uiState.value.sortType.code
+                    ).distinctUntilChanged()
+                        .cachedIn(viewModelScope)
+                )
+            )
+            sendSideEffect(ShowSearchEffect.ScrollFirstInList)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun fetchPopularShowList() {
+        val type = "DAY"
+        val baseDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now().minusDays(1))
+        showRepository.requestPopularShowList(
+            type = type,
+            genre = uiState.value.genreType.name,
+            baseDate = baseDate
+        ).onEach {
+            sendAction(
+                ShowSearchEvent.GetPopularShowRankModels(
+                    showRankModels = it
+                )
+            )
+        }.flatMapLatest { showRankModels ->
+            favoriteRepository.checkFavoriteShows(showRankModels.map { it.id })
+        }.onEach { checkFavoriteShows ->
+            sendAction(
+                ShowSearchEvent.GetPopularShowRankModels(
+                    showRankModels = uiState.value.popularShowRankModels.map { showRankModel ->
+                        showRankModel.copy(
+                            favorite = checkFavoriteShows.find {
+                                it.showId == showRankModel.id
+                            }?.favorite ?: false
+                        )
+                    }
+                )
+            )
+        }.launchIn(viewModelScope)
     }
 
     fun checkShowLike(
@@ -112,116 +207,46 @@ class ShowSearchViewModel @Inject constructor(
     ) {
         if (isLike) {
             favoriteRepository.requestFavoriteShow(showId)
-                .onEach { _isRefresh.emit(true) }
+                .onEach { sendSideEffect(ShowSearchEffect.RefreshShowList) }
                 .launchIn(viewModelScope)
         } else {
             favoriteRepository.deleteFavoriteShow(showId)
-                .onEach { _isRefresh.emit(true) }
+                .onEach { sendSideEffect(ShowSearchEffect.RefreshShowList) }
                 .launchIn(viewModelScope)
         }
-    }
-    private fun fetchShowList() {
-        showRepository.fetchShowList(genreType.value.name, sortType.value.code)
-            .distinctUntilChanged()
-            .cachedIn(viewModelScope)
-            .onEach { _showInfoModels.value = it }
-            .launchIn(viewModelScope)
-
-        viewModelScope.launch {
-            _isChange.emit(true)
-        }
-    }
-
-    private fun queryShowSearchWords() {
-        showRepository.getShowSearchWordList()
-            .distinctUntilChanged()
-            .onEach { _showSearchWords.value = it }
-            .launchIn(viewModelScope)
     }
 
     private fun insertShowSearchWord(query: String) {
         viewModelScope.launch {
             showRepository.insertShowSearchWord(ShowSearchWordModel(query, System.currentTimeMillis()))
-            requestShowSearchWords()
             fetchSearchShowList(query)
         }
+    }
+
+    private fun fetchSearchShowList(query: String) {
+        sendAction(
+            ShowSearchEvent.GetShowInfoModels(
+                showInfoModels = showRepository
+                    .fetchSearchShowList(query.trim())
+                    .cachedIn(viewModelScope)
+            )
+        )
     }
 
     fun deleteShowSearchWord(searchWordModel: ShowSearchWordModel) {
         viewModelScope.launch {
             showRepository.deleteShowSearchWord(searchWordModel)
-            requestShowSearchWords()
         }
     }
 
     fun deleteAllShowSearchWord() {
         viewModelScope.launch {
             showRepository.deleteShowSearchWordList()
-            requestShowSearchWords()
         }
-    }
-
-    private fun fetchSearchShowList(query: String) {
-        showRepository.fetchSearchShowList(query.trim())
-            .cachedIn(viewModelScope)
-            .onEach { _searchShowInfoModels.value = it }
-            .launchIn(viewModelScope)
     }
 
     fun searchRecentlyWord(searchWordModel: ShowSearchWordModel) {
         _searchAppBarState.value.searchText.value = searchWordModel.word
         _searchAppBarState.value.onDone(searchWordModel.word)
-    }
-
-    // //////////////////////////////////////////////////////////////////////////////////
-
-    override fun reduceState(currentState: ShowSearchUiState, event: ShowSearchEvent): ShowSearchUiState =
-        when (event) {
-            ShowSearchEvent.ActivateSearch -> currentState.copy(isActiveSearch = true)
-            ShowSearchEvent.DeActivateSearch -> currentState.copy(isActiveSearch = false)
-            ShowSearchEvent.Searching -> currentState.copy(isDoneSearch = false)
-            ShowSearchEvent.DoneSearch -> currentState.copy(isDoneSearch = true)
-            is ShowSearchEvent.SetQueryString -> currentState.copy(queryString = event.query)
-            is ShowSearchEvent.ChangeGenre -> currentState.copy(genre = event.genre)
-            is ShowSearchEvent.ChangeSort -> currentState.copy(sortType = event.sortType)
-        }
-
-    fun searchShowList(query: String) {
-        showRepository.fetchSearchShowList(query)
-            .cachedIn(viewModelScope)
-            .onEach { _showSearchItems.value = it }
-            .launchIn(viewModelScope)
-    }
-
-    fun onActiveSearch() {
-        sendAction(ShowSearchEvent.ActivateSearch)
-    }
-
-    fun onDeActiveSearch() {
-        sendAction(ShowSearchEvent.DeActivateSearch)
-    }
-
-    fun onDoneSearch() {
-        sendAction(ShowSearchEvent.DoneSearch)
-    }
-
-    fun requestFavoriteShow(showId: String) {
-        favoriteRepository.requestFavoriteShow(showId).launchIn(viewModelScope)
-    }
-
-    fun deleteFavoriteShow(showId: String) {
-        favoriteRepository.deleteFavoriteShow(showId).launchIn(viewModelScope)
-    }
-
-    private fun requestShowSearchWords() {
-        showRepository.getShowSearchWordList()
-            .onEach { _searchWords.value = it }
-            .launchIn(viewModelScope)
-    }
-
-    fun deleteShowSearchWordList() {
-        viewModelScope.launch {
-            showRepository.deleteShowSearchWordList()
-        }
     }
 }
