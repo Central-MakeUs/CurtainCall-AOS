@@ -55,6 +55,7 @@ val White = Color(0xFFFFFFFF)
 val Eerie_Black = Color(0xFF161924)
 val Roman_Silver = Color(0xFF828996)
 val Blue = Color(0xFF345DEF)
+val Primary = Color(0xFF0D1327)
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)

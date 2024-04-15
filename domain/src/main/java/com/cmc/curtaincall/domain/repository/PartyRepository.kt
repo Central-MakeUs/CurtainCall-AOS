@@ -65,6 +65,10 @@ interface PartyRepository {
         partyId: Int
     ): Flow<Boolean>
 
+    fun cancelParty(
+        partyId: Int
+    ): Flow<Boolean>
+
     fun checkParty(
         partyId: Int
     ): Flow<CheckPartyModel>

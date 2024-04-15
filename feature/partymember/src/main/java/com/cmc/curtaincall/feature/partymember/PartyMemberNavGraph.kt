@@ -14,7 +14,7 @@ import io.getstream.chat.android.client.ChatClient
 fun NavGraphBuilder.partymemberNavGraph(
     navHostController: NavHostController,
     chatClient: ChatClient,
-    onNavigateReport: (Int, ReportType) -> Unit
+    onNavigateToReport: (Int, ReportType) -> Unit
 ) {
     navigation(startDestination = PartyMemberDestination.PartyMember.route, route = NavGraphLabel.PARTY_MEMBER) {
         composable(route = PartyMemberDestination.PartyMember.route) {
@@ -42,10 +42,12 @@ fun NavGraphBuilder.partymemberNavGraph(
             val showNameArg = entry.arguments?.getString(PartyMemberDestination.Detail.showNameArg)
             PartyMemberDetailScreen(
                 partyId = partyIdArg,
-                showName = showNameArg
-            ) {
-                navHostController.popBackStack()
-            }
+                showName = showNameArg,
+                onNavigateToReport = onNavigateToReport,
+                onBack = {
+                    navHostController.popBackStack()
+                }
+            )
         }
     }
 }

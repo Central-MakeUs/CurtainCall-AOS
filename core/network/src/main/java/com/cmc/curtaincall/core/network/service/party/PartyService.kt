@@ -58,6 +58,11 @@ interface PartyService {
         @Path("partyId") partyId: Int
     ): Response<Unit>
 
+    @DELETE("member/parties/{partyId}")
+    suspend fun cancelParty(
+        @Path("partyId") partyId: Int
+    ): Response<Unit>
+
     @GET("member/participated")
     suspend fun checkParties(
         @Query("partyIds") partyIds: List<Int>

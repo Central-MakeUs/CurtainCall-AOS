@@ -24,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -49,7 +48,7 @@ import com.cmc.curtaincall.common.designsystem.theme.White
 import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
 import com.cmc.curtaincall.common.utility.extensions.toDateInKorea
 import com.cmc.curtaincall.common.utility.extensions.toTimePM
-import com.cmc.curtaincall.feature.partymember.test.PartyMemberDetail2ViewModel
+import com.cmc.curtaincall.feature.partymember.detail.PartyMemberDetailViewModel
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.client.models.Channel
 import io.getstream.chat.android.client.models.User
@@ -57,28 +56,26 @@ import io.getstream.chat.android.compose.state.messages.list.MessageItemState
 import io.getstream.chat.android.compose.ui.messages.composer.MessageComposer
 import io.getstream.chat.android.compose.ui.messages.header.MessageListHeader
 import io.getstream.chat.android.compose.ui.messages.list.MessageList
-import io.getstream.chat.android.compose.ui.theme.ChatTheme
-import io.getstream.chat.android.compose.ui.theme.StreamColors
 import io.getstream.chat.android.compose.viewmodel.messages.MessageComposerViewModel
 import io.getstream.chat.android.compose.viewmodel.messages.MessageListViewModel
 import io.getstream.chat.android.compose.viewmodel.messages.MessagesViewModelFactory
 
 @Composable
 fun PartyMemberLiveTalkScreen(
-    partyMemberDetailViewModel: PartyMemberDetail2ViewModel = hiltViewModel(),
+    partyMemberDetailViewModel: PartyMemberDetailViewModel = hiltViewModel(),
     chatClient: ChatClient,
     onBack: () -> Unit
 ) {
-    val partyMemberDetailState by partyMemberDetailViewModel.uiState.collectAsStateWithLifecycle()
-    ChatTheme(
-        isInDarkMode = false,
-        colors = StreamColors.defaultColors().copy(
-            appBackground = Cultured,
-            barsBackground = Cultured,
-            ownMessagesBackground = Color.Transparent,
-            otherMessagesBackground = Color.Transparent
-        )
-    ) {
+//    val partyMemberDetailState by partyMemberDetailViewModel.uiState.collectAsStateWithLifecycle()
+//    ChatTheme(
+//        isInDarkMode = false,
+//        colors = StreamColors.defaultColors().copy(
+//            appBackground = Cultured,
+//            barsBackground = Cultured,
+//            ownMessagesBackground = Color.Transparent,
+//            otherMessagesBackground = Color.Transparent
+//        )
+//    ) {
 //        PartyMemberLiveTalkContent(
 //            partyId = partyMemberDetailState.partyDetailModel.id,
 //            showName = if (partyMemberDetailState.partyDetailModel.category == PartyType.ETC.category) {
@@ -95,7 +92,7 @@ fun PartyMemberLiveTalkScreen(
 //            chatClient = chatClient,
 //            onBack = onBack
 //        )
-    }
+    // }
 }
 
 @Composable
