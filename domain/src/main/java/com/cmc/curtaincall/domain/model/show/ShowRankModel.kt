@@ -1,13 +1,17 @@
 package com.cmc.curtaincall.domain.model.show
 
 data class ShowRankModel(
-    val endDate: String = "",
-    val genre: String = "",
+    val rank: Int = 1,
     val id: String = "",
     val name: String = "",
+    val startDate: String = "",
+    val endDate: String = "",
+    val facilityName: String = "",
     val poster: String = "",
-    val rank: Int = 0,
-    val reviewCount: Int = 1,
+    val genre: String = "",
+    val runtime: String = "",
+    val reviewCount: Int = 0,
     val reviewGradeSum: Int = 0,
-    val startDate: String = ""
+    val reviewGradeAvg: Float = 0f,
+    val favorite: Boolean = false
 )
