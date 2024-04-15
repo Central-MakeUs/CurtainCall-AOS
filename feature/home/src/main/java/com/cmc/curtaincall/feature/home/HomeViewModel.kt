@@ -5,6 +5,7 @@ import com.cmc.curtaincall.common.utility.extensions.convertDDay
 import com.cmc.curtaincall.core.base.BaseViewModel
 import com.cmc.curtaincall.domain.enums.ShowGenreType
 import com.cmc.curtaincall.domain.repository.ChattingRepository
+import com.cmc.curtaincall.domain.repository.LaunchRepository
 import com.cmc.curtaincall.domain.repository.MemberRepository
 import com.cmc.curtaincall.domain.repository.ShowRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,8 @@ import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -28,6 +31,7 @@ class HomeViewModel @Inject constructor(
     private val memberRepository: MemberRepository,
     private val showRepository: ShowRepository,
     private val chattingRepository: ChattingRepository,
+    private val launchRepository: LaunchRepository
 ) : BaseViewModel<HomeState, HomeEvent, Nothing>(
     initialState = HomeState()
 ) {
@@ -35,11 +39,20 @@ class HomeViewModel @Inject constructor(
     private val _token = MutableStateFlow("")
 
     init {
+        checkCostEffectiveTooltip()
         getMemberNickname()
     }
 
     override fun reduceState(currentState: HomeState, event: HomeEvent): HomeState =
         when (event) {
+            HomeEvent.ShowTooltip -> {
+                currentState.copy(isShowTooltip = true)
+            }
+
+            HomeEvent.HideTooltip -> {
+                currentState.copy(isShowTooltip = false)
+            }
+
             is HomeEvent.GetNickname -> {
                 currentState.copy(nickname = event.nickname)
             }
@@ -82,6 +95,26 @@ class HomeViewModel @Inject constructor(
 
             else -> currentState
         }
+
+    private fun checkCostEffectiveTooltip() {
+        launchRepository.isShowHomeTooltip()
+            .onEach { isShow ->
+                sendAction(
+                    if (isShow) {
+                        HomeEvent.ShowTooltip
+                    } else {
+                        HomeEvent.HideTooltip
+                    }
+                )
+            }.launchIn(viewModelScope)
+    }
+
+    fun hideCostEffectiveTooltip() {
+        viewModelScope.launch {
+            launchRepository.stopShowHomeTooltip()
+            sendAction(HomeEvent.HideTooltip)
+        }
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun getMemberNickname() {
@@ -140,12 +173,19 @@ class HomeViewModel @Inject constructor(
     }
 
     fun requestPopularShowList() {
-        val today = SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().time)
-        showRepository.requestPopularShowList(type = "WEEK", genre = "ALL", baseDate = today)
-            .onEach {
-                sendAction(HomeEvent.RequestPopularShowList(it.sortedBy { it.rank }.take(10)))
-            }
-            .launchIn(viewModelScope)
+        val type = "DAY"
+        val baseDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now().minusDays(1))
+        showRepository.requestPopularShowList(
+            type = type,
+            genre = null,
+            baseDate = baseDate
+        ).onEach {
+            sendAction(
+                HomeEvent.RequestPopularShowList(
+                    showRanks = it.sortedBy { it.rank }.take(10)
+                )
+            )
+        }.launchIn(viewModelScope)
     }
 
     fun requestOpenShowList() {

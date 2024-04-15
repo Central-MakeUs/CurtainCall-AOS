@@ -29,4 +29,11 @@ class LaunchRepositoryImpl @Inject constructor(
     override suspend fun stopShowPartyTooltip() {
         launchLocalSource.stopShowPartyTooltip()
     }
+
+    override fun isShowHomeTooltip(): Flow<Boolean> =
+        launchLocalSource.isShowHomeTooltip()
+
+    override suspend fun stopShowHomeTooltip() {
+        launchLocalSource.stopShowHomeTooltip()
+    }
 }

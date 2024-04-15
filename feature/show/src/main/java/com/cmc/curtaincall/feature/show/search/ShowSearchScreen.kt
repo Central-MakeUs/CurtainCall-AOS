@@ -266,7 +266,7 @@ private fun ShowListContent(
                 }
             }
         }
-        if (showSearchUiState.isShowTooltip) {
+        if (showSearchUiState.isShowTooltip && showSearchUiState.sortType == ShowSortType.POPULAR) {
             CurtainCallShowSortTooltip(
                 modifier = Modifier
                     .align(Alignment.TopEnd)

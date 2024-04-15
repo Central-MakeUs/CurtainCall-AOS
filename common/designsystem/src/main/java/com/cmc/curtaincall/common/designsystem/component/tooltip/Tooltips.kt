@@ -25,6 +25,54 @@ import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey1
 
 @Composable
+fun CurtainCallCostEffectiveShowTooltip(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit = {}
+) {
+    Column(modifier.width(302.dp)) {
+        Canvas(
+            modifier = Modifier
+                .padding(start = 50.dp)
+                .size(10.dp, 5.dp)
+        ) {
+            drawPath(
+                color = Grey1,
+                path = Path().apply {
+                    moveTo(5.dp.toPx(), 0.dp.toPx())
+                    lineTo(0.dp.toPx(), 6.dp.toPx())
+                    lineTo(10.dp.toPx(), 6.dp.toPx())
+                }
+            )
+        }
+        Box(
+            modifier = Modifier
+                .size(302.dp, 33.dp)
+                .background(Grey1, RoundedCornerShape(8.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = text,
+                    style = CurtainCallTheme.typography.body5.copy(
+                        color = CurtainCallTheme.colors.onPrimary
+                    )
+                )
+                Icon(
+                    painter = painterResource(R.drawable.ic_white_close),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .size(14.dp)
+                        .clickable { onClick() },
+                    tint = Color.Unspecified
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun CurtainCallShowSortTooltip(
     modifier: Modifier = Modifier,
     text: String,
@@ -47,7 +95,7 @@ fun CurtainCallShowSortTooltip(
         }
         Box(
             modifier = Modifier
-                .size(277.dp, 39.dp)
+                .size(277.dp, 33.dp)
                 .background(Grey1, RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {

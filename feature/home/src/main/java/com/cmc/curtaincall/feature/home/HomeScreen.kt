@@ -29,6 +29,7 @@ import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallTitleTopAppBar
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
+import com.cmc.curtaincall.common.designsystem.component.tooltip.CurtainCallCostEffectiveShowTooltip
 import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallCostEffectiveShowPoster
 import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallEndShowPoster
 import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallOpenShowPoster
@@ -38,8 +39,8 @@ import com.cmc.curtaincall.common.designsystem.theme.*
 import com.cmc.curtaincall.common.utility.extensions.convertDDay
 import com.cmc.curtaincall.common.utility.extensions.convertSimpleDate
 import com.cmc.curtaincall.common.utility.extensions.toChangeDate
-import com.cmc.curtaincall.domain.model.show.ShowRecommendationModel
 import com.cmc.curtaincall.domain.enums.translateShowGenreType
+import com.cmc.curtaincall.domain.model.show.ShowRecommendationModel
 import io.getstream.chat.android.client.ChatClient
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,6 +85,7 @@ private fun HomeContent(
 
     LaunchedEffect(homeViewModel) {
         homeViewModel.requestShowRecommendations()
+        homeViewModel.requestPopularShowList()
         homeViewModel.requestOpenShowList()
         homeViewModel.requestEndShowList()
         homeViewModel.requestCostEffectiveShows()
@@ -114,7 +116,7 @@ private fun HomeContent(
                         CurtainCallPopularPoster(
                             model = showRank.poster,
                             text = showRank.name,
-                            rank = index + 1,
+                            rank = showRank.rank,
                             genreType = translateShowGenreType(showRank.genre),
                             onClick = { onNavigateToPerformanceDetail(showRank.id) }
                         )
@@ -160,19 +162,31 @@ private fun HomeContent(
                 }
             }
             if (homeUiState.costEffectiveShows.isNotEmpty()) {
-                HomeContentsLazyRow(
+                Box(
                     modifier = Modifier
                         .padding(top = 50.dp)
-                        .fillMaxWidth(),
-                    text = stringResource(R.string.home_contents_cost_effective)
+                        .fillMaxWidth()
                 ) {
-                    items(homeUiState.costEffectiveShows) { costEffectiveShow ->
-                        CurtainCallCostEffectiveShowPoster(
-                            model = costEffectiveShow.poster,
-                            name = costEffectiveShow.name,
-                            minPrice = costEffectiveShow.minTicketPrice,
-                            genreType = translateShowGenreType(costEffectiveShow.genre),
-                            onClick = { onNavigateToPerformanceDetail(costEffectiveShow.id) }
+                    HomeContentsLazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.home_contents_cost_effective)
+                    ) {
+                        items(homeUiState.costEffectiveShows) { costEffectiveShow ->
+                            CurtainCallCostEffectiveShowPoster(
+                                model = costEffectiveShow.poster,
+                                name = costEffectiveShow.name,
+                                minPrice = costEffectiveShow.minTicketPrice,
+                                genreType = translateShowGenreType(costEffectiveShow.genre),
+                                onClick = { onNavigateToPerformanceDetail(costEffectiveShow.id) }
+                            )
+                        }
+                    }
+
+                    if (homeUiState.isShowTooltip) {
+                        CurtainCallCostEffectiveShowTooltip(
+                            modifier = Modifier.padding(start = 20.dp, top = 28.dp),
+                            text = stringResource(R.string.home_cost_effective_tooltip),
+                            onClick = { homeViewModel.hideCostEffectiveTooltip() }
                         )
                     }
                 }
