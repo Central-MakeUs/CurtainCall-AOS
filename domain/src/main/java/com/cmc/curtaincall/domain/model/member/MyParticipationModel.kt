@@ -8,7 +8,6 @@ data class MyParticipationModel(
     val maxMemberNum: Int = 0,
     val showAt: String = "",
     val createdAt: String = "",
-    val category: String = "",
     val creatorId: Int = 0,
     val creatorNickname: String = "",
     val creatorImageUrl: String? = null,

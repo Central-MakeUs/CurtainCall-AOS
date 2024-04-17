@@ -46,8 +46,7 @@ interface MemberService {
     suspend fun requestMyRecruitments(
         @Path("memberId") memberId: Int,
         @Query("page") page: Int,
-        @Query("size") size: Int,
-        @Query("category") category: String?
+        @Query("size") size: Int
     ): MemberRecruitmentsResponse
 
     @GET("members/{memberId}/participations")
@@ -55,7 +54,6 @@ interface MemberService {
         @Path("memberId") memberId: Int,
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("category") category: String?
     ): MemberParticipationsResponse
 
     @GET("member/reviews")

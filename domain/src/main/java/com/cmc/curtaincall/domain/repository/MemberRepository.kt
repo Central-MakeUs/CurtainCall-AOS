@@ -21,25 +21,21 @@ interface MemberRepository {
     fun requestMyRecruitments(
         memberId: Int,
         page: Int,
-        size: Int,
-        category: String?
+        size: Int
     ): Flow<List<MyRecruitmentModel>>
 
     fun fetchMyRecruitments(
-        memberId: Int,
-        category: String
+        memberId: Int
     ): Flow<PagingData<MyRecruitmentModel>>
 
     fun requestMyParticipations(
         memberId: Int,
         page: Int,
-        size: Int,
-        category: String?
+        size: Int
     ): Flow<List<MyParticipationModel>>
 
     fun fetchMyParticipations(
-        memberId: Int,
-        category: String
+        memberId: Int
     ): Flow<PagingData<MyParticipationModel>>
 
     fun fetchMyReview(): Flow<PagingData<MemberReviewModel>>

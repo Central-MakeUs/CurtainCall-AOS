@@ -9,29 +9,15 @@ import androidx.navigation.navigation
 import com.cmc.curtaincall.common.navigation.NavGraphLabel
 import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
-import com.cmc.curtaincall.core.navigation.CurtainCallDestination
 import com.cmc.curtaincall.feature.mypage.faq.MyPageFAQScreen
 import com.cmc.curtaincall.feature.mypage.favorite.MyPageFavoriteScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeDetailScreen
 import com.cmc.curtaincall.feature.mypage.notice.MyPageNoticeScreen
+import com.cmc.curtaincall.feature.mypage.party.MyPagePartyScreen
 import com.cmc.curtaincall.feature.mypage.profile.MyPageProfileScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageDeleteMemberScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageSettingScreen
 import com.cmc.curtaincall.feature.mypage.writing.MyPageWritingScreen
-
-private const val MYPAGE_RECRUITMENT = "mypage_recruitment"
-private const val MYPAGE_PARTICIPATION = "mypage_participantion"
-
-sealed interface MyPageDestination2 : CurtainCallDestination {
-
-    object Recruitment : MyPageDestination2 {
-        override val route = MYPAGE_RECRUITMENT
-    }
-
-    object Participation : MyPageDestination2 {
-        override val route = MYPAGE_PARTICIPATION
-    }
-}
 
 fun NavGraphBuilder.mypageNavGraph(
     navHostController: NavHostController,
@@ -43,6 +29,9 @@ fun NavGraphBuilder.mypageNavGraph(
             MyPageScreen(
                 onNavigateToProfile = {
                     navHostController.navigate(MyPageDestination.Profile.route)
+                },
+                onNavigateToMyParty = {
+                    navHostController.navigate(MyPageDestination.MyParty.route)
                 },
                 onNavigateToWriting = {
                     navHostController.navigate(MyPageDestination.Writing.route)
@@ -58,12 +47,6 @@ fun NavGraphBuilder.mypageNavGraph(
                 },
                 onNavigateToSetting = {
                     navHostController.navigate(MyPageDestination.Setting.route)
-                },
-                onNavigateRecruitment = {
-                    navHostController.navigate(MyPageDestination2.Recruitment.route)
-                },
-                onNavigateParticipation = {
-                    navHostController.navigate(MyPageDestination2.Participation.route)
                 }
             )
         }
@@ -145,50 +128,10 @@ fun NavGraphBuilder.mypageNavGraph(
             )
         }
 
-        composable(MyPageDestination2.Recruitment.route) { entry ->
-//            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.MyPage.route) }
-//            MyPageRecruitmentScreen(
-//                myPageViewModel = hiltViewModel(parentEntry),
-//                onNavigateRecruitmentDetail = { partyType, partyId ->
-//                    navHostController.navigate(
-//                        PartyMemberDestination2.Detail.route + "?" +
-//                            "${PartyMemberDestination2.Detail.partyIdArg}=$partyId" + "&" +
-//                            "${PartyMemberDestination2.Detail.typeArg}=$partyType" + "&" +
-//                            "${PartyMemberDestination2.Detail.myWritingArg}=true" + "&" +
-//                            "${PartyMemberDestination2.Detail.fromRecruitmentArg}=true" + "&" +
-//                            "${PartyMemberDestination2.Detail.fromParticipationArg}=false"
-//                    )
-//                },
-//                onNavigatePartyMember = {
-//                    navHostController.navigate("${PartyMemberDestination2.List.route}/$it")
-//                },
-//                onBack = {
-//                    navHostController.popBackStack()
-//                }
-//            )
-        }
-
-        composable(MyPageDestination2.Participation.route) { entry ->
-//            val parentEntry = remember(entry) { navHostController.getBackStackEntry(MyPageDestination2.MyPage.route) }
-//            MyPageParticipationScreen(
-//                myPageViewModel = hiltViewModel(parentEntry),
-//                onNavigateParticipationDetail = { partyType, partyId ->
-//                    navHostController.navigate(
-//                        PartyMemberDestination2.Detail.route + "?" +
-//                            "${PartyMemberDestination2.Detail.partyIdArg}=$partyId" + "&" +
-//                            "${PartyMemberDestination2.Detail.typeArg}=$partyType" + "&" +
-//                            "${PartyMemberDestination2.Detail.myWritingArg}=false" + "&" +
-//                            "${PartyMemberDestination2.Detail.fromRecruitmentArg}=false" + "&" +
-//                            "${PartyMemberDestination2.Detail.fromParticipationArg}=true"
-//                    )
-//                },
-//                onNavigatePartyMember = {
-//                    navHostController.navigate("${PartyMemberDestination2.List.route}/$it")
-//                },
-//                onBack = {
-//                    navHostController.popBackStack()
-//                }
-//            )
+        composable(MyPageDestination.MyParty.route) {
+            MyPagePartyScreen(
+                onBack = { navHostController.popBackStack() }
+            )
         }
     }
 }

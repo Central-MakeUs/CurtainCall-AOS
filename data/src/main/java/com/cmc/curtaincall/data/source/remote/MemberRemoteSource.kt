@@ -17,6 +17,7 @@ class MemberRemoteSource @Inject constructor(
     fun checkDuplicateNickname(nickname: String): Flow<Boolean> = flow {
         emit(memberService.checkDuplicateNickname(nickname).result)
     }
+
     fun createMember(nickname: String): Flow<Int> = flow {
         emit(memberService.createMember(MemberCreateRequest(nickname)).id)
     }
@@ -42,15 +43,13 @@ class MemberRemoteSource @Inject constructor(
     fun requestMyRecruitments(
         memberId: Int,
         page: Int,
-        size: Int,
-        category: String?
+        size: Int
     ): Flow<List<MyRecruitmentModel>> = flow {
         emit(
             memberService.requestMyRecruitments(
                 memberId = memberId,
                 page = page,
                 size = size,
-                category = category
             ).recruitments.map { it.toModel() }
         )
     }
@@ -58,15 +57,13 @@ class MemberRemoteSource @Inject constructor(
     fun requestMyParticipations(
         memberId: Int,
         page: Int,
-        size: Int,
-        category: String?
+        size: Int
     ): Flow<List<MyParticipationModel>> = flow {
         emit(
             memberService.requestMyParticipations(
                 memberId = memberId,
                 page = page,
-                size = size,
-                category = category
+                size = size
             ).participations.map { it.toModel() }
         )
     }

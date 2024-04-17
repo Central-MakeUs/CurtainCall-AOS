@@ -132,8 +132,8 @@ private fun MyPageRecruitmentContent(
                                     .fillMaxWidth()
                                     .wrapContentHeight()
                                     .padding(bottom = 20.dp),
-                                profileImageUrl = recruitmentModel.creatorImageUrl,
-                                nickname = recruitmentModel.creatorNickname,
+                                profileImageUrl = null,
+                                nickname = "",
                                 createAtDate = recruitmentModel.createdAt.toChangeFullDate(),
                                 createAtTime = recruitmentModel.createdAt.toTime(),
                                 description = recruitmentModel.title,
@@ -154,8 +154,8 @@ private fun MyPageRecruitmentContent(
                                     .wrapContentHeight()
                                     .padding(bottom = 20.dp),
                                 title = recruitmentModel.showName,
-                                profileImageUrl = recruitmentModel.creatorImageUrl,
-                                nickname = recruitmentModel.creatorNickname,
+                                profileImageUrl = null,
+                                nickname = "",
                                 createAtDate = recruitmentModel.createdAt.toChangeFullDate(),
                                 createAtTime = recruitmentModel.createdAt.toTime(),
                                 numberOfMember = recruitmentModel.curMemberNum,

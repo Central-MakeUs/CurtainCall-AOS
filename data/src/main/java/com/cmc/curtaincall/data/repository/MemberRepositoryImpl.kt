@@ -34,10 +34,10 @@ class MemberRepositoryImpl @Inject constructor(
     override fun checkDuplicateNickname(nickname: String): Flow<Boolean> =
         memberRemoteSource.checkDuplicateNickname(nickname)
 
-    override fun fetchMyRecruitments(memberId: Int, category: String): Flow<PagingData<MyRecruitmentModel>> {
+    override fun fetchMyRecruitments(memberId: Int): Flow<PagingData<MyRecruitmentModel>> {
         return Pager(
             config = PagingConfig(pageSize = RECRUITMENT_PAGE_SIZE),
-            pagingSourceFactory = { MyRecruitmentPagingSource(memberService, memberId, category) }
+            pagingSourceFactory = { MyRecruitmentPagingSource(memberService, memberId) }
         ).flow
             .map { pagingData ->
                 pagingData.map { response ->
@@ -46,10 +46,10 @@ class MemberRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun fetchMyParticipations(memberId: Int, category: String): Flow<PagingData<MyParticipationModel>> {
+    override fun fetchMyParticipations(memberId: Int): Flow<PagingData<MyParticipationModel>> {
         return Pager(
             config = PagingConfig(pageSize = PARTICIPATION_PAGE_SIZE),
-            pagingSourceFactory = { MyParticipationPagingSource(memberService, memberId, category) }
+            pagingSourceFactory = { MyParticipationPagingSource(memberService, memberId) }
         ).flow
             .map { pagingData ->
                 pagingData.map { response ->
@@ -70,27 +70,23 @@ class MemberRepositoryImpl @Inject constructor(
     override fun requestMyRecruitments(
         memberId: Int,
         page: Int,
-        size: Int,
-        category: String?
+        size: Int
     ): Flow<List<MyRecruitmentModel>> =
         memberRemoteSource.requestMyRecruitments(
             memberId = memberId,
             page = page,
             size = size,
-            category = category
         )
 
     override fun requestMyParticipations(
         memberId: Int,
         page: Int,
-        size: Int,
-        category: String?
+        size: Int
     ): Flow<List<MyParticipationModel>> =
         memberRemoteSource.requestMyParticipations(
             memberId = memberId,
             page = page,
-            size = size,
-            category = category
+            size = size
         )
 
     override fun fetchMyReview(): Flow<PagingData<MemberReviewModel>> {

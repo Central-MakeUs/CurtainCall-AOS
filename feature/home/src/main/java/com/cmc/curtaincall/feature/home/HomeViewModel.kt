@@ -138,8 +138,7 @@ class HomeViewModel @Inject constructor(
             memberRepository.requestMyRecruitments(
                 memberId = memberId,
                 page = 0,
-                size = 2,
-                category = null
+                size = 2
             ).onEach { recruitments ->
                 sendAction(
                     HomeEvent.RequestMyRecruitment(
@@ -158,8 +157,7 @@ class HomeViewModel @Inject constructor(
             memberRepository.requestMyParticipations(
                 memberId = memberId,
                 page = 0,
-                size = 2,
-                category = null
+                size = 2
             ).onEach { participations ->
                 sendAction(
                     HomeEvent.RequestMyParticipations(
@@ -174,15 +172,23 @@ class HomeViewModel @Inject constructor(
 
     fun requestPopularShowList() {
         val type = "DAY"
-        val baseDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now().minusDays(1))
+        val baseDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now().minusDays(2))
         showRepository.requestPopularShowList(
             type = type,
-            genre = null,
+            genre = ShowGenreType.PLAY.name,
             baseDate = baseDate
-        ).onEach {
+        ).zip(
+            showRepository.requestPopularShowList(
+                type = type,
+                genre = ShowGenreType.MUSICAL.name,
+                baseDate = baseDate
+            )
+        ) { popular1, popular2 ->
+            (popular1 + popular2).sortedBy { it.rank }.take(10)
+        }.onEach {
             sendAction(
                 HomeEvent.RequestPopularShowList(
-                    showRanks = it.sortedBy { it.rank }.take(10)
+                    showRanks = it
                 )
             )
         }.launchIn(viewModelScope)

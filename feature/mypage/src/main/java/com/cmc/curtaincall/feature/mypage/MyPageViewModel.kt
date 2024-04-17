@@ -45,33 +45,27 @@ class MyPageViewModel @Inject constructor(
     val favoriteShowList = _favoriteShowList.asStateFlow()
 
     var watchingRecruitmentItems = memberRepository.fetchMyRecruitments(
-        memberId = memberId.value,
-        category = PartyType.PERFORMANCE.category
+        memberId = memberId.value
     ).cachedIn(viewModelScope)
 
     var foodRecruitmentItems = memberRepository.fetchMyRecruitments(
-        memberId = memberId.value,
-        category = PartyType.MEAL.category
+        memberId = memberId.value
     ).cachedIn(viewModelScope)
 
     var etcRecruitmentItems = memberRepository.fetchMyRecruitments(
-        memberId = memberId.value,
-        category = PartyType.ETC.category
+        memberId = memberId.value
     ).cachedIn(viewModelScope)
 
     var watchingParticipationItems = memberRepository.fetchMyParticipations(
-        memberId = memberId.value,
-        category = PartyType.PERFORMANCE.category
+        memberId = memberId.value
     ).cachedIn(viewModelScope)
 
     var foodParticipationItems = memberRepository.fetchMyParticipations(
-        memberId = memberId.value,
-        category = PartyType.MEAL.category
+        memberId = memberId.value
     ).cachedIn(viewModelScope)
 
     var etcParticipationItems = memberRepository.fetchMyParticipations(
-        memberId = memberId.value,
-        category = PartyType.ETC.category
+        memberId = memberId.value
     ).cachedIn(viewModelScope)
 
     init {
@@ -108,28 +102,22 @@ class MyPageViewModel @Inject constructor(
             .onEach {
                 _memberId.value = it
                 watchingRecruitmentItems = memberRepository.fetchMyRecruitments(
-                    memberId = it,
-                    category = PartyType.PERFORMANCE.category
+                    memberId = it
                 ).cachedIn(viewModelScope)
                 foodRecruitmentItems = memberRepository.fetchMyRecruitments(
-                    memberId = it,
-                    category = PartyType.MEAL.category
+                    memberId = it
                 ).cachedIn(viewModelScope)
                 etcRecruitmentItems = memberRepository.fetchMyRecruitments(
-                    memberId = it,
-                    category = PartyType.ETC.category
+                    memberId = it
                 ).cachedIn(viewModelScope)
                 watchingParticipationItems = memberRepository.fetchMyParticipations(
-                    memberId = it,
-                    category = PartyType.PERFORMANCE.category
+                    memberId = it
                 ).cachedIn(viewModelScope)
                 foodParticipationItems = memberRepository.fetchMyParticipations(
-                    memberId = it,
-                    category = PartyType.MEAL.category
+                    memberId = it
                 ).cachedIn(viewModelScope)
                 etcParticipationItems = memberRepository.fetchMyParticipations(
-                    memberId = it,
-                    category = PartyType.ETC.category
+                    memberId = it
                 ).cachedIn(viewModelScope)
             }.flatMapLatest { memberRepository.requestMemberInfo(it) }
             .onEach { sendAction(MyPageEvent.LoadMemberInfo(it)) }

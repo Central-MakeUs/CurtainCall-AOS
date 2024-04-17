@@ -190,6 +190,11 @@
     <string name="mypage_setting_delete_member_second_description3">이후 계정을 복구하고 싶다면, 30일 내 접근 시 계정 복구가 가능합니다.\n단, 30일 이후에는 영구적으로 삭제됩니다.</string>
     <string name="mypage_setting_delete_member_continue">계속할까요?</string>
     <string name="mypage_setting_delete_reason_placeholder">자유롭게 작성해주세요.</string>
+    <string name="mypage_myparty_participation_title">참여 중인 파티원이 없어요!</string>
+    <string name="mypage_myparty_participation_subtitle">다른 파티원 모집글에 참여하고\n네트워킹을 즐겨보세요!</string>
+    <string name="mypage_myparty_recruitment_title">모집 중인 파티원이 없어요!</string>
+    <string name="mypage_myparty_recruitment_subtitle">파티원 모집글을 작성하고\n네트워킹을 즐겨보세요!</string>
+    <string name="mypage_myparty_navigate_to_party">파티원으로 이동하기</string>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
