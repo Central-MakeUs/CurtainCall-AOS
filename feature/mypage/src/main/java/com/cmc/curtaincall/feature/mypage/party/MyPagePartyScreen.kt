@@ -29,11 +29,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import androidx.paging.compose.itemsIndexed
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.chips.CurtainCallBasicChip
+import com.cmc.curtaincall.common.designsystem.custom.my.MyParticipationtItem
 import com.cmc.curtaincall.common.designsystem.custom.my.MyRecruitmentItem
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey4
@@ -139,6 +141,19 @@ private fun MyPagePartyContent(
                     Spacer(Modifier.weight(312f))
                 }
             } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(myParticipationModels) { myParticipationModel ->
+                        myParticipationModel?.let {
+                            MyParticipationtItem(
+                                myParticipationModel = it
+                            )
+                        }
+                    }
+                }
             }
         } else {
             if (myRecruitmentModels.itemCount == 0) {

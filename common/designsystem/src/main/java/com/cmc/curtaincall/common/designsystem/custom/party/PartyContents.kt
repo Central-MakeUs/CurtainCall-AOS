@@ -36,6 +36,8 @@ import com.cmc.curtaincall.common.designsystem.theme.Grey8
 import com.cmc.curtaincall.common.utility.extensions.convertPartyDate
 import com.cmc.curtaincall.common.utility.extensions.convertPartyTime
 import com.cmc.curtaincall.domain.model.party.PartyModel
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
 fun PartyEmptyContent(
@@ -84,6 +86,10 @@ fun PartyContent(
     partyModel: PartyModel,
     onClick: () -> Unit = {}
 ) {
+    val showAt = partyModel.showAt?.let {
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(it)
+    } ?: Date()
+
     Column(
         modifier = modifier
             .size(320.dp, 182.dp)
@@ -222,7 +228,7 @@ fun PartyContent(
             ) {
                 Text(
                     text = stringResource(
-                        if (partyModel.curMemberNum == partyModel.maxMemberNum) {
+                        if (partyModel.curMemberNum == partyModel.maxMemberNum || showAt <= Date()) {
                             R.string.finish_recruitment
                         } else {
                             R.string.recruiting

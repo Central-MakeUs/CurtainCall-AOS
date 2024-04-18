@@ -36,9 +36,12 @@ import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey1
 import com.cmc.curtaincall.common.designsystem.theme.Grey3
 import com.cmc.curtaincall.common.designsystem.theme.Grey4
+import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey8
+import com.cmc.curtaincall.common.designsystem.theme.Grey9
 import com.cmc.curtaincall.common.utility.extensions.convertPartyDate
 import com.cmc.curtaincall.common.utility.extensions.convertPartyTime
+import com.cmc.curtaincall.domain.model.member.MyParticipationModel
 import com.cmc.curtaincall.domain.model.member.MyRecruitmentModel
 
 @Composable
@@ -284,6 +287,213 @@ fun MyRecruitmentItem(
                     color = CurtainCallTheme.colors.primary
                 )
             )
+        }
+    }
+}
+
+@Composable
+fun MyParticipationtItem(
+    modifier: Modifier = Modifier,
+    myParticipationModel: MyParticipationModel,
+    onNavigateToDetail: () -> Unit = {},
+    onCancel: () -> Unit = {},
+    onNavigateToLiveTalk: () -> Unit = {}
+) {
+    Box(
+        modifier = modifier
+            .size(320.dp, 222.dp)
+            .background(CurtainCallTheme.colors.background, RoundedCornerShape(12.dp))
+            .clickable { onNavigateToDetail() }
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .padding(horizontal = 12.dp)
+                .fillMaxWidth()
+        ) {
+            AsyncImage(
+                model = myParticipationModel.showPoster,
+                contentDescription = null,
+                error = painterResource(R.drawable.ic_error_poster),
+                modifier = Modifier
+                    .size(80.dp, 109.dp)
+                    .clip(RoundedCornerShape(6.dp)),
+                contentScale = ContentScale.FillBounds
+            )
+            Column(modifier = Modifier.padding(start = 10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    AsyncImage(
+                        model = myParticipationModel.creatorImageUrl,
+                        error = painterResource(R.drawable.ic_default_profile),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.FillBounds
+                    )
+                    Text(
+                        text = myParticipationModel.creatorNickname,
+                        modifier = Modifier.padding(start = 8.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+                }
+                Text(
+                    text = myParticipationModel.title,
+                    modifier = Modifier.padding(top = 17.dp),
+                    style = CurtainCallTheme.typography.body2.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = myParticipationModel.content,
+                    modifier = Modifier.padding(top = 8.dp),
+                    style = CurtainCallTheme.typography.body4.copy(
+                        color = Grey3
+                    ),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+        Box(
+            modifier = Modifier
+                .padding(top = 126.dp)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Canvas(
+                modifier = Modifier
+                    .size(14.dp)
+                    .offset(x = (-7).dp)
+            ) {
+                drawArc(
+                    color = Grey8,
+                    startAngle = -90f,
+                    sweepAngle = 180f,
+                    useCenter = false
+                )
+            }
+            DottedLine(
+                modifier = Modifier.fillMaxWidth(),
+                strokeWidth = 5.dp.value,
+                strokeColor = Grey8
+            )
+            Canvas(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(14.dp)
+                    .offset(x = 7.dp)
+            ) {
+                drawArc(
+                    color = Grey8,
+                    startAngle = -90f,
+                    sweepAngle = -180f,
+                    useCenter = false
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .padding(top = 147.dp)
+                .padding(start = 17.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(Grey8, RoundedCornerShape(4.dp))
+                    .padding(vertical = 2.dp, horizontal = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = myParticipationModel.showAt.convertPartyDate() ?: stringResource(R.string.no_information),
+                    style = CurtainCallTheme.typography.body5.copy(
+                        color = Grey4
+                    )
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .padding(start = 6.dp)
+                    .background(Grey8, RoundedCornerShape(4.dp))
+                    .padding(vertical = 2.dp, horizontal = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = myParticipationModel.showAt?.convertPartyTime() ?: stringResource(R.string.no_information),
+                    style = CurtainCallTheme.typography.body5.copy(
+                        color = Grey4
+                    )
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .padding(start = 6.dp)
+                    .background(Grey8, RoundedCornerShape(4.dp))
+                    .padding(vertical = 2.dp, horizontal = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(
+                        if (myParticipationModel.curMemberNum == myParticipationModel.maxMemberNum) {
+                            R.string.finish_recruitment
+                        } else {
+                            R.string.recruiting
+                        }
+                    ),
+                    style = CurtainCallTheme.typography.body5.copy(
+                        color = Grey4
+                    )
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .padding(top = 182.dp)
+                .fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(40.dp)
+                    .background(
+                        color = Grey9,
+                        shape = RoundedCornerShape(bottomStart = 12.dp)
+                    )
+                    .clickable { onCancel() },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.cancel_participate),
+                    style = CurtainCallTheme.typography.body3.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = Grey6
+                    )
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(40.dp)
+                    .background(
+                        color = CurtainCallTheme.colors.secondary,
+                        shape = RoundedCornerShape(bottomEnd = 12.dp)
+                    )
+                    .clickable { onNavigateToLiveTalk() },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.enter_livetalk),
+                    style = CurtainCallTheme.typography.body3.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = CurtainCallTheme.colors.primary
+                    )
+                )
+            }
         }
     }
 }

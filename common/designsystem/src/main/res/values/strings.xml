@@ -20,6 +20,7 @@
     <string name="participate">참여하기</string>
     <string name="enter_livetalk">TALK 입장</string>
     <string name="cancel_participate">참여 취소</string>
+    <string name="end_recruitment">모집 마감</string>
 
     <!-- app -->
     <string name="onboarding_first_banner_title">작품 정보뿐만 아니라 분실물까지!</string>
@@ -29,7 +30,7 @@
     <string name="onboarding_third_banner_title">라이브톡으로 더 생생하게!</string>
     <string name="onboarding_third_banner_description">실시간으로 다른 사람들과 함께 작품에 대한\n이야기를 자유롭게 나눌 수 있어요!</string>
     <string name="onboarding_next_login">로그인 하기</string>
-    
+
     <!-- design system -->
     <string name="default_top_appbar_title">CURTAIN CALL</string>
     <string name="search_appbar_hint">작품 제목을 입력하세요.</string>

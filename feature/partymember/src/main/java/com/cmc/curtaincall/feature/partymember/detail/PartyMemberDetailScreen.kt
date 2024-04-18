@@ -59,6 +59,9 @@ import com.cmc.curtaincall.common.designsystem.theme.Grey8
 import com.cmc.curtaincall.common.designsystem.theme.Primary
 import com.cmc.curtaincall.common.utility.extensions.convertUIDate
 import com.cmc.curtaincall.domain.type.ReportType
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun PartyMemberDetailScreen(
@@ -122,7 +125,6 @@ fun PartyMemberDetailScreen(
             )
         },
         floatingActionButton = {
-            // TODO 파티원 참여 여부에 따라 분기처리
             if (isMyWriting) {
                 CurtainCallFilledButton(
                     text = stringResource(R.string.enter_livetalk),
@@ -173,6 +175,8 @@ fun PartyMemberDetailScreen(
                         text = stringResource(
                             if (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum) {
                                 R.string.party_member_full_number_of_member
+                            } else if (SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(partyDetailModel.showAt) <= Date()) {
+                                R.string.end_recruitment
                             } else {
                                 R.string.participate
                             }
@@ -182,7 +186,7 @@ fun PartyMemberDetailScreen(
                             .padding(bottom = 14.dp)
                             .fillMaxWidth()
                             .height(51.dp),
-                        enabled = partyDetailModel.curMemberNum != partyDetailModel.maxMemberNum,
+                        enabled = !(partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum || SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(partyDetailModel.showAt) <= Date()),
                         containerColor = CurtainCallTheme.colors.secondary,
                         contentColor = CurtainCallTheme.colors.primary,
                         onClick = { showParticipatePopup = true }
