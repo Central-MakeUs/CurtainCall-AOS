@@ -17,10 +17,8 @@ import com.cmc.curtaincall.common.navigation.destination.HomeDestination
 import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
 import com.cmc.curtaincall.common.navigation.destination.PartyMemberDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
-import com.cmc.curtaincall.domain.type.HomeGuideMenu
 import com.cmc.curtaincall.domain.type.ReportType
 import com.cmc.curtaincall.feature.home.HomeScreen
-import com.cmc.curtaincall.feature.home.guide.HomeGuideScreen
 import com.cmc.curtaincall.feature.home.report.HomeReportScreen
 import com.cmc.curtaincall.feature.livetalk.livetalkNavGraph
 import com.cmc.curtaincall.feature.mypage.mypageNavGraph
@@ -62,16 +60,6 @@ fun HomeNavHost(
                     onNavigateToPerformanceDetail = {
                         navHostController.navigate("${ShowDestination.Detail.route}/$it")
                     }
-                )
-            }
-            composable(
-                route = HomeDestination.Guide.routeWithArgs,
-                arguments = HomeDestination.Guide.arguments
-            ) { entry ->
-                val homeGuideMenu: HomeGuideMenu? = getGuideMenu(entry.arguments)
-                HomeGuideScreen(
-                    homeGuideMenu = homeGuideMenu,
-                    onBack = { navHostController.popBackStack() }
                 )
             }
 
@@ -121,13 +109,6 @@ fun HomeNavHost(
         }
     }
 }
-
-private fun getGuideMenu(bundle: Bundle?): HomeGuideMenu? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        bundle?.getSerializable(HomeDestination.Guide.guideMenuArg, HomeGuideMenu::class.java)
-    } else {
-        bundle?.getSerializable(HomeDestination.Guide.guideMenuArg) as? HomeGuideMenu
-    }
 
 private fun getReportType(bundle: Bundle?): ReportType? =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
