@@ -7,7 +7,9 @@ import com.cmc.curtaincall.domain.repository.MemberRepository
 import com.cmc.curtaincall.domain.repository.PartyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -31,6 +33,9 @@ class PartyMemberDetailViewModel @Inject constructor(
 
     private val _isParticipated = MutableStateFlow(false)
     val isParticipated = _isParticipated.asStateFlow()
+
+    private val _isSuccessDelete = MutableSharedFlow<Boolean>()
+    val isSuccessDelete = _isSuccessDelete.asSharedFlow()
 
     init {
         checkMemberId()
@@ -71,6 +76,13 @@ class PartyMemberDetailViewModel @Inject constructor(
                 if (check) {
                     requestPartyDetail(partyId)
                 }
+            }.launchIn(viewModelScope)
+    }
+
+    fun deleteParty(partyId: Int) {
+        partyRepository.deleteParty(partyId)
+            .onEach { check ->
+                _isSuccessDelete.emit(check)
             }.launchIn(viewModelScope)
     }
 }

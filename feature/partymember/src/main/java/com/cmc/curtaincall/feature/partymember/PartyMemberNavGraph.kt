@@ -44,6 +44,9 @@ fun NavGraphBuilder.partymemberNavGraph(
             PartyMemberDetailScreen(
                 partyId = partyIdArg,
                 showName = showNameArg,
+                onNavigateToEdit = { partyId, showName ->
+                    navHostController.navigate("${PartyMemberDestination.Edit.route}/$partyId/$showName")
+                },
                 onNavigateToReport = onNavigateToReport,
                 onBack = {
                     navHostController.popBackStack()

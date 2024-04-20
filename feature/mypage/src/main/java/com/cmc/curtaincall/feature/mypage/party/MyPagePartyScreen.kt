@@ -218,9 +218,10 @@ private fun MyPagePartyContent(
                     )
                     Box(
                         modifier = Modifier
+                            .padding(top = 20.dp)
                             .background(CurtainCallTheme.colors.secondary, RoundedCornerShape(40.dp))
                             .padding(horizontal = 18.dp, vertical = 8.dp)
-                            .clickable { },
+                            .clickable { onNavigateToParty() },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
