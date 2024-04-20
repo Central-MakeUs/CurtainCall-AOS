@@ -75,7 +75,7 @@ class MemberRepositoryImpl @Inject constructor(
         memberRemoteSource.requestMyRecruitments(
             memberId = memberId,
             page = page,
-            size = size,
+            size = size
         )
 
     override fun requestMyParticipations(

@@ -49,7 +49,7 @@ class MemberRemoteSource @Inject constructor(
             memberService.requestMyRecruitments(
                 memberId = memberId,
                 page = page,
-                size = size,
+                size = size
             ).recruitments.map { it.toModel() }
         )
     }
