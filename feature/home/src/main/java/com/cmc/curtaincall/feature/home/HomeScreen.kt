@@ -30,6 +30,7 @@ import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallTitleTopAppBar
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.tooltip.CurtainCallCostEffectiveShowTooltip
+import com.cmc.curtaincall.common.designsystem.custom.party.PartyHomeContent
 import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallCostEffectiveShowPoster
 import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallEndShowPoster
 import com.cmc.curtaincall.common.designsystem.custom.poster.CurtainCallOpenShowPoster
@@ -49,9 +50,8 @@ fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
     chatClient: ChatClient,
     onNavigateToPerformanceDetail: (String) -> Unit,
-    onNavigateLiveTalk: () -> Unit = {},
-    onNavigatePartyMember: () -> Unit = {},
-    onNavigateMyPage: () -> Unit = {}
+    onNavigateToMyParty: () -> Unit = {},
+    onNavigateToPartyDetail: (Int?, String?) -> Unit = { _, _ -> }
 ) {
     LaunchedEffect(Unit) {
         homeViewModel.connectChattingClient(chatClient)
@@ -69,7 +69,9 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
                 .background(CurtainCallTheme.colors.background),
-            onNavigateToPerformanceDetail = onNavigateToPerformanceDetail
+            onNavigateToPerformanceDetail = onNavigateToPerformanceDetail,
+            onNavigateToMyParty = onNavigateToMyParty,
+            onNavigateToPartyDetail = onNavigateToPartyDetail
         )
     }
 }
@@ -78,13 +80,16 @@ fun HomeScreen(
 private fun HomeContent(
     homeViewModel: HomeViewModel,
     modifier: Modifier = Modifier,
-    onNavigateToPerformanceDetail: (String) -> Unit
+    onNavigateToPerformanceDetail: (String) -> Unit,
+    onNavigateToMyParty: () -> Unit = {},
+    onNavigateToPartyDetail: (Int?, String?) -> Unit = { _, _ -> }
 ) {
     val scrollState = rememberScrollState()
     val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(homeViewModel) {
         homeViewModel.requestShowRecommendations()
+        homeViewModel.requestMyRecruitments()
         homeViewModel.requestPopularShowList()
         homeViewModel.requestOpenShowList()
         homeViewModel.requestEndShowList()
@@ -105,6 +110,32 @@ private fun HomeContent(
                 .fillMaxSize()
                 .background(White)
         ) {
+            if (homeUiState.myRecruitments.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Grey8)
+                        .padding(top = 20.dp, bottom = 20.dp)
+                ) {
+                    HomeContentsLazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.mypage_profile_party_activity),
+                        isMyParty = true,
+                        onNavigateToMyParty = onNavigateToMyParty
+                    ) {
+                        itemsIndexed(homeUiState.myRecruitments) { index, myRecruitment ->
+                            PartyHomeContent(
+                                creatorImageUrl = homeUiState.memberInfo.imageUrl,
+                                creatorNickname = homeUiState.memberInfo.nickname,
+                                myRecruitmentModel = myRecruitment,
+                                onClick = {
+                                    onNavigateToPartyDetail(myRecruitment.id, myRecruitment.showName)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
             if (homeUiState.showRanks.isNotEmpty()) {
                 HomeContentsLazyRow(
                     modifier = Modifier
@@ -201,14 +232,30 @@ private fun HomeContentsLazyRow(
     modifier: Modifier = Modifier,
     text: String,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(12.dp),
+    isMyParty: Boolean = false,
+    onNavigateToMyParty: () -> Unit = {},
     content: LazyListScope.() -> Unit = {}
 ) {
     Column(modifier) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(start = 20.dp),
-            style = CurtainCallTheme.typography.subTitle3
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = text,
+                modifier = Modifier
+                    .padding(start = 20.dp)
+                    .weight(1f),
+                style = CurtainCallTheme.typography.subTitle3
+            )
+            if (isMyParty) {
+                Text(
+                    text = stringResource(R.string.all_view),
+                    modifier = Modifier.clickable { onNavigateToMyParty() },
+                    style = CurtainCallTheme.typography.body4.copy(
+                        color = Grey4,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                )
+            }
+        }
         LazyRow(
             modifier = Modifier
                 .padding(top = 12.dp)

@@ -156,6 +156,59 @@ fun CurtainCallCenterTopAppBarWithBack(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CurtainCallCenterTopAppBarWithBackAndMore(
+    title: String,
+    containerColor: Color = CurtainCallTheme.colors.background,
+    contentColor: Color = Black,
+    onMore: () -> Unit = {},
+    onBack: () -> Unit = {}
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(TopAppBarHeight),
+        color = containerColor
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_back),
+                contentDescription = TopAppBarBackIconDescription,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 14.dp)
+                    .size(TopAppBarBackIconSize)
+                    .clickable { onBack() },
+                tint = contentColor
+            )
+            Text(
+                text = title,
+                modifier = Modifier.width(180.dp),
+                style = CurtainCallTheme.typography.subTitle4.copy(
+                    color = contentColor
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center
+            )
+            Icon(
+                painter = painterResource(R.drawable.ic_more_vert),
+                contentDescription = TopAppBarBackIconDescription,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp)
+                    .size(TopAppBarBackIconSize)
+                    .clickable { onMore() },
+                tint = contentColor
+            )
+        }
+    }
+}
+
 @Stable
 data class SearchAppBarState(
     var isSearchMode: MutableState<Boolean> = mutableStateOf(false),

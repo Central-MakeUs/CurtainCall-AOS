@@ -38,4 +38,19 @@ sealed class PartyMemberDestination : CurtainCallDestination {
             }
         )
     }
+
+    object Edit : PartyMemberDestination() {
+        override val route = NavRouteLabel.PARTY_MEMBER_EDIT
+        const val partyIdArg = PARTY_ID_ARG
+        const val showNameArg = SHOW_NAME_ARG
+        val routeWithArgs = "$route/{$partyIdArg}/{$showNameArg}"
+        val arguments = listOf(
+            navArgument(partyIdArg) {
+                type = NavType.IntType
+            },
+            navArgument(showNameArg) {
+                type = NavType.StringType
+            }
+        )
+    }
 }

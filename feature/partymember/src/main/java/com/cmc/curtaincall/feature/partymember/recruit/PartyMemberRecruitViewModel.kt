@@ -206,7 +206,7 @@ class PartyMemberRecruitViewModel @Inject constructor(
 
     private fun fetchPopularShowRankModels() {
         val type = "DAY"
-        val baseDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now().minusDays(1))
+        val baseDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now().minusDays(2))
         showRepository.requestPopularShowList(
             type = type,
             genre = uiState.value.genreType.name,

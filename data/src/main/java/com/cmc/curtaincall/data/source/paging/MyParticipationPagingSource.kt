@@ -11,8 +11,7 @@ const val PARTICIPATION_PAGE_SIZE = 20
 
 class MyParticipationPagingSource @Inject constructor(
     private val memberService: MemberService,
-    private val memberId: Int,
-    private val category: String
+    private val memberId: Int
 ) : PagingSource<Int, MemberParticipationResponse>() {
     override fun getRefreshKey(state: PagingState<Int, MemberParticipationResponse>): Int? {
         return state.anchorPosition?.let { position ->
@@ -27,7 +26,6 @@ class MyParticipationPagingSource @Inject constructor(
             val response = memberService.requestMyParticipations(
                 page = pageKey,
                 size = PARTICIPATION_PAGE_SIZE,
-                category = category,
                 memberId = memberId
             )
             return LoadResult.Page(

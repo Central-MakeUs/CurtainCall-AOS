@@ -8,7 +8,8 @@ data class MemberParticipationsResponse(
 )
 
 data class MemberParticipationResponse(
-    val category: String,
+    val id: Int,
+    val title: String,
     val createdAt: String,
     val creatorId: Int,
     val creatorImageUrl: String?,
@@ -16,23 +17,21 @@ data class MemberParticipationResponse(
     val curMemberNum: Int,
     val facilityId: String,
     val facilityName: String,
-    val id: Int,
     val maxMemberNum: Int,
     val showAt: String,
     val showId: String,
     val showName: String,
     val showPoster: String,
-    val title: String,
     val content: String
 ) {
     fun toModel() = MyParticipationModel(
         id = id,
         title = title,
+        content = content,
         curMemberNum = curMemberNum,
         maxMemberNum = maxMemberNum,
         showAt = showAt,
         createdAt = createdAt,
-        category = category,
         creatorId = creatorId,
         creatorNickname = creatorNickname,
         creatorImageUrl = creatorImageUrl,
@@ -40,7 +39,6 @@ data class MemberParticipationResponse(
         showName = showName,
         showPoster = showPoster,
         facilityId = facilityId,
-        facilityName = facilityName,
-        content = content
+        facilityName = facilityName
     )
 }

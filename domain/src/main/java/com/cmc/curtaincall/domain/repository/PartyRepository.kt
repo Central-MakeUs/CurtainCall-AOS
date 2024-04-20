@@ -57,6 +57,7 @@ interface PartyRepository {
     ): Flow<Boolean>
 
     fun updateParty(
+        partyId: Int,
         title: String,
         content: String
     ): Flow<Boolean>

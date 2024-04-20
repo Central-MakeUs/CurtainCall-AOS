@@ -1,7 +1,7 @@
 package com.cmc.curtaincall.feature.home
 
 import com.cmc.curtaincall.core.base.BaseEvent
-import com.cmc.curtaincall.domain.model.member.MyParticipationModel
+import com.cmc.curtaincall.domain.model.member.MemberInfoModel
 import com.cmc.curtaincall.domain.model.member.MyRecruitmentModel
 import com.cmc.curtaincall.domain.model.show.CostEffectiveShowModel
 import com.cmc.curtaincall.domain.model.show.LiveTalkShowModel
@@ -27,10 +27,6 @@ sealed class HomeEvent : BaseEvent {
         val myRecruitments: List<MyRecruitmentModel>
     ) : HomeEvent()
 
-    data class RequestMyParticipations(
-        val myParticipations: List<MyParticipationModel>
-    ) : HomeEvent()
-
     data class RequestPopularShowList(
         val showRanks: List<ShowRankModel>
     ) : HomeEvent()
@@ -53,5 +49,9 @@ sealed class HomeEvent : BaseEvent {
 
     data class RequestCostEffectiveShows(
         val costEffectiveShows: List<CostEffectiveShowModel>
+    ) : HomeEvent()
+
+    data class GetMemberInfo(
+        val memberInfoModel: MemberInfoModel
     ) : HomeEvent()
 }

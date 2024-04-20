@@ -83,11 +83,13 @@ class PartyRemoteSource @Inject constructor(
     }
 
     fun updateParty(
+        partyId: Int,
         title: String,
         content: String
     ): Flow<Boolean> = flow {
         emit(
             partyService.updateParty(
+                partyId = partyId,
                 updatePartyRequest = UpdatePartyRequest(
                     title = title,
                     content = content

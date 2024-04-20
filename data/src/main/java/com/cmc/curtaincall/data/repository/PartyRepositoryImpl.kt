@@ -96,8 +96,8 @@ class PartyRepositoryImpl @Inject constructor(
     override fun deleteParty(partyId: Int): Flow<Boolean> =
         partyRemoteSource.deleteParty(partyId)
 
-    override fun updateParty(title: String, content: String): Flow<Boolean> =
-        partyRemoteSource.updateParty(title, content)
+    override fun updateParty(partyId: Int, title: String, content: String): Flow<Boolean> =
+        partyRemoteSource.updateParty(partyId, title, content)
 
     override fun participateParty(partyId: Int): Flow<Boolean> =
         partyRemoteSource.participateParty(partyId)

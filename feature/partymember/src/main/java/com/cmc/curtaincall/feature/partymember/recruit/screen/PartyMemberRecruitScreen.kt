@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -202,8 +204,9 @@ private fun PartyMemberRecruitContent(
     partyMemberRecruitUiState: PartyMemberRecruitUiState,
     searchAppBarState: SearchAppBarState
 ) {
+    val scrollState = rememberScrollState()
     val showInfoModels = partyMemberRecruitUiState.showInfoModels.collectAsLazyPagingItems()
-    Column(modifier) {
+    Column(modifier.verticalScroll(scrollState)) {
         PartyMemberRecruitPhrase(
             modifier = Modifier
                 .padding(top = 20.dp)

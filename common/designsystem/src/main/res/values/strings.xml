@@ -6,7 +6,7 @@
     <string name="cancel">취소</string>
     <string name="show">작품</string>
     <string name="recently_search_word">최근 검색어</string>
-    <string name="dismiss">아니요</string>
+    <string name="dismiss">아니요</string>제
     <string name="delete_popup">네, 삭제할게요</string>
     <string name="lost_property">분실물</string>
     <string name="no_information">정보없음</string>
@@ -20,6 +20,9 @@
     <string name="participate">참여하기</string>
     <string name="enter_livetalk">TALK 입장</string>
     <string name="cancel_participate">참여 취소</string>
+    <string name="end_recruitment">모집 마감</string>
+    <string name="edit_complete">수정 완료</string>
+    <string name="all_view">모두 보기</string>
 
     <!-- app -->
     <string name="onboarding_first_banner_title">작품 정보뿐만 아니라 분실물까지!</string>
@@ -29,7 +32,7 @@
     <string name="onboarding_third_banner_title">라이브톡으로 더 생생하게!</string>
     <string name="onboarding_third_banner_description">실시간으로 다른 사람들과 함께 작품에 대한\n이야기를 자유롭게 나눌 수 있어요!</string>
     <string name="onboarding_next_login">로그인 하기</string>
-    
+
     <!-- design system -->
     <string name="default_top_appbar_title">CURTAIN CALL</string>
     <string name="search_appbar_hint">작품 제목을 입력하세요.</string>
@@ -117,7 +120,7 @@
     <string name="show_review_create_text_placeholder">공연이 어떘는지 자세히 작성해주세요!</string>
     <string name="show_review_create_max_text_restrict">500자 이내로 작성해주세요</string>
     <string name="show_review_edit_title">공연 리뷰 수정</string>
-    <string name="show_review_delete_title">해당 게시물을 삭제할까요?</string>
+    <string name="show_review_delete_title">해당 게시물을 삭제할까요?</string>제
 
     <!--    party member-->
     <string name="party_member">파티원</string>
@@ -139,6 +142,8 @@
     <string name="party_member_show_content_restrict">500자 이내로 작성해주세요</string>
     <string name="party_member_upload_success">파티원 모집글이 업로드되었어요</string>
     <string name="party_member_upload_failure">오류로 인해 모집글 업로드에 실패했어요</string>
+    <string name="party_member_edit_success">파티원 모집글이 수정되었어요</string>
+    <string name="party_member_edit_failure">오류로 인해 모집글 수정에 실패했어요</string>
     <string name="party_member_detail_show_name">작품명</string>
     <string name="party_member_detail_show_date">공연 일자</string>
     <string name="party_member_detail_show_time">공연 시간</string>
@@ -151,6 +156,7 @@
     <string name="party_member_cancel_participate_popup_title">해당 모집 글에 취소할까요?</string>
     <string name="party_member_cancel_participate_popup_description">참여 취소 시, 톡방에서 자동으로 나가게 돼요!</string>
     <string name="party_member_cancel_participate_popup_positive">네, 취소할래요</string>
+    <string name="party_member_delete_popup_title">해당 게시물을 삭제할까요?</string>
 
     <!-- mypage -->
     <string name="mypage_profile_edit">프로필 변경</string>
@@ -190,6 +196,11 @@
     <string name="mypage_setting_delete_member_second_description3">이후 계정을 복구하고 싶다면, 30일 내 접근 시 계정 복구가 가능합니다.\n단, 30일 이후에는 영구적으로 삭제됩니다.</string>
     <string name="mypage_setting_delete_member_continue">계속할까요?</string>
     <string name="mypage_setting_delete_reason_placeholder">자유롭게 작성해주세요.</string>
+    <string name="mypage_myparty_participation_title">참여 중인 파티원이 없어요!</string>
+    <string name="mypage_myparty_participation_subtitle">다른 파티원 모집글에 참여하고\n네트워킹을 즐겨보세요!</string>
+    <string name="mypage_myparty_recruitment_title">모집 중인 파티원이 없어요!</string>
+    <string name="mypage_myparty_recruitment_subtitle">파티원 모집글을 작성하고\n네트워킹을 즐겨보세요!</string>
+    <string name="mypage_myparty_navigate_to_party">파티원으로 이동하기</string>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 

@@ -8,39 +8,31 @@ data class MemberRecruitmentsResponse(
 )
 
 data class MemberRecruitmentResponse(
-    val category: String,
-    val createdAt: String,
-    val creatorId: Int,
-    val creatorImageUrl: String?,
-    val creatorNickname: String,
-    val curMemberNum: Int,
-    val facilityId: String?,
-    val facilityName: String?,
     val id: Int,
+    val title: String,
+    val content: String,
+    val curMemberNum: Int,
     val maxMemberNum: Int,
     val showAt: String?,
+    val createdAt: String,
     val showId: String?,
     val showName: String?,
     val showPoster: String?,
-    val title: String,
-    val content: String
+    val facilityId: String?,
+    val facilityName: String?,
 ) {
     fun toModel() = MyRecruitmentModel(
         id = id,
         title = title,
+        content = content,
         curMemberNum = curMemberNum,
         maxMemberNum = maxMemberNum,
         showAt = showAt,
         createdAt = createdAt,
-        category = category,
-        creatorId = creatorId,
-        creatorNickname = creatorNickname,
-        creatorImageUrl = creatorImageUrl,
         showId = showId,
         showName = showName,
         showPoster = showPoster,
         facilityId = facilityId,
-        facilityName = facilityName,
-        content = content
+        facilityName = facilityName
     )
 }

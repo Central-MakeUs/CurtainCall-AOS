@@ -19,6 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -40,15 +42,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
+import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBackAndMore
 import com.cmc.curtaincall.common.designsystem.component.basic.DottedLine
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.buttons.common.CurtainCallFilledButton
 import com.cmc.curtaincall.common.designsystem.component.dialogs.CurtainCallSelectDialog
+import com.cmc.curtaincall.common.designsystem.component.divider.HorizontalDivider
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey1
 import com.cmc.curtaincall.common.designsystem.theme.Grey4
@@ -59,12 +64,17 @@ import com.cmc.curtaincall.common.designsystem.theme.Grey8
 import com.cmc.curtaincall.common.designsystem.theme.Primary
 import com.cmc.curtaincall.common.utility.extensions.convertUIDate
 import com.cmc.curtaincall.domain.type.ReportType
+import kotlinx.coroutines.flow.collectLatest
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun PartyMemberDetailScreen(
     partyMemberDetailViewModel: PartyMemberDetailViewModel = hiltViewModel(),
     partyId: Int?,
     showName: String?,
+    onNavigateToEdit: (Int?, String?) -> Unit = { _, _ -> },
     onNavigateToReport: (Int, ReportType) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
@@ -76,6 +86,7 @@ fun PartyMemberDetailScreen(
     val isMyWriting by partyMemberDetailViewModel.isMyWriting.collectAsStateWithLifecycle()
     var showParticipatePopup by remember { mutableStateOf(false) }
     var showCancelPopup by remember { mutableStateOf(false) }
+    var showEditMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         partyMemberDetailViewModel.requestPartyDetail(partyId)
@@ -114,15 +125,24 @@ fun PartyMemberDetailScreen(
     SystemUiStatusBar(CurtainCallTheme.colors.primary)
     Scaffold(
         topBar = {
-            CurtainCallCenterTopAppBarWithBack(
-                title = showName,
-                containerColor = CurtainCallTheme.colors.primary,
-                contentColor = CurtainCallTheme.colors.onPrimary,
-                onBack = onBack
-            )
+            if (isMyWriting) {
+                CurtainCallCenterTopAppBarWithBackAndMore(
+                    title = showName,
+                    containerColor = CurtainCallTheme.colors.primary,
+                    contentColor = CurtainCallTheme.colors.onPrimary,
+                    onMore = { showEditMenu = showEditMenu.not() },
+                    onBack = onBack
+                )
+            } else {
+                CurtainCallCenterTopAppBarWithBack(
+                    title = showName,
+                    containerColor = CurtainCallTheme.colors.primary,
+                    contentColor = CurtainCallTheme.colors.onPrimary,
+                    onBack = onBack
+                )
+            }
         },
         floatingActionButton = {
-            // TODO 파티원 참여 여부에 따라 분기처리
             if (isMyWriting) {
                 CurtainCallFilledButton(
                     text = stringResource(R.string.enter_livetalk),
@@ -173,6 +193,8 @@ fun PartyMemberDetailScreen(
                         text = stringResource(
                             if (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum) {
                                 R.string.party_member_full_number_of_member
+                            } else if (SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(partyDetailModel.showAt) <= Date()) {
+                                R.string.end_recruitment
                             } else {
                                 R.string.participate
                             }
@@ -182,7 +204,7 @@ fun PartyMemberDetailScreen(
                             .padding(bottom = 14.dp)
                             .fillMaxWidth()
                             .height(51.dp),
-                        enabled = partyDetailModel.curMemberNum != partyDetailModel.maxMemberNum,
+                        enabled = !(partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum || SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(partyDetailModel.showAt) <= Date()),
                         containerColor = CurtainCallTheme.colors.secondary,
                         contentColor = CurtainCallTheme.colors.primary,
                         onClick = { showParticipatePopup = true }
@@ -197,8 +219,19 @@ fun PartyMemberDetailScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
                 .background(CurtainCallTheme.colors.primary),
+            showEditMenu = showEditMenu,
+            onCloseShowEditMenu = { showEditMenu = false },
+            onNavigateToEdit = onNavigateToEdit,
             onNavigateToReport = onNavigateToReport
         )
+    }
+
+    LaunchedEffect(Unit) {
+        partyMemberDetailViewModel.isSuccessDelete.collectLatest { isSuccessDelete ->
+            if (isSuccessDelete) {
+                onBack()
+            }
+        }
     }
 }
 
@@ -206,13 +239,85 @@ fun PartyMemberDetailScreen(
 private fun PartyMemberDetailContent(
     modifier: Modifier = Modifier,
     partyMemberDetailViewModel: PartyMemberDetailViewModel = hiltViewModel(),
+    showEditMenu: Boolean = false,
+    onCloseShowEditMenu: () -> Unit = {},
+    onNavigateToEdit: (Int?, String?) -> Unit = { _, _ -> },
     onNavigateToReport: (Int, ReportType) -> Unit = { _, _ -> },
 ) {
     val scrollState = rememberScrollState()
     val partyDetailModel by partyMemberDetailViewModel.partyDetailModel.collectAsStateWithLifecycle()
     val isMyWriting by partyMemberDetailViewModel.isMyWriting.collectAsStateWithLifecycle()
+    var showDeletePopup by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier.verticalScroll(scrollState)) {
+    if (showDeletePopup) {
+        CurtainCallSelectDialog(
+            title = stringResource(R.string.party_member_delete_popup_title),
+            cancelButtonText = stringResource(R.string.dismiss),
+            actionButtonText = stringResource(R.string.delete_popup),
+            onAction = {
+                onCloseShowEditMenu()
+                partyMemberDetailViewModel.deleteParty(partyDetailModel.id)
+            },
+            onCancel = { showDeletePopup = false },
+            onDismiss = { showDeletePopup = false }
+        )
+    }
+
+    Box(modifier = modifier.verticalScroll(scrollState)) {
+        if (showEditMenu) {
+            Card(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(end = 20.dp)
+                    .size(73.dp, 88.dp)
+                    .zIndex(1f),
+                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CurtainCallTheme.colors.background
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 10.dp
+                )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .clickable {
+                            onCloseShowEditMenu()
+                            onNavigateToEdit(partyDetailModel.id, partyDetailModel.showName)
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.edit),
+                        style = CurtainCallTheme.typography.body3.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = Grey1
+                        )
+                    )
+                }
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    background = Grey8
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .clickable { showDeletePopup = true },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.delete),
+                        style = CurtainCallTheme.typography.body3.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = Grey1
+                        )
+                    )
+                }
+            }
+        }
         Column(
             modifier = Modifier
                 .padding(top = 20.dp, bottom = 121.dp)

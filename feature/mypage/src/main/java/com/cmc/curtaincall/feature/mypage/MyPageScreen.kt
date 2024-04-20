@@ -61,13 +61,12 @@ import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
 fun MyPageScreen(
     myPageViewModel: MyPageViewModel = hiltViewModel(),
     onNavigateToProfile: () -> Unit = {},
+    onNavigateToMyParty: () -> Unit = {},
     onNavigateToWriting: () -> Unit = {},
     onNavigateToFavorite: () -> Unit = {},
     onNavigateToNotice: () -> Unit = {},
     onNavigateToFAQ: () -> Unit = {},
-    onNavigateToSetting: () -> Unit = {},
-    onNavigateRecruitment: () -> Unit,
-    onNavigateParticipation: () -> Unit,
+    onNavigateToSetting: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     val memberInfoModel by myPageViewModel.memberInfoModel.collectAsStateWithLifecycle()
@@ -101,6 +100,7 @@ fun MyPageScreen(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 30.dp)
                 .fillMaxWidth(),
+            onNavigateToMyParty = onNavigateToMyParty,
             onNavigateToWriting = onNavigateToWriting,
             onNavigateToFavorite = onNavigateToFavorite
         )
@@ -264,6 +264,7 @@ private fun MyPageService(
 @Composable
 private fun MyPageActivity(
     modifier: Modifier = Modifier,
+    onNavigateToMyParty: () -> Unit = {},
     onNavigateToWriting: () -> Unit = {},
     onNavigateToFavorite: () -> Unit = {}
 ) {
@@ -275,9 +276,7 @@ private fun MyPageActivity(
         Row(
             modifier = Modifier
                 .padding(top = 30.dp)
-                .clickable {
-                    // TODO
-                },
+                .clickable { onNavigateToMyParty() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

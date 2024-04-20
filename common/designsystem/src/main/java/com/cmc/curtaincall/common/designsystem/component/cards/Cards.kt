@@ -79,8 +79,8 @@ fun ShowDetailCard(
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .size(200.dp, 286.dp)
-                .clip(RoundedCornerShape(18.dp)),
+                .clip(RoundedCornerShape(18.dp))
+                .size(200.dp, 286.dp),
             contentScale = ContentScale.FillBounds
         )
         CurtainCallBasicChip(

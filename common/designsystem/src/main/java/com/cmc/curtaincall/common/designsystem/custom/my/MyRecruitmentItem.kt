@@ -1,4 +1,4 @@
-package com.cmc.curtaincall.common.designsystem.custom.party
+package com.cmc.curtaincall.common.designsystem.custom.my
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -7,101 +7,68 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.basic.DottedLine
+import com.cmc.curtaincall.common.designsystem.component.divider.HorizontalDivider
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
+import com.cmc.curtaincall.common.designsystem.theme.Grey1
 import com.cmc.curtaincall.common.designsystem.theme.Grey3
 import com.cmc.curtaincall.common.designsystem.theme.Grey4
+import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey8
+import com.cmc.curtaincall.common.designsystem.theme.Grey9
 import com.cmc.curtaincall.common.utility.extensions.convertPartyDate
 import com.cmc.curtaincall.common.utility.extensions.convertPartyTime
+import com.cmc.curtaincall.domain.model.member.MyParticipationModel
 import com.cmc.curtaincall.domain.model.member.MyRecruitmentModel
-import com.cmc.curtaincall.domain.model.party.PartyModel
 import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
-fun PartyEmptyContent(
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier
-                .size(60.dp)
-                .background(CurtainCallTheme.colors.background, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_partymember),
-                contentDescription = null,
-                modifier = Modifier.size(34.dp),
-                tint = CurtainCallTheme.colors.primary
-            )
-        }
-        Text(
-            text = stringResource(R.string.empty_party_member),
-            modifier = Modifier.padding(top = 12.dp),
-            style = CurtainCallTheme.typography.body3.copy(
-                fontWeight = FontWeight.SemiBold,
-                color = CurtainCallTheme.colors.primary
-            ),
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Preview
-@Composable
-fun PartyEmptyContentPreview() {
-    CurtainCallTheme {
-        PartyEmptyContent()
-    }
-}
-
-@Composable
-fun PartyHomeContent(
+fun MyRecruitmentItem(
     modifier: Modifier = Modifier,
+    myRecruitmentModel: MyRecruitmentModel,
     creatorImageUrl: String?,
     creatorNickname: String,
-    myRecruitmentModel: MyRecruitmentModel,
-    onClick: () -> Unit = {}
+    isEditMode: Boolean = false,
+    onMore: () -> Unit = {},
+    onEdit: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    onNavigateToDetail: () -> Unit = {},
+    onNavigateToLiveTalk: () -> Unit = {}
 ) {
-    val showAt = myRecruitmentModel.showAt?.let {
-        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(it)
-    } ?: Date()
-
-    Column(
+    val isEndRecruitment = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(myRecruitmentModel.showAt) <= Date()
+    Box(
         modifier = modifier
-            .size(290.dp, 182.dp)
+            .size(320.dp, 222.dp)
             .background(CurtainCallTheme.colors.background, RoundedCornerShape(12.dp))
-            .clickable { onClick() }
+            .clickable { onNavigateToDetail() }
     ) {
         Row(
             modifier = Modifier
-                .padding(top = 12.dp, bottom = 5.dp)
+                .padding(top = 12.dp)
                 .padding(horizontal = 12.dp)
                 .fillMaxWidth()
         ) {
@@ -127,10 +94,20 @@ fun PartyHomeContent(
                     )
                     Text(
                         text = creatorNickname,
-                        modifier = Modifier.padding(start = 8.dp),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .weight(1f),
                         style = CurtainCallTheme.typography.body4.copy(
                             fontWeight = FontWeight.SemiBold
                         )
+                    )
+                    Icon(
+                        painter = painterResource(R.drawable.ic_more_vert),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { onMore() },
+                        tint = Color.Unspecified
                     )
                 }
                 Text(
@@ -153,8 +130,62 @@ fun PartyHomeContent(
                 )
             }
         }
+
+        if (isEditMode) {
+            Card(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(end = 12.dp, top = 38.dp)
+                    .size(73.dp, 88.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CurtainCallTheme.colors.background
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 10.dp
+                )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .clickable { onEdit() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.edit),
+                        style = CurtainCallTheme.typography.body3.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = Grey1
+                        )
+                    )
+                }
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    background = Grey8
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .clickable { onDelete() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.delete),
+                        style = CurtainCallTheme.typography.body3.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = Grey1
+                        )
+                    )
+                }
+            }
+        }
+
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(top = 126.dp)
+                .fillMaxWidth(),
             contentAlignment = Alignment.CenterStart
         ) {
             Canvas(
@@ -190,7 +221,7 @@ fun PartyHomeContent(
         }
         Row(
             modifier = Modifier
-                .padding(top = 7.dp, bottom = 14.dp)
+                .padding(top = 147.dp)
                 .padding(start = 17.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -231,7 +262,7 @@ fun PartyHomeContent(
             ) {
                 Text(
                     text = stringResource(
-                        if (myRecruitmentModel.curMemberNum == myRecruitmentModel.maxMemberNum || showAt <= Date()) {
+                        if (myRecruitmentModel.curMemberNum == myRecruitmentModel.maxMemberNum || isEndRecruitment) {
                             R.string.finish_recruitment
                         } else {
                             R.string.recruiting
@@ -243,33 +274,51 @@ fun PartyHomeContent(
                 )
             }
         }
+        Box(
+            modifier = Modifier
+                .padding(top = 182.dp)
+                .fillMaxWidth()
+                .height(40.dp)
+                .background(
+                    color = CurtainCallTheme.colors.secondary,
+                    shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.enter_livetalk),
+                style = CurtainCallTheme.typography.body3.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    color = CurtainCallTheme.colors.primary
+                )
+            )
+        }
     }
 }
 
 @Composable
-fun PartyContent(
+fun MyParticipationtItem(
     modifier: Modifier = Modifier,
-    partyModel: PartyModel,
-    onClick: () -> Unit = {}
+    myParticipationModel: MyParticipationModel,
+    onNavigateToDetail: () -> Unit = {},
+    onCancel: () -> Unit = {},
+    onNavigateToLiveTalk: () -> Unit = {}
 ) {
-    val showAt = partyModel.showAt?.let {
-        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(it)
-    } ?: Date()
-
-    Column(
+    val isEndRecruitment = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(myParticipationModel.showAt) <= Date()
+    Box(
         modifier = modifier
-            .size(320.dp, 182.dp)
+            .size(320.dp, 222.dp)
             .background(CurtainCallTheme.colors.background, RoundedCornerShape(12.dp))
-            .clickable { onClick() }
+            .clickable { onNavigateToDetail() }
     ) {
         Row(
             modifier = Modifier
-                .padding(top = 12.dp, bottom = 5.dp)
+                .padding(top = 12.dp)
                 .padding(horizontal = 12.dp)
                 .fillMaxWidth()
         ) {
             AsyncImage(
-                model = partyModel.showPoster,
+                model = myParticipationModel.showPoster,
                 contentDescription = null,
                 error = painterResource(R.drawable.ic_error_poster),
                 modifier = Modifier
@@ -280,7 +329,7 @@ fun PartyContent(
             Column(modifier = Modifier.padding(start = 10.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     AsyncImage(
-                        model = partyModel.creatorImageUrl,
+                        model = myParticipationModel.creatorImageUrl,
                         error = painterResource(R.drawable.ic_default_profile),
                         contentDescription = null,
                         modifier = Modifier
@@ -289,7 +338,7 @@ fun PartyContent(
                         contentScale = ContentScale.FillBounds
                     )
                     Text(
-                        text = partyModel.creatorNickname,
+                        text = myParticipationModel.creatorNickname,
                         modifier = Modifier.padding(start = 8.dp),
                         style = CurtainCallTheme.typography.body4.copy(
                             fontWeight = FontWeight.SemiBold
@@ -297,7 +346,7 @@ fun PartyContent(
                     )
                 }
                 Text(
-                    text = partyModel.title,
+                    text = myParticipationModel.title,
                     modifier = Modifier.padding(top = 17.dp),
                     style = CurtainCallTheme.typography.body2.copy(
                         fontWeight = FontWeight.SemiBold
@@ -306,7 +355,7 @@ fun PartyContent(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = partyModel.content,
+                    text = myParticipationModel.content,
                     modifier = Modifier.padding(top = 8.dp),
                     style = CurtainCallTheme.typography.body4.copy(
                         color = Grey3
@@ -317,7 +366,9 @@ fun PartyContent(
             }
         }
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(top = 126.dp)
+                .fillMaxWidth(),
             contentAlignment = Alignment.CenterStart
         ) {
             Canvas(
@@ -353,7 +404,7 @@ fun PartyContent(
         }
         Row(
             modifier = Modifier
-                .padding(top = 7.dp, bottom = 14.dp)
+                .padding(top = 147.dp)
                 .padding(start = 17.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -365,7 +416,7 @@ fun PartyContent(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = partyModel.showAt?.convertPartyDate() ?: stringResource(R.string.no_information),
+                    text = myParticipationModel.showAt.convertPartyDate() ?: stringResource(R.string.no_information),
                     style = CurtainCallTheme.typography.body5.copy(
                         color = Grey4
                     )
@@ -379,7 +430,7 @@ fun PartyContent(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = partyModel.showAt?.convertPartyTime() ?: stringResource(R.string.no_information),
+                    text = myParticipationModel.showAt.convertPartyTime() ?: stringResource(R.string.no_information),
                     style = CurtainCallTheme.typography.body5.copy(
                         color = Grey4
                     )
@@ -394,7 +445,7 @@ fun PartyContent(
             ) {
                 Text(
                     text = stringResource(
-                        if (partyModel.curMemberNum == partyModel.maxMemberNum || showAt <= Date()) {
+                        if (myParticipationModel.curMemberNum == myParticipationModel.maxMemberNum || isEndRecruitment) {
                             R.string.finish_recruitment
                         } else {
                             R.string.recruiting
@@ -406,22 +457,49 @@ fun PartyContent(
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun PartyContentPreview() {
-    CurtainCallTheme {
-        PartyContent(
-            partyModel = PartyModel(
-                creatorNickname = "ows3090",
-                title = "제목제목제목",
-                content = "내용두줄내용두줄내용두줄내용두줄내용두줄내용두줄내용두줄내용두줄내용두",
-                showAt = "2023-04-28T19:30:00",
-                curMemberNum = 3,
-                maxMemberNum = 5
-            )
-        )
+        Row(
+            modifier = Modifier
+                .padding(top = 182.dp)
+                .fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(40.dp)
+                    .background(
+                        color = Grey9,
+                        shape = RoundedCornerShape(bottomStart = 12.dp)
+                    )
+                    .clickable { onCancel() },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.cancel_participate),
+                    style = CurtainCallTheme.typography.body3.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = Grey6
+                    )
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(40.dp)
+                    .background(
+                        color = CurtainCallTheme.colors.secondary,
+                        shape = RoundedCornerShape(bottomEnd = 12.dp)
+                    )
+                    .clickable { onNavigateToLiveTalk() },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.enter_livetalk),
+                    style = CurtainCallTheme.typography.body3.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = CurtainCallTheme.colors.primary
+                    )
+                )
+            }
+        }
     }
 }
