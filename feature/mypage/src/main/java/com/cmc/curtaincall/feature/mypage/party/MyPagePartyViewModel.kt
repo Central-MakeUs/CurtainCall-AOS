@@ -3,10 +3,12 @@ package com.cmc.curtaincall.feature.mypage.party
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.cmc.curtaincall.domain.model.member.MemberInfoModel
 import com.cmc.curtaincall.domain.model.member.MyParticipationModel
 import com.cmc.curtaincall.domain.model.member.MyRecruitmentModel
 import com.cmc.curtaincall.domain.repository.MemberRepository
+import com.cmc.curtaincall.domain.repository.PartyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +23,8 @@ enum class MyPartyType(val value: String) {
 
 @HiltViewModel
 class MyPagePartyViewModel @Inject constructor(
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
+    private val partyRepository: PartyRepository
 ) : ViewModel() {
     private val memberID = MutableStateFlow(Int.MIN_VALUE)
     private val _memberInfo = MutableStateFlow(MemberInfoModel())
@@ -36,11 +39,7 @@ class MyPagePartyViewModel @Inject constructor(
     private val _myParticipationModels = MutableStateFlow<PagingData<MyParticipationModel>>(PagingData.empty())
     val myParticipationModels = _myParticipationModels.asStateFlow()
 
-    init {
-        checkMemberID()
-    }
-
-    private fun checkMemberID() {
+    fun checkMemberID() {
         memberRepository.getMemberId()
             .onEach {
                 memberID.value = it
@@ -59,6 +58,7 @@ class MyPagePartyViewModel @Inject constructor(
 
     private fun fetchMyRecruitments(memberId: Int) {
         memberRepository.fetchMyRecruitments(memberId)
+            .cachedIn(viewModelScope)
             .onEach {
                 _myRecruitmentModels.value = it
             }.launchIn(viewModelScope)
@@ -66,8 +66,27 @@ class MyPagePartyViewModel @Inject constructor(
 
     private fun fetchMyParticipations(memberId: Int) {
         memberRepository.fetchMyParticipations(memberId)
+            .cachedIn(viewModelScope)
             .onEach {
                 _myParticipationModels.value = it
+            }.launchIn(viewModelScope)
+    }
+
+    fun cancelParty(partyId: Int) {
+        partyRepository.cancelParty(partyId)
+            .onEach { check ->
+                if (check) {
+                    fetchMyParticipations(memberID.value)
+                }
+            }.launchIn(viewModelScope)
+    }
+
+    fun deleteParty(partyId: Int) {
+        partyRepository.deleteParty(partyId)
+            .onEach { check ->
+                if (check) {
+                    fetchMyRecruitments(memberID.value)
+                }
             }.launchIn(viewModelScope)
     }
 }

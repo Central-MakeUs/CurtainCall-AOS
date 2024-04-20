@@ -43,6 +43,8 @@ import com.cmc.curtaincall.common.utility.extensions.convertPartyDate
 import com.cmc.curtaincall.common.utility.extensions.convertPartyTime
 import com.cmc.curtaincall.domain.model.member.MyParticipationModel
 import com.cmc.curtaincall.domain.model.member.MyRecruitmentModel
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
 fun MyRecruitmentItem(
@@ -57,6 +59,7 @@ fun MyRecruitmentItem(
     onNavigateToDetail: () -> Unit = {},
     onNavigateToLiveTalk: () -> Unit = {}
 ) {
+    val isEndRecruitment = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(myRecruitmentModel.showAt) <= Date()
     Box(
         modifier = modifier
             .size(320.dp, 222.dp)
@@ -145,7 +148,8 @@ fun MyRecruitmentItem(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
+                        .weight(1f)
+                        .clickable { onEdit() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -163,7 +167,8 @@ fun MyRecruitmentItem(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
+                        .weight(1f)
+                        .clickable { onDelete() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -257,7 +262,7 @@ fun MyRecruitmentItem(
             ) {
                 Text(
                     text = stringResource(
-                        if (myRecruitmentModel.curMemberNum == myRecruitmentModel.maxMemberNum) {
+                        if (myRecruitmentModel.curMemberNum == myRecruitmentModel.maxMemberNum || isEndRecruitment) {
                             R.string.finish_recruitment
                         } else {
                             R.string.recruiting
@@ -299,6 +304,7 @@ fun MyParticipationtItem(
     onCancel: () -> Unit = {},
     onNavigateToLiveTalk: () -> Unit = {}
 ) {
+    val isEndRecruitment = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(myParticipationModel.showAt) <= Date()
     Box(
         modifier = modifier
             .size(320.dp, 222.dp)
@@ -424,7 +430,7 @@ fun MyParticipationtItem(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = myParticipationModel.showAt?.convertPartyTime() ?: stringResource(R.string.no_information),
+                    text = myParticipationModel.showAt.convertPartyTime() ?: stringResource(R.string.no_information),
                     style = CurtainCallTheme.typography.body5.copy(
                         color = Grey4
                     )
@@ -439,7 +445,7 @@ fun MyParticipationtItem(
             ) {
                 Text(
                     text = stringResource(
-                        if (myParticipationModel.curMemberNum == myParticipationModel.maxMemberNum) {
+                        if (myParticipationModel.curMemberNum == myParticipationModel.maxMemberNum || isEndRecruitment) {
                             R.string.finish_recruitment
                         } else {
                             R.string.recruiting

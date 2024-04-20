@@ -16,8 +16,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,6 +37,7 @@ import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.chips.CurtainCallBasicChip
+import com.cmc.curtaincall.common.designsystem.component.dialogs.CurtainCallSelectDialog
 import com.cmc.curtaincall.common.designsystem.custom.my.MyParticipationtItem
 import com.cmc.curtaincall.common.designsystem.custom.my.MyRecruitmentItem
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
@@ -43,6 +46,10 @@ import com.cmc.curtaincall.common.designsystem.theme.Grey8
 
 @Composable
 internal fun MyPagePartyScreen(
+    myPagePartyViewModel: MyPagePartyViewModel = hiltViewModel(),
+    onNavigateToParty: () -> Unit = {},
+    onNavigateToPartyDetail: (Int?, String?) -> Unit = { _, _ -> },
+    onNavigateToPartyEdit: (Int?, String?) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
     SystemUiStatusBar(Grey8)
@@ -59,21 +66,47 @@ internal fun MyPagePartyScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(Grey8)
+                .background(Grey8),
+            onNavigateToParty = onNavigateToParty,
+            onNavigateToPartyDetail = onNavigateToPartyDetail,
+            onNavigateToPartyEdit = onNavigateToPartyEdit
         )
+    }
+
+    LaunchedEffect(Unit) {
+        myPagePartyViewModel.checkMemberID()
     }
 }
 
 @Composable
 private fun MyPagePartyContent(
     modifier: Modifier = Modifier,
-    myPagePartyViewModel: MyPagePartyViewModel = hiltViewModel()
+    myPagePartyViewModel: MyPagePartyViewModel = hiltViewModel(),
+    onNavigateToParty: () -> Unit = {},
+    onNavigateToPartyDetail: (Int?, String?) -> Unit = { _, _ -> },
+    onNavigateToPartyEdit: (Int?, String?) -> Unit = { _, _ -> },
 ) {
     val partyType by myPagePartyViewModel.myPartyType.collectAsStateWithLifecycle()
     val memberInfo by myPagePartyViewModel.memberInfo.collectAsStateWithLifecycle()
     val myParticipationModels = myPagePartyViewModel.myParticipationModels.collectAsLazyPagingItems()
     val myRecruitmentModels = myPagePartyViewModel.myRecruitmentModels.collectAsLazyPagingItems()
     var selectEditIndex by remember { mutableIntStateOf(Int.MIN_VALUE) }
+    var cancelPartyId by remember { mutableStateOf(Int.MIN_VALUE) }
+
+    if (cancelPartyId != Int.MIN_VALUE) {
+        CurtainCallSelectDialog(
+            title = stringResource(R.string.party_member_cancel_participate_popup_title),
+            description = stringResource(R.string.party_member_cancel_participate_popup_description),
+            cancelButtonText = stringResource(R.string.dismiss),
+            actionButtonText = stringResource(R.string.party_member_cancel_participate_popup_positive),
+            onAction = {
+                myPagePartyViewModel.cancelParty(cancelPartyId)
+                cancelPartyId = Int.MIN_VALUE
+            },
+            onCancel = { cancelPartyId = Int.MIN_VALUE },
+            onDismiss = { cancelPartyId = Int.MIN_VALUE }
+        )
+    }
 
     Column(modifier) {
         Row(
@@ -127,7 +160,7 @@ private fun MyPagePartyContent(
                             .padding(top = 20.dp)
                             .background(CurtainCallTheme.colors.secondary, RoundedCornerShape(40.dp))
                             .padding(horizontal = 18.dp, vertical = 8.dp)
-                            .clickable { },
+                            .clickable { onNavigateToParty() },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -149,7 +182,13 @@ private fun MyPagePartyContent(
                     items(myParticipationModels) { myParticipationModel ->
                         myParticipationModel?.let {
                             MyParticipationtItem(
-                                myParticipationModel = it
+                                myParticipationModel = it,
+                                onNavigateToDetail = {
+                                    onNavigateToPartyDetail(it.id, it.showName)
+                                },
+                                onCancel = {
+                                    cancelPartyId = it.id
+                                }
                             )
                         }
                     }
@@ -213,6 +252,18 @@ private fun MyPagePartyContent(
                                     } else {
                                         selectEditIndex = index
                                     }
+                                },
+                                onEdit = {
+                                    selectEditIndex = Int.MIN_VALUE
+                                    onNavigateToPartyEdit(it.id, it.showName)
+                                },
+                                onDelete = {
+                                    selectEditIndex = Int.MIN_VALUE
+                                    myPagePartyViewModel.deleteParty(it.id)
+                                },
+                                onNavigateToDetail = {
+                                    selectEditIndex = Int.MIN_VALUE
+                                    onNavigateToPartyDetail(it.id, it.showName)
                                 }
                             )
                         }

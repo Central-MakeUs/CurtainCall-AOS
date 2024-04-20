@@ -50,6 +50,7 @@ interface PartyService {
 
     @PATCH("parties/{partyId}")
     suspend fun updateParty(
+        @Path("partyId") partyId: Int,
         @Body updatePartyRequest: UpdatePartyRequest
     ): Response<Unit>
 

@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.cmc.curtaincall.common.navigation.NavGraphLabel
 import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
+import com.cmc.curtaincall.common.navigation.destination.PartyMemberDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
 import com.cmc.curtaincall.feature.mypage.faq.MyPageFAQScreen
 import com.cmc.curtaincall.feature.mypage.favorite.MyPageFavoriteScreen
@@ -130,6 +131,19 @@ fun NavGraphBuilder.mypageNavGraph(
 
         composable(MyPageDestination.MyParty.route) {
             MyPagePartyScreen(
+                onNavigateToParty = {
+                    navHostController.navigate(PartyMemberDestination.PartyMember.route) {
+                        popUpTo(MyPageDestination.MyPage.route) {
+                            inclusive = false
+                        }
+                    }
+                },
+                onNavigateToPartyDetail = { partyId, showName ->
+                    navHostController.navigate("${PartyMemberDestination.Detail.route}/$partyId/$showName")
+                },
+                onNavigateToPartyEdit = { partyId, showName ->
+                    navHostController.navigate("${PartyMemberDestination.Edit.route}/$partyId/$showName")
+                },
                 onBack = { navHostController.popBackStack() }
             )
         }

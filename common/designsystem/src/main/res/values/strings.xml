@@ -21,6 +21,7 @@
     <string name="enter_livetalk">TALK 입장</string>
     <string name="cancel_participate">참여 취소</string>
     <string name="end_recruitment">모집 마감</string>
+    <string name="edit_complete">수정 완료</string>
 
     <!-- app -->
     <string name="onboarding_first_banner_title">작품 정보뿐만 아니라 분실물까지!</string>
@@ -140,6 +141,8 @@
     <string name="party_member_show_content_restrict">500자 이내로 작성해주세요</string>
     <string name="party_member_upload_success">파티원 모집글이 업로드되었어요</string>
     <string name="party_member_upload_failure">오류로 인해 모집글 업로드에 실패했어요</string>
+    <string name="party_member_edit_success">파티원 모집글이 수정되었어요</string>
+    <string name="party_member_edit_failure">오류로 인해 모집글 수정에 실패했어요</string>
     <string name="party_member_detail_show_name">작품명</string>
     <string name="party_member_detail_show_date">공연 일자</string>
     <string name="party_member_detail_show_time">공연 시간</string>
