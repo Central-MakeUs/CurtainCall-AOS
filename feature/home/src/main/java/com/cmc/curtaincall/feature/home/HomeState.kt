@@ -1,7 +1,7 @@
 package com.cmc.curtaincall.feature.home
 
 import com.cmc.curtaincall.core.base.BaseState
-import com.cmc.curtaincall.domain.model.member.MyParticipationModel
+import com.cmc.curtaincall.domain.model.member.MemberInfoModel
 import com.cmc.curtaincall.domain.model.member.MyRecruitmentModel
 import com.cmc.curtaincall.domain.model.show.CostEffectiveShowModel
 import com.cmc.curtaincall.domain.model.show.LiveTalkShowModel
@@ -13,8 +13,8 @@ import com.cmc.curtaincall.domain.model.show.ShowSearchWordModel
 data class HomeState(
     val isShowTooltip: Boolean = false,
     val nickname: String = "",
+    val memberInfo: MemberInfoModel = MemberInfoModel(),
     val myRecruitments: List<MyRecruitmentModel> = listOf(),
-    val myParticipations: List<MyParticipationModel> = listOf(),
     val liveTalks: List<LiveTalkShowModel> = listOf(),
     val showRanks: List<ShowRankModel> = listOf(),
     val openShowInfos: List<ShowInfoModel> = listOf(),

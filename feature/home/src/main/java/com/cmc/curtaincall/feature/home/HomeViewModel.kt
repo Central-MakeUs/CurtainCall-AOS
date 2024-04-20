@@ -13,7 +13,6 @@ import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.client.models.User
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -32,13 +31,16 @@ class HomeViewModel @Inject constructor(
     private val showRepository: ShowRepository,
     private val chattingRepository: ChattingRepository,
     private val launchRepository: LaunchRepository
+
 ) : BaseViewModel<HomeState, HomeEvent, Nothing>(
     initialState = HomeState()
 ) {
+    private val memberID = MutableStateFlow(Int.MIN_VALUE)
     private val _user = MutableStateFlow(User())
     private val _token = MutableStateFlow("")
 
     init {
+        checkMemberId()
         checkCostEffectiveTooltip()
         getMemberNickname()
     }
@@ -59,10 +61,6 @@ class HomeViewModel @Inject constructor(
 
             is HomeEvent.RequestMyRecruitment -> {
                 currentState.copy(myRecruitments = event.myRecruitments)
-            }
-
-            is HomeEvent.RequestMyParticipations -> {
-                currentState.copy(myParticipations = event.myParticipations)
             }
 
             is HomeEvent.RequestPopularShowList -> {
@@ -93,8 +91,24 @@ class HomeViewModel @Inject constructor(
                 currentState.copy(costEffectiveShows = event.costEffectiveShows)
             }
 
+            is HomeEvent.GetMemberInfo -> {
+                currentState.copy(memberInfo = event.memberInfoModel)
+            }
+
             else -> currentState
         }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun checkMemberId() {
+        memberRepository.getMemberId()
+            .onEach {
+                memberID.value = it
+            }.flatMapLatest {
+                memberRepository.requestMemberInfo(it)
+            }.onEach {
+                sendAction(HomeEvent.GetMemberInfo(it))
+            }.launchIn(viewModelScope)
+    }
 
     private fun checkCostEffectiveTooltip() {
         launchRepository.isShowHomeTooltip()
@@ -133,41 +147,13 @@ class HomeViewModel @Inject constructor(
     }
 
     fun requestMyRecruitments() {
-        viewModelScope.launch {
-            val memberId = memberRepository.getMemberId().first()
-            memberRepository.requestMyRecruitments(
-                memberId = memberId,
-                page = 0,
-                size = 2
-            ).onEach { recruitments ->
-                sendAction(
-                    HomeEvent.RequestMyRecruitment(
-                        recruitments
-                            .sortedByDescending { it.createdAt }
-                            .take(2)
-                    )
-                )
-            }.launchIn(this)
-        }
-    }
-
-    fun requestMyParticipations() {
-        viewModelScope.launch {
-            val memberId = memberRepository.getMemberId().first()
-            memberRepository.requestMyParticipations(
-                memberId = memberId,
-                page = 0,
-                size = 2
-            ).onEach { participations ->
-                sendAction(
-                    HomeEvent.RequestMyParticipations(
-                        participations
-                            .sortedByDescending { it.createdAt }
-                            .take(2)
-                    )
-                )
-            }.launchIn(this)
-        }
+        memberRepository.requestMyRecruitments(
+            memberId = memberID.value,
+            page = 0,
+            size = 5
+        ).onEach {
+            sendAction(HomeEvent.RequestMyRecruitment(it))
+        }.launchIn(viewModelScope)
     }
 
     fun requestPopularShowList() {

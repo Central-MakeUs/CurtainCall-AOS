@@ -22,6 +22,7 @@
     <string name="cancel_participate">참여 취소</string>
     <string name="end_recruitment">모집 마감</string>
     <string name="edit_complete">수정 완료</string>
+    <string name="all_view">모두 보기</string>
 
     <!-- app -->
     <string name="onboarding_first_banner_title">작품 정보뿐만 아니라 분실물까지!</string>

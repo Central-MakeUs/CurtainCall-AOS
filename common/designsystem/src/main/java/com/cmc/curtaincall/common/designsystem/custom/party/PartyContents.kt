@@ -35,6 +35,7 @@ import com.cmc.curtaincall.common.designsystem.theme.Grey4
 import com.cmc.curtaincall.common.designsystem.theme.Grey8
 import com.cmc.curtaincall.common.utility.extensions.convertPartyDate
 import com.cmc.curtaincall.common.utility.extensions.convertPartyTime
+import com.cmc.curtaincall.domain.model.member.MyRecruitmentModel
 import com.cmc.curtaincall.domain.model.party.PartyModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -77,6 +78,171 @@ fun PartyEmptyContent(
 fun PartyEmptyContentPreview() {
     CurtainCallTheme {
         PartyEmptyContent()
+    }
+}
+
+@Composable
+fun PartyHomeContent(
+    modifier: Modifier = Modifier,
+    creatorImageUrl: String?,
+    creatorNickname: String,
+    myRecruitmentModel: MyRecruitmentModel,
+    onClick: () -> Unit = {}
+) {
+    val showAt = myRecruitmentModel.showAt?.let {
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(it)
+    } ?: Date()
+
+    Column(
+        modifier = modifier
+            .size(290.dp, 182.dp)
+            .background(CurtainCallTheme.colors.background, RoundedCornerShape(12.dp))
+            .clickable { onClick() }
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(top = 12.dp, bottom = 5.dp)
+                .padding(horizontal = 12.dp)
+                .fillMaxWidth()
+        ) {
+            AsyncImage(
+                model = myRecruitmentModel.showPoster,
+                contentDescription = null,
+                error = painterResource(R.drawable.ic_error_poster),
+                modifier = Modifier
+                    .size(80.dp, 109.dp)
+                    .clip(RoundedCornerShape(6.dp)),
+                contentScale = ContentScale.FillBounds
+            )
+            Column(modifier = Modifier.padding(start = 10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    AsyncImage(
+                        model = creatorImageUrl,
+                        error = painterResource(R.drawable.ic_default_profile),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.FillBounds
+                    )
+                    Text(
+                        text = creatorNickname,
+                        modifier = Modifier.padding(start = 8.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+                }
+                Text(
+                    text = myRecruitmentModel.title,
+                    modifier = Modifier.padding(top = 17.dp),
+                    style = CurtainCallTheme.typography.body2.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = myRecruitmentModel.content,
+                    modifier = Modifier.padding(top = 8.dp),
+                    style = CurtainCallTheme.typography.body4.copy(
+                        color = Grey3
+                    ),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Canvas(
+                modifier = Modifier
+                    .size(14.dp)
+                    .offset(x = (-7).dp)
+            ) {
+                drawArc(
+                    color = Grey8,
+                    startAngle = -90f,
+                    sweepAngle = 180f,
+                    useCenter = false
+                )
+            }
+            DottedLine(
+                modifier = Modifier.fillMaxWidth(),
+                strokeWidth = 5.dp.value,
+                strokeColor = Grey8
+            )
+            Canvas(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(14.dp)
+                    .offset(x = 7.dp)
+            ) {
+                drawArc(
+                    color = Grey8,
+                    startAngle = -90f,
+                    sweepAngle = -180f,
+                    useCenter = false
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .padding(top = 7.dp, bottom = 14.dp)
+                .padding(start = 17.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(Grey8, RoundedCornerShape(4.dp))
+                    .padding(vertical = 2.dp, horizontal = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = myRecruitmentModel.showAt?.convertPartyDate() ?: stringResource(R.string.no_information),
+                    style = CurtainCallTheme.typography.body5.copy(
+                        color = Grey4
+                    )
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .padding(start = 6.dp)
+                    .background(Grey8, RoundedCornerShape(4.dp))
+                    .padding(vertical = 2.dp, horizontal = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = myRecruitmentModel.showAt?.convertPartyTime() ?: stringResource(R.string.no_information),
+                    style = CurtainCallTheme.typography.body5.copy(
+                        color = Grey4
+                    )
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .padding(start = 6.dp)
+                    .background(Grey8, RoundedCornerShape(4.dp))
+                    .padding(vertical = 2.dp, horizontal = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(
+                        if (myRecruitmentModel.curMemberNum == myRecruitmentModel.maxMemberNum || showAt <= Date()) {
+                            R.string.finish_recruitment
+                        } else {
+                            R.string.recruiting
+                        }
+                    ),
+                    style = CurtainCallTheme.typography.body5.copy(
+                        color = Grey4
+                    )
+                )
+            }
+        }
     }
 }
 

@@ -59,6 +59,12 @@ fun HomeNavHost(
                     chatClient = chatClient,
                     onNavigateToPerformanceDetail = {
                         navHostController.navigate("${ShowDestination.Detail.route}/$it")
+                    },
+                    onNavigateToMyParty = {
+                        navHostController.navigate(MyPageDestination.MyParty.route)
+                    },
+                    onNavigateToPartyDetail = { partyId, showName ->
+                        navHostController.navigate("${PartyMemberDestination.Detail.route}/$partyId/$showName")
                     }
                 )
             }
