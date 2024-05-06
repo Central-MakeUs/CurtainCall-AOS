@@ -206,7 +206,16 @@ private fun PartyMemberRecruitContent(
 ) {
     val scrollState = rememberScrollState()
     val showInfoModels = partyMemberRecruitUiState.showInfoModels.collectAsLazyPagingItems()
-    Column(modifier.verticalScroll(scrollState)) {
+    Column(
+        modifier = modifier
+            .then(
+                if (partyMemberRecruitUiState.phrase == 1) {
+                    Modifier
+                } else {
+                    Modifier.verticalScroll(scrollState)
+                }
+            )
+    ) {
         PartyMemberRecruitPhrase(
             modifier = Modifier
                 .padding(top = 20.dp)
