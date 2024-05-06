@@ -120,7 +120,7 @@ fun ShowReviewItemContent(
             containerColor = CurtainCallTheme.colors.background
         ),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 8.dp
+            defaultElevation = 2.dp
         )
     ) {
         Column(
