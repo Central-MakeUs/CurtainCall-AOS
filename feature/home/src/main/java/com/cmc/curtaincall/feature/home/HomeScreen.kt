@@ -248,7 +248,9 @@ private fun HomeContentsLazyRow(
             if (isMyParty) {
                 Text(
                     text = stringResource(R.string.all_view),
-                    modifier = Modifier.clickable { onNavigateToMyParty() },
+                    modifier = Modifier
+                        .padding(end = 20.dp)
+                        .clickable { onNavigateToMyParty() },
                     style = CurtainCallTheme.typography.body4.copy(
                         color = Grey4,
                         fontWeight = FontWeight.SemiBold
