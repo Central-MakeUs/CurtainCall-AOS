@@ -97,9 +97,7 @@ fun MyPageScreen(
                 .background(Grey9)
         )
         MyPageActivity(
-            modifier = Modifier
-                .padding(horizontal = 20.dp, vertical = 30.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             onNavigateToMyParty = onNavigateToMyParty,
             onNavigateToWriting = onNavigateToWriting,
             onNavigateToFavorite = onNavigateToFavorite
@@ -111,9 +109,7 @@ fun MyPageScreen(
                 .background(Grey9)
         )
         MyPageService(
-            modifier = Modifier
-                .padding(horizontal = 20.dp, vertical = 30.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             onNavigateToNotice = onNavigateToNotice,
             onNavigateToFAQ = onNavigateToFAQ,
             onNavigateToSetting = onNavigateToSetting
@@ -199,13 +195,16 @@ private fun MyPageService(
     Column(modifier) {
         Text(
             text = stringResource(R.string.mypage_profile_service),
+            modifier = Modifier.padding(start = 20.dp, top = 30.dp),
             style = CurtainCallTheme.typography.subTitle4
         )
         Row(
             modifier = Modifier
-                .padding(top = 30.dp)
+                .padding(top = 15.dp)
                 .fillMaxWidth()
-                .clickable { onNavigateToSetting() },
+                .height(51.dp)
+                .clickable { onNavigateToSetting() }
+                .padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -222,9 +221,10 @@ private fun MyPageService(
         }
         Row(
             modifier = Modifier
-                .padding(top = 30.dp)
                 .fillMaxWidth()
-                .clickable { onNavigateToNotice() },
+                .height(51.dp)
+                .clickable { onNavigateToNotice() }
+                .padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -241,9 +241,11 @@ private fun MyPageService(
         }
         Row(
             modifier = Modifier
-                .padding(top = 30.dp)
+                .padding(bottom = 15.dp)
                 .fillMaxWidth()
-                .clickable { onNavigateToFAQ() },
+                .height(51.dp)
+                .clickable { onNavigateToFAQ() }
+                .padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -271,12 +273,16 @@ private fun MyPageActivity(
     Column(modifier) {
         Text(
             text = stringResource(R.string.mypage_profile_activity),
+            modifier = Modifier.padding(top = 30.dp, start = 20.dp),
             style = CurtainCallTheme.typography.subTitle4
         )
         Row(
             modifier = Modifier
-                .padding(top = 30.dp)
-                .clickable { onNavigateToMyParty() },
+                .padding(top = 15.dp)
+                .fillMaxWidth()
+                .height(51.dp)
+                .clickable { onNavigateToMyParty() }
+                .padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -293,8 +299,10 @@ private fun MyPageActivity(
         }
         Row(
             modifier = Modifier
-                .padding(top = 30.dp)
-                .clickable { onNavigateToWriting() },
+                .fillMaxWidth()
+                .height(51.dp)
+                .clickable { onNavigateToWriting() }
+                .padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -311,8 +319,11 @@ private fun MyPageActivity(
         }
         Row(
             modifier = Modifier
-                .padding(top = 30.dp)
-                .clickable { onNavigateToFavorite() },
+                .fillMaxWidth()
+                .padding(bottom = 15.dp)
+                .height(51.dp)
+                .clickable { onNavigateToFavorite() }
+                .padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
