@@ -355,7 +355,7 @@ fun MyReviewContent(
             containerColor = CurtainCallTheme.colors.background
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
+            defaultElevation = 2.dp
         )
     ) {
         Column(
