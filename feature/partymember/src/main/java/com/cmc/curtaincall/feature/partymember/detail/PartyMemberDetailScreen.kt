@@ -189,26 +189,31 @@ fun PartyMemberDetailScreen(
                         )
                     }
                 } else {
-                    CurtainCallFilledButton(
-                        text = stringResource(
-                            if (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum) {
-                                R.string.party_member_full_number_of_member
-                            } else if (SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(partyDetailModel.showAt) <= Date()) {
-                                R.string.end_recruitment
-                            } else {
-                                R.string.participate
-                            }
-                        ),
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .padding(bottom = 14.dp)
-                            .fillMaxWidth()
-                            .height(51.dp),
-                        enabled = !(partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum || SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(partyDetailModel.showAt) <= Date()),
-                        containerColor = CurtainCallTheme.colors.secondary,
-                        contentColor = CurtainCallTheme.colors.primary,
-                        onClick = { showParticipatePopup = true }
-                    )
+                    if (partyDetailModel.showAt.isNotEmpty()) {
+                        val showAt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(partyDetailModel.showAt)
+                        if (showAt != null) {
+                            CurtainCallFilledButton(
+                                text = stringResource(
+                                    if (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum) {
+                                        R.string.party_member_full_number_of_member
+                                    } else if (showAt <= Date()) {
+                                        R.string.end_recruitment
+                                    } else {
+                                        R.string.participate
+                                    }
+                                ),
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .padding(bottom = 14.dp)
+                                    .fillMaxWidth()
+                                    .height(51.dp),
+                                enabled = (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum).not() && (showAt <= Date()).not(),
+                                containerColor = CurtainCallTheme.colors.secondary,
+                                contentColor = CurtainCallTheme.colors.primary,
+                                onClick = { showParticipatePopup = true }
+                            )
+                        }
+                    }
                 }
             }
         },
