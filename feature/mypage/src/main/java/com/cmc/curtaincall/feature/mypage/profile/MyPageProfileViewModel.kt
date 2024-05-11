@@ -36,6 +36,9 @@ class MyPageProfileViewModel @Inject constructor(
     private val _updateEffect = MutableSharedFlow<Boolean>()
     val updateEffect = _updateEffect.asSharedFlow()
 
+    private val _isDefaultProfile = MutableStateFlow(false)
+    val isDefaultProfile = _isDefaultProfile.asStateFlow()
+
     init {
         checkMemberID()
     }
@@ -95,5 +98,9 @@ class MyPageProfileViewModel @Inject constructor(
                     .launchIn(viewModelScope)
             }
         }
+    }
+
+    fun changeDefaultProfile(isDefault: Boolean) {
+        _isDefaultProfile.value = isDefault
     }
 }

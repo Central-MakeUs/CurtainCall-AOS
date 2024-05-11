@@ -92,27 +92,31 @@ private fun MyPageProfileContent(
     modifier: Modifier = Modifier,
     myPageProfileViewModel: MyPageProfileViewModel = hiltViewModel()
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
+    val validationCheckState by myPageProfileViewModel.validationCheckState.collectAsStateWithLifecycle()
+    val memberInfoModel by myPageProfileViewModel.memberInfoModel.collectAsStateWithLifecycle()
+    val isDefaultProfile by myPageProfileViewModel.isDefaultProfile.collectAsStateWithLifecycle()
+
     var profileUri by remember { mutableStateOf<Uri?>(null) }
     val takePhotoFromAlbum = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { uri ->
             profileUri = uri
+            myPageProfileViewModel.changeDefaultProfile(false)
         }
     }
     var isShowBottomSheet by remember { mutableStateOf(false) }
     var isNickNameEdit by remember { mutableStateOf(false) }
-    val validationCheckState by myPageProfileViewModel.validationCheckState.collectAsStateWithLifecycle()
-    var userNickname by remember { mutableStateOf("") }
     var borderColor by remember { mutableStateOf(Color.Transparent) }
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val memberInfoModel by myPageProfileViewModel.memberInfoModel.collectAsStateWithLifecycle()
+    var userNickname by remember(memberInfoModel.nickname) { mutableStateOf(memberInfoModel.nickname) }
 
     LaunchedEffect(Unit) {
         myPageProfileViewModel.updateEffect.collectLatest { update ->
             if (update) {
                 profileUri = null
-                userNickname = ""
+                userNickname = memberInfoModel.nickname
                 isNickNameEdit = false
+                myPageProfileViewModel.changeDefaultProfile(false)
                 myPageProfileViewModel.clearValidationState()
                 myPageProfileViewModel.requestMemberInfo()
             }
@@ -128,7 +132,7 @@ private fun MyPageProfileContent(
                     }
 
                     ProfileEditImageMode.DEFAULT -> {
-                        profileUri = null
+                        myPageProfileViewModel.changeDefaultProfile(true)
                     }
 
                     else -> Unit
@@ -145,7 +149,11 @@ private fun MyPageProfileContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
-            model = profileUri ?: memberInfoModel.imageUrl,
+            model = if (isDefaultProfile) {
+                null
+            } else {
+                profileUri ?: memberInfoModel.imageUrl
+            },
             contentDescription = null,
             modifier = Modifier
                 .padding(top = 60.dp)
@@ -263,7 +271,7 @@ private fun MyPageProfileContent(
                 .padding(horizontal = 20.dp)
                 .fillMaxWidth()
                 .height(51.dp),
-            enabled = userNickname.isNotEmpty() && validationCheckState == ValidationCheckState.Validate,
+            enabled = profileUri != null || isDefaultProfile || validationCheckState == ValidationCheckState.Validate,
             onClick = {
                 myPageProfileViewModel.updateMember(
                     context = context,
