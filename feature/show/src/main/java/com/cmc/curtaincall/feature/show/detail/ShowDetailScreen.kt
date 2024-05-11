@@ -205,7 +205,7 @@ private fun ShowDetailContent(
         )
         ShowDetailCard(
             modifier = Modifier
-                .padding(top = 76.dp)
+                .padding(top = 20.dp)
                 .padding(horizontal = 20.dp),
             showDetailModel = showDetailModel,
             isFavorite = isFavorite,
