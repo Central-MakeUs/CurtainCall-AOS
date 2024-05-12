@@ -10,12 +10,15 @@ import com.cmc.curtaincall.core.navigation.CurtainCallDestination
 private const val SHOW_LABEL = "작품"
 private const val SHOW_ID_ARG = "showId"
 private const val REVIEW_ID_ARG = "reviewId"
+private const val GRADE_ARG = "grade"
+private const val CONTENT_ARG = "content"
 private const val FACILITY_ID_ARG = "facilityId"
 private const val FACILITY_NAME_ARG = "facilityName"
 private const val LOST_PROPERTY_ID_ARG = "lostPropertyId"
 private const val FROM_CREATE_ARGS = "fromCreate"
 const val DEFAULT_REVIEW_ID = Int.MIN_VALUE
 const val DEFAULT_LOST_PROPERTY_ID = Int.MIN_VALUE
+const val DEFAULT_GRADE = 0
 
 sealed class ShowDestination : CurtainCallDestination {
     object Search : ShowDestination(), BottomDestination {
@@ -51,13 +54,28 @@ sealed class ShowDestination : CurtainCallDestination {
         override val route = NavRouteLabel.SHOW_REVIEW_CREATE
         const val showIdArg = SHOW_ID_ARG
         const val reviewIdArg = REVIEW_ID_ARG
-        val routeWithArgs = "$route/{$showIdArg}/{$reviewIdArg}"
+        const val gradeArg = GRADE_ARG
+        const val contentArg = CONTENT_ARG
+        val routeWithArgs = "$route?" +
+            "$showIdArg={$showIdArg}&" +
+            "$reviewIdArg={$reviewIdArg}&" +
+            "$gradeArg={$gradeArg}&" +
+            "$contentArg={$contentArg}"
         val arguments = listOf(
             navArgument(showIdArg) {
                 type = NavType.StringType
             },
             navArgument(reviewIdArg) {
                 type = NavType.IntType
+            },
+            navArgument(gradeArg) {
+                type = NavType.IntType
+                defaultValue = DEFAULT_GRADE
+            },
+            navArgument(contentArg) {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
             }
         )
     }

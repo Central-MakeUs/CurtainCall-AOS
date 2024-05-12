@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
 import com.cmc.curtaincall.common.designsystem.R
+import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.custom.show.MyReviewContent
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
@@ -33,7 +33,7 @@ import com.cmc.curtaincall.common.designsystem.theme.White
 @Composable
 internal fun MyPageWritingScreen(
     myPageWritingViewModel: MyPageWritingViewModel = hiltViewModel(),
-    onNavigateToReviewCreate: (String, Int) -> Unit = { _, _ -> },
+    onNavigateToReviewCreate: (String, Int, Int, String?) -> Unit = { _, _, _, _ -> },
     onBack: () -> Unit = {}
 ) {
     SystemUiStatusBar(White)
@@ -63,7 +63,7 @@ internal fun MyPageWritingScreen(
 private fun MyPageWritingContent(
     modifier: Modifier = Modifier,
     myPageWritingViewModel: MyPageWritingViewModel = hiltViewModel(),
-    onNavigateToReviewCreate: (String, Int) -> Unit = { _, _ -> },
+    onNavigateToReviewCreate: (String, Int, Int, String?) -> Unit = { _, _, _, _ -> },
 ) {
     val myReviewModels = myPageWritingViewModel.myReviewModels.collectAsLazyPagingItems()
     if (myReviewModels.itemCount == 0) {
@@ -100,7 +100,7 @@ private fun MyPageWritingContent(
                     MyReviewContent(
                         modifier = Modifier.fillMaxWidth(),
                         memberReviewModel = model,
-                        onClick = { onNavigateToReviewCreate(model.showId, model.id) }
+                        onClick = { onNavigateToReviewCreate(model.showId, model.id, model.grade, model.content) }
                     )
                 }
             }

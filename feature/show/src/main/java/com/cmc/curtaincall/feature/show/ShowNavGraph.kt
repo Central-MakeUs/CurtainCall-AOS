@@ -43,7 +43,11 @@ fun NavGraphBuilder.showNavGraph(
                     navHostController.navigate("${ShowDestination.Review.route}/$showId")
                 },
                 onNavigateToReviewCreate = {
-                    navHostController.navigate("${ShowDestination.ReviewCreate.route}/$showIdArg/$DEFAULT_REVIEW_ID")
+                    navHostController.navigate(
+                        "${ShowDestination.ReviewCreate.route}?" +
+                            "${ShowDestination.ReviewCreate.showIdArg}=$showIdArg&" +
+                            "${ShowDestination.ReviewCreate.reviewIdArg}=$DEFAULT_REVIEW_ID"
+                    )
                 },
                 onNavigateToLostProperty = { facilityId, facilityName ->
                     navHostController.navigate("${ShowDestination.LostProperty.route}/$facilityId/$facilityName")
@@ -61,8 +65,14 @@ fun NavGraphBuilder.showNavGraph(
             val showIdArg = entry.arguments?.getString(ShowDestination.Review.showIdArg)
             ShowReviewScreen(
                 showId = showIdArg,
-                onNavigateToReviewCreate = { reviewId ->
-                    navHostController.navigate("${ShowDestination.ReviewCreate.route}/$showIdArg/$reviewId")
+                onNavigateToReviewCreate = { reviewId, grade, content ->
+                    navHostController.navigate(
+                        "${ShowDestination.ReviewCreate.route}?" +
+                            "${ShowDestination.ReviewCreate.showIdArg}=$showIdArg&" +
+                            "${ShowDestination.ReviewCreate.reviewIdArg}=$reviewId&" +
+                            "${ShowDestination.ReviewCreate.gradeArg}=$grade&" +
+                            "${ShowDestination.ReviewCreate.contentArg}=$content"
+                    )
                 },
                 onNavigateToReport = onNavigateToReport,
                 onBack = {
@@ -76,6 +86,9 @@ fun NavGraphBuilder.showNavGraph(
         ) { entry ->
             val showIdArg = entry.arguments?.getString(ShowDestination.ReviewCreate.showIdArg)
             val reviewIdArg = entry.arguments?.getInt(ShowDestination.ReviewCreate.reviewIdArg)
+            val gradeArg = entry.arguments?.getInt(ShowDestination.ReviewCreate.gradeArg)
+            val contentArg = entry.arguments?.getString(ShowDestination.ReviewCreate.contentArg)
+
             if (navHostController.previousBackStackEntry?.destination?.route == ShowDestination.Review.routeWithArgs) {
                 val showDetailEntry = remember(entry) { navHostController.getBackStackEntry(ShowDestination.Detail.routeWithArgs) }
                 val reviewEntry = remember(entry) { navHostController.getBackStackEntry(ShowDestination.Review.routeWithArgs) }
@@ -84,6 +97,8 @@ fun NavGraphBuilder.showNavGraph(
                     showReviewViewModel = hiltViewModel(reviewEntry),
                     showId = showIdArg,
                     reviewId = reviewIdArg,
+                    grade = gradeArg,
+                    content = contentArg,
                     onBack = { navHostController.popBackStack() }
                 )
             } else if (navHostController.previousBackStackEntry?.destination?.route == ShowDestination.Detail.routeWithArgs) {
@@ -92,12 +107,16 @@ fun NavGraphBuilder.showNavGraph(
                     showDetailViewModel = hiltViewModel(showDetailEntry),
                     showId = showIdArg,
                     reviewId = reviewIdArg,
+                    grade = gradeArg,
+                    content = contentArg,
                     onBack = { navHostController.popBackStack() }
                 )
             } else {
                 ShowReviewCreateScreen(
                     showId = showIdArg,
                     reviewId = reviewIdArg,
+                    grade = gradeArg,
+                    content = contentArg,
                     onBack = { navHostController.popBackStack() }
                 )
             }

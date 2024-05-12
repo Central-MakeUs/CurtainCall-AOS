@@ -46,6 +46,7 @@ import com.cmc.curtaincall.common.designsystem.custom.show.ShowReviewListEmptyCo
 import com.cmc.curtaincall.common.designsystem.theme.Black
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey9
+import com.cmc.curtaincall.common.navigation.destination.DEFAULT_GRADE
 import com.cmc.curtaincall.common.navigation.destination.DEFAULT_REVIEW_ID
 import com.cmc.curtaincall.domain.type.ReportType
 
@@ -53,7 +54,7 @@ import com.cmc.curtaincall.domain.type.ReportType
 internal fun ShowReviewScreen(
     showReviewViewModel: ShowReviewViewModel = hiltViewModel(),
     showId: String?,
-    onNavigateToReviewCreate: (Int) -> Unit = {},
+    onNavigateToReviewCreate: (Int, Int, String?) -> Unit = { _, _, _ -> },
     onNavigateToReport: (Int, ReportType) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
@@ -101,7 +102,7 @@ internal fun ShowReviewScreen(
                     if (showReviewUiState.hasMyReview) {
                         existedReviewPopup = true
                     } else {
-                        onNavigateToReviewCreate(DEFAULT_REVIEW_ID)
+                        onNavigateToReviewCreate(DEFAULT_REVIEW_ID, DEFAULT_GRADE, null)
                     }
                 }
             )
@@ -125,7 +126,7 @@ private fun ShowReviewContent(
     modifier: Modifier = Modifier,
     showReviewViewModel: ShowReviewViewModel = hiltViewModel(),
     showId: String,
-    onNavigateToReviewCreate: (Int) -> Unit = {},
+    onNavigateToReviewCreate: (Int, Int, String?) -> Unit = { _, _, _ -> },
     onNavigateToReport: (Int, ReportType) -> Unit = { _, _ -> }
 ) {
     val showReviewUiState by showReviewViewModel.uiState.collectAsStateWithLifecycle()
@@ -253,7 +254,7 @@ private fun ShowReviewContent(
                                     isFavorite = !showReviewModel.isFavorite
                                 )
                             },
-                            onEditClick = { onNavigateToReviewCreate(showReviewModel.id) },
+                            onEditClick = { onNavigateToReviewCreate(showReviewModel.id, showReviewModel.grade, showReviewModel.content) },
                             onDeleteClick = { deleteReviewId = showReviewModel.id },
                             onReportClick = {
                                 onNavigateToReport(
