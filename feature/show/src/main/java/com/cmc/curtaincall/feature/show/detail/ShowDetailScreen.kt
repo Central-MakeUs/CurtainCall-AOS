@@ -77,7 +77,7 @@ internal fun ShowDetailScreen(
             ShowDetailContent(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(668.dp)
+                    .height(611.dp)
                     .background(CurtainCallTheme.colors.background),
                 showDetailModel = showDetailUiState.showDetailModel,
                 isFavorite = showDetailUiState.isFavorite,
@@ -218,7 +218,7 @@ private fun ShowDetailContent(
         )
         if (isShowCoachMark) {
             CurtainCallShowLiveTalkTooltip(
-                modifier = Modifier.padding(top = 620.dp),
+                modifier = Modifier.padding(top = 564.dp),
                 text = stringResource(R.string.livetalk_coach_mark),
                 onClick = { showDetailViewModel.closeCoachMark() }
             )
