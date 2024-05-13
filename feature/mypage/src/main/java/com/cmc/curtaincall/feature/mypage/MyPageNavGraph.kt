@@ -60,8 +60,14 @@ fun NavGraphBuilder.mypageNavGraph(
 
         composable(route = MyPageDestination.Writing.route) {
             MyPageWritingScreen(
-                onNavigateToReviewCreate = { showId, reviewId ->
-                    navHostController.navigate("${ShowDestination.ReviewCreate.route}/$showId/$reviewId")
+                onNavigateToReviewCreate = { showId, reviewId, grade, content ->
+                    navHostController.navigate(
+                        "${ShowDestination.ReviewCreate.route}?" +
+                            "${ShowDestination.ReviewCreate.showIdArg}=$showId&" +
+                            "${ShowDestination.ReviewCreate.reviewIdArg}=$reviewId&" +
+                            "${ShowDestination.ReviewCreate.gradeArg}=$grade&" +
+                            "${ShowDestination.ReviewCreate.contentArg}=$content"
+                    )
                 },
                 onBack = {
                     navHostController.popBackStack()

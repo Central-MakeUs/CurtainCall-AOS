@@ -62,14 +62,17 @@ internal fun ShowReviewCreateScreen(
     showReviewViewModel: ShowReviewViewModel = hiltViewModel(),
     showId: String?,
     reviewId: Int?,
+    grade: Int?,
+    content: String?,
     onBack: () -> Unit
 ) {
     requireNotNull(showId)
     requireNotNull(reviewId)
+    requireNotNull(grade)
 
     val editMode = reviewId != DEFAULT_REVIEW_ID
-    var rating by remember { mutableIntStateOf(0) }
-    var reviewText by remember { mutableStateOf("") }
+    var rating by remember { mutableIntStateOf(grade) }
+    var reviewText by remember { mutableStateOf(content ?: "") }
 
     if (editMode) {
         showDetailViewModel.requestShowDetail(showId)

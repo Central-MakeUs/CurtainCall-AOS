@@ -1,5 +1,7 @@
 package com.cmc.curtaincall.feature.show.detail.menu
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -28,6 +31,7 @@ import com.cmc.curtaincall.common.designsystem.component.divider.HorizontalDivid
 import com.cmc.curtaincall.common.designsystem.custom.show.ShowInfoContent
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey9
+import com.cmc.curtaincall.common.designsystem.theme.White
 import com.cmc.curtaincall.common.utility.extensions.convertDefaultDate
 import com.cmc.curtaincall.common.utility.extensions.toRunningTime
 import com.cmc.curtaincall.domain.enums.getShowTimes
@@ -81,20 +85,35 @@ fun ShowDetailMenuTabContent(
                     .replace("</styurl>", " ")
                     .split(" ")
                     .first()
-                AsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .allowHardware(false)
-                        .data(introductionImage)
-                        .build(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(top = 37.dp)
-                        .fillMaxWidth()
-                        .then(if (isExpanded) Modifier else Modifier.aspectRatio(360 / 300f)),
-                    error = painterResource(R.drawable.ic_error_introduction),
-                    alignment = Alignment.TopCenter,
-                    contentScale = ContentScale.FillWidth
-                )
+
+                val brush = Brush.verticalGradient(listOf(White.copy(0f), White.copy(1f)))
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .allowHardware(false)
+                            .data(introductionImage)
+                            .build(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(top = 37.dp)
+                            .fillMaxWidth()
+                            .then(if (isExpanded) Modifier else Modifier.aspectRatio(360 / 300f)),
+                        error = painterResource(R.drawable.ic_error_introduction),
+                        alignment = Alignment.TopCenter,
+                        contentScale = ContentScale.FillWidth
+                    )
+                    if (isExpanded.not()) {
+                        Canvas(
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .fillMaxWidth()
+                                .aspectRatio(360 / 100f),
+                            onDraw = {
+                                drawRect(brush)
+                            }
+                        )
+                    }
+                }
                 CurtainCallOutlinedButton(
                     modifier = Modifier
                         .padding(top = 40.dp, bottom = 30.dp)

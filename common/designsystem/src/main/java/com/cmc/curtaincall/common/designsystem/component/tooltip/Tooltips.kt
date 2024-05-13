@@ -37,7 +37,7 @@ fun CurtainCallCostEffectiveShowTooltip(
                 .size(10.dp, 5.dp)
         ) {
             drawPath(
-                color = Grey1,
+                color = Grey1.copy(0.8f),
                 path = Path().apply {
                     moveTo(5.dp.toPx(), 0.dp.toPx())
                     lineTo(0.dp.toPx(), 6.dp.toPx())
@@ -48,7 +48,7 @@ fun CurtainCallCostEffectiveShowTooltip(
         Box(
             modifier = Modifier
                 .size(302.dp, 33.dp)
-                .background(Grey1, RoundedCornerShape(8.dp)),
+                .background(Grey1.copy(0.8f), RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -85,7 +85,7 @@ fun CurtainCallShowSortTooltip(
                 .size(10.dp, 5.dp)
         ) {
             drawPath(
-                color = Grey1,
+                color = Grey1.copy(0.8f),
                 path = Path().apply {
                     moveTo(5.dp.toPx(), 0.dp.toPx())
                     lineTo(0.dp.toPx(), 6.dp.toPx())
@@ -96,7 +96,7 @@ fun CurtainCallShowSortTooltip(
         Box(
             modifier = Modifier
                 .size(277.dp, 33.dp)
-                .background(Grey1, RoundedCornerShape(8.dp)),
+                .background(Grey1.copy(0.8f), RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -133,7 +133,7 @@ fun CurtainCallShowLiveTalkTooltip(
                 .size(10.dp, 5.dp)
         ) {
             drawPath(
-                color = Grey1,
+                color = Grey1.copy(0.8f),
                 path = Path().apply {
                     moveTo(5.dp.toPx(), 0.dp.toPx())
                     lineTo(0.dp.toPx(), 6.dp.toPx())
@@ -144,7 +144,7 @@ fun CurtainCallShowLiveTalkTooltip(
         Box(
             modifier = Modifier
                 .size(279.dp, 33.dp)
-                .background(Grey1, RoundedCornerShape(8.dp)),
+                .background(Grey1.copy(0.8f), RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -181,7 +181,7 @@ fun CurtainCallPartyTooltip(
                 .size(10.dp, 5.dp)
         ) {
             drawPath(
-                color = Grey1,
+                color = Grey1.copy(0.8f),
                 path = Path().apply {
                     moveTo(5.dp.toPx(), 0.dp.toPx())
                     lineTo(0.dp.toPx(), 6.dp.toPx())
@@ -192,7 +192,7 @@ fun CurtainCallPartyTooltip(
         Box(
             modifier = Modifier
                 .size(215.dp, 33.dp)
-                .background(Grey1, RoundedCornerShape(8.dp)),
+                .background(Grey1.copy(0.8f), RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {

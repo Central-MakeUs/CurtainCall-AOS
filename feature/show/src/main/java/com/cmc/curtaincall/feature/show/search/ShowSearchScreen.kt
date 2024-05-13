@@ -229,8 +229,9 @@ private fun ShowListContent(
         Column {
             Row(
                 modifier = Modifier
-                    .padding(top = 20.dp)
-                    .fillMaxWidth(),
+                    .padding(top = 12.dp)
+                    .fillMaxWidth()
+                    .height(45.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 CurtainCallBasicChip(
@@ -280,10 +281,10 @@ private fun ShowListContent(
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
-                .padding(top = 67.dp)
+                .padding(top = 57.dp)
                 .fillMaxSize(),
             state = lazyGridState,
-            contentPadding = PaddingValues(bottom = 26.dp),
+            contentPadding = PaddingValues(top = 10.dp, bottom = 26.dp),
             verticalArrangement = Arrangement.spacedBy(26.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {

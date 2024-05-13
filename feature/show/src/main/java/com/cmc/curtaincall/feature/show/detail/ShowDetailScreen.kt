@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,7 +37,6 @@ import com.cmc.curtaincall.domain.enums.MenuTabType
 import com.cmc.curtaincall.domain.model.show.ShowDetailModel
 import com.cmc.curtaincall.feature.show.detail.menu.ShowDetailMenuTabContent
 import com.cmc.curtaincall.feature.show.detail.menu.ShowReviewTabContent
-import timber.log.Timber
 
 @Composable
 internal fun ShowDetailScreen(
@@ -54,31 +55,43 @@ internal fun ShowDetailScreen(
         showDetailViewModel.requestShowDetail(showId)
         showDetailViewModel.checkFavoriteShow(showId)
     }
-    Timber.d("ShowDetailScreen ${showDetailViewModel.hashCode()}")
 
     SystemUiStatusBar(CurtainCallTheme.colors.primary)
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-    ) {
-        ShowDetailContent(
+    Scaffold(
+        topBar = {
+            CurtainCallCenterTopAppBarWithBack(
+                title = showDetailUiState.showDetailModel.name,
+                containerColor = CurtainCallTheme.colors.primary,
+                contentColor = CurtainCallTheme.colors.onPrimary,
+                onBack = onBack
+            )
+        }
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(668.dp)
-                .background(CurtainCallTheme.colors.background),
-            showDetailModel = showDetailUiState.showDetailModel,
-            isFavorite = showDetailUiState.isFavorite,
-            isShowCoachMark = showDetailUiState.isShowCoachMark,
-            onBack = onBack
-        )
-        ShowDetailMenuTab(
-            modifier = Modifier.fillMaxSize(),
-            showId = showId,
-            onNavigateToReview = onNavigateToReview,
-            onNavigateToReviewCreate = onNavigateToReviewCreate,
-            onNavigateToLostProperty = onNavigateToLostProperty
-        )
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(CurtainCallTheme.colors.primary)
+                .verticalScroll(scrollState)
+        ) {
+            ShowDetailContent(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(611.dp)
+                    .background(CurtainCallTheme.colors.background),
+                showDetailModel = showDetailUiState.showDetailModel,
+                isFavorite = showDetailUiState.isFavorite,
+                isShowCoachMark = showDetailUiState.isShowCoachMark,
+                onBack = onBack
+            )
+            ShowDetailMenuTab(
+                modifier = Modifier.fillMaxSize(),
+                showId = showId,
+                onNavigateToReview = onNavigateToReview,
+                onNavigateToReviewCreate = onNavigateToReviewCreate,
+                onNavigateToLostProperty = onNavigateToLostProperty
+            )
+        }
     }
 }
 
@@ -184,22 +197,15 @@ private fun ShowDetailContent(
         modifier = modifier,
         contentAlignment = Alignment.TopCenter
     ) {
-        Column(
+        Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(276.dp)
+                .height(240.dp)
                 .background(CurtainCallTheme.colors.primary, RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 30.dp))
-        ) {
-            CurtainCallCenterTopAppBarWithBack(
-                title = showDetailModel.name,
-                containerColor = CurtainCallTheme.colors.primary,
-                contentColor = CurtainCallTheme.colors.onPrimary,
-                onBack = onBack
-            )
-        }
+        )
         ShowDetailCard(
             modifier = Modifier
-                .padding(top = 76.dp)
+                .padding(top = 20.dp)
                 .padding(horizontal = 20.dp),
             showDetailModel = showDetailModel,
             isFavorite = isFavorite,
@@ -212,7 +218,7 @@ private fun ShowDetailContent(
         )
         if (isShowCoachMark) {
             CurtainCallShowLiveTalkTooltip(
-                modifier = Modifier.padding(top = 620.dp),
+                modifier = Modifier.padding(top = 564.dp),
                 text = stringResource(R.string.livetalk_coach_mark),
                 onClick = { showDetailViewModel.closeCoachMark() }
             )

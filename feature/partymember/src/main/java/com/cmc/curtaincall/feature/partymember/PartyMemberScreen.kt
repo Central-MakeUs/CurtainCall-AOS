@@ -1,5 +1,6 @@
 package com.cmc.curtaincall.feature.partymember
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -47,6 +50,7 @@ import com.cmc.curtaincall.common.designsystem.custom.search.SearchWordEmptyCont
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey8
+import com.cmc.curtaincall.common.designsystem.theme.White
 import com.kizitonwose.calendar.core.CalendarDay
 import java.time.format.DateTimeFormatter
 
@@ -126,6 +130,7 @@ private fun PartyMemberSearchContent(
     val partyMemberUiState by partyMemberViewModel.uiState.collectAsStateWithLifecycle()
     val searchWords = partyMemberUiState.partySearchWords
     val partyModels = partyMemberUiState.partyModels.collectAsLazyPagingItems()
+
     if (searchAppBarState.isDoneSearch.value) {
         LazyColumn(
             modifier = modifier.fillMaxSize(),
@@ -273,6 +278,18 @@ private fun PartyMemberContent(
                     }
                 }
             }
+
+            val brush = Brush.verticalGradient(listOf(White.copy(alpha = 0f), White.copy(alpha = 1f)))
+            Canvas(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .blur(radius = 2.dp),
+                onDraw = {
+                    drawRect(brush)
+                }
+            )
         }
     }
 }

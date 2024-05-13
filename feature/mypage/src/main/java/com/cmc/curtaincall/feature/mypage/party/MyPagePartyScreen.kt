@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -111,9 +112,11 @@ private fun MyPagePartyContent(
     Column(modifier) {
         Row(
             modifier = Modifier
-                .padding(top = 20.dp)
+                .padding(top = 12.dp)
                 .padding(horizontal = 20.dp)
                 .fillMaxWidth()
+                .height(45.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             CurtainCallBasicChip(
                 text = MyPartyType.Participation.value,
@@ -139,7 +142,7 @@ private fun MyPagePartyContent(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(Modifier.weight(191f))
+                    Spacer(Modifier.weight(183f))
                     Text(
                         text = stringResource(R.string.mypage_myparty_participation_title),
                         style = CurtainCallTheme.typography.body3.copy(
@@ -176,7 +179,10 @@ private fun MyPagePartyContent(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(20.dp),
+                    contentPadding = PaddingValues(
+                        horizontal = 20.dp,
+                        vertical = 12.dp
+                    ),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(myParticipationModels) { myParticipationModel ->
@@ -237,7 +243,10 @@ private fun MyPagePartyContent(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(20.dp),
+                    contentPadding = PaddingValues(
+                        horizontal = 20.dp,
+                        vertical = 12.dp
+                    ),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     itemsIndexed(myRecruitmentModels) { index, myRecruitmentModel ->

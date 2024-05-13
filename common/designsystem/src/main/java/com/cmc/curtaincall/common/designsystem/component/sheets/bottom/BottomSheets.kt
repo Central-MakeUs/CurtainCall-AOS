@@ -2,6 +2,7 @@ package com.cmc.curtaincall.common.designsystem.component.sheets.bottom
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,7 +32,7 @@ import com.cmc.curtaincall.common.designsystem.theme.NoRippleTheme
 import com.cmc.curtaincall.domain.enums.ReviewSortType
 import com.cmc.curtaincall.domain.enums.ShowSortType
 
-private val ShowSortBottomSheetHeight = 270.dp
+private val ShowSortBottomSheetHeight = 250.dp
 private val ShowSortBottomSheetRadius = 28.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,12 +51,14 @@ fun CurtainCallShowSortBottomSheet(
             topStart = ShowSortBottomSheetRadius,
             topEnd = ShowSortBottomSheetRadius
         ),
-        containerColor = CurtainCallTheme.colors.background
+        containerColor = CurtainCallTheme.colors.background,
+        dragHandle = null
     ) {
+        Spacer(Modifier.size(20.dp))
         ShowSortType.values().forEach { sortType ->
             Row(
                 modifier = Modifier
-                    .padding(start = 30.dp, end = 15.dp)
+                    .padding(horizontal = 30.dp)
                     .fillMaxWidth()
                     .height(50.dp)
                     .clickable { onSelectSortType(sortType) },
@@ -83,6 +86,7 @@ fun CurtainCallShowSortBottomSheet(
                 }
             }
         }
+        Spacer(Modifier.size(30.dp))
     }
 }
 

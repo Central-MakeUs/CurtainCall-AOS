@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +36,7 @@ private data class OnBoardingBannerInfo(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun OnBoardingScreen(
+    onBoardingViewModel: OnBoardingViewModel = hiltViewModel(),
     onNavigateLoginUp: () -> Unit = {}
 ) {
     val bannerInfos = listOf(
@@ -57,6 +57,7 @@ internal fun OnBoardingScreen(
         )
     )
 
+    val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState { bannerInfos.size }
     SystemUiStatusBar(CurtainCallTheme.colors.primary)
     Column(
@@ -64,58 +65,15 @@ internal fun OnBoardingScreen(
             .fillMaxSize()
             .background(CurtainCallTheme.colors.primary)
     ) {
-        HorizontalPager(state = pagerState) { position ->
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.weight(571f)
+        ) { position ->
             OnBoardingContent(
                 modifier = Modifier.fillMaxSize(),
-                bannerInfo = bannerInfos[position],
-                pagerState = pagerState,
-                onNavigateLoginUp = onNavigateLoginUp
+                bannerInfo = bannerInfos[position]
             )
         }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun OnBoardingContent(
-    modifier: Modifier = Modifier,
-    onBoardingViewModel: OnBoardingViewModel = hiltViewModel(),
-    bannerInfo: OnBoardingBannerInfo,
-    pagerState: PagerState,
-    onNavigateLoginUp: () -> Unit = {}
-) {
-    val coroutineScope = rememberCoroutineScope()
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(Modifier.weight(112f))
-        Image(
-            painter = bannerInfo.image,
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(360 / 230f),
-            contentScale = ContentScale.FillBounds
-        )
-        Spacer(Modifier.weight(84f))
-        Text(
-            text = bannerInfo.title,
-            style = CurtainCallTheme.typography.subTitle2.copy(
-                color = CurtainCallTheme.colors.secondary
-            ),
-            textAlign = TextAlign.Center
-        )
-        Spacer(Modifier.weight(20f))
-        Text(
-            text = bannerInfo.description,
-            style = CurtainCallTheme.typography.body4.copy(
-                color = CurtainCallTheme.colors.secondary,
-                lineHeight = (20.8).sp
-            ),
-            textAlign = TextAlign.Center
-        )
-        Spacer(Modifier.weight(60f))
         DynamicHorizontalPagerIndicator(
             pagerState = pagerState,
             pageCount = pagerState.pageCount,
@@ -157,5 +115,44 @@ private fun OnBoardingContent(
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun OnBoardingContent(
+    modifier: Modifier = Modifier,
+    bannerInfo: OnBoardingBannerInfo
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(Modifier.weight(112f))
+        Image(
+            painter = bannerInfo.image,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(360 / 230f),
+            contentScale = ContentScale.FillBounds
+        )
+        Spacer(Modifier.weight(84f))
+        Text(
+            text = bannerInfo.title,
+            style = CurtainCallTheme.typography.subTitle2.copy(
+                color = CurtainCallTheme.colors.secondary
+            ),
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.weight(20f))
+        Text(
+            text = bannerInfo.description,
+            style = CurtainCallTheme.typography.body4.copy(
+                color = CurtainCallTheme.colors.secondary,
+                lineHeight = (20.8).sp
+            ),
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.weight(60f))
     }
 }

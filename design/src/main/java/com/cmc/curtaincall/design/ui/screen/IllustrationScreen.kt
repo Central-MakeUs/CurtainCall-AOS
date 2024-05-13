@@ -57,9 +57,6 @@ private fun IllustrationContent(
     modifier: Modifier = Modifier
 ) {
     val illustrations = listOf(
-        R.drawable.ic_onboarding_performance_search to "작품 탐색",
-        R.drawable.ic_onboarding_partymember_recruit to "파티원 모집",
-        R.drawable.ic_onboarding_livetalk to "라이브톡",
         R.drawable.ic_welcome_anim to "커튼콜 환영",
         R.drawable.ic_dictionary to "알쏭달쏭 용어 사전",
         R.drawable.ic_ticket to "티켓팅 안내",
