@@ -30,6 +30,7 @@ fun AppNavHost(
     ) {
         composable(route = RootDestination.Splash.route) {
             SplashScreen(
+                chatClient = chatClient,
                 onNavigateOnBoarding = {
                     navHostController.navigate(RootDestination.OnBoarding.route) {
                         popUpTo(RootDestination.Splash.route) {
@@ -84,6 +85,9 @@ fun AppNavHost(
             )
         }
 
-        authNavGraph(navHostController)
+        authNavGraph(
+            navHostController = navHostController,
+            chatClient = chatClient
+        )
     }
 }

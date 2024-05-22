@@ -11,11 +11,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
+import io.getstream.chat.android.client.ChatClient
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SplashScreen(
     splashViewModel: SplashViewModel = hiltViewModel(),
+    chatClient: ChatClient,
     onNavigateOnBoarding: () -> Unit = {},
     onNavigateOnLogin: () -> Unit = {},
     onNavigateOnHome: () -> Unit = {}
@@ -38,6 +40,16 @@ fun SplashScreen(
             }
         }
     }
+
+    LaunchedEffect(Unit) {
+        splashViewModel.user.collectLatest { user ->
+            splashViewModel.connectChattingClient(
+                chatClient = chatClient,
+                user = user
+            )
+        }
+    }
+
     SystemUiStatusBar(CurtainCallTheme.colors.primary)
     Spacer(
         modifier = Modifier

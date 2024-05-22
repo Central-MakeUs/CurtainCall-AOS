@@ -5,14 +5,21 @@ import com.cmc.curtaincall.common.utility.extensions.getTodayDate
 import com.cmc.curtaincall.core.base.RootViewModel
 import com.cmc.curtaincall.domain.model.auth.LoginResultModel
 import com.cmc.curtaincall.domain.repository.AuthRepository
+import com.cmc.curtaincall.domain.repository.ChattingRepository
 import com.cmc.curtaincall.domain.repository.LaunchRepository
 import com.cmc.curtaincall.domain.repository.MemberRepository
 import com.cmc.curtaincall.domain.repository.TokenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.getstream.chat.android.client.ChatClient
+import io.getstream.chat.android.client.models.User
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
 import timber.log.Timber
@@ -23,7 +30,8 @@ class SplashViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val tokenRepository: TokenRepository,
     private val memberRepository: MemberRepository,
-    private val launchRepository: LaunchRepository
+    private val launchRepository: LaunchRepository,
+    private val chattingRepository: ChattingRepository
 ) : RootViewModel<SplashSideEffect>() {
 
     private var refreshCount = 0
@@ -31,11 +39,15 @@ class SplashViewModel @Inject constructor(
     private val _isFirstEntryOnBoarding = MutableStateFlow(false)
     val isFirstEntryOnBoarding = _isFirstEntryOnBoarding.asStateFlow()
 
+    private val _user = MutableSharedFlow<User>()
+    val user = _user.asSharedFlow()
+
     init {
         checkIsFirstEntryOnBoarding()
         isValidationToken()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun isValidationToken() {
         val today = getTodayDate()
         tokenRepository.getAccessToken()
@@ -75,11 +87,47 @@ class SplashViewModel @Inject constructor(
                         if (loginResult.memberId == Int.MIN_VALUE) {
                             sendSideEffect(SplashSideEffect.NeedLogin)
                         } else {
-                            sendSideEffect(SplashSideEffect.AutoLogin)
+                            getCurrentUser(loginResult.memberId)
                         }
                     }
                 }
             }.launchIn(viewModelScope)
+    }
+
+    private fun getCurrentUser(memberId: Int?) {
+        memberId?.let { id ->
+            memberRepository.requestMemberInfo(id)
+                .onEach {
+                    _user.emit(
+                        User(
+                            id = it.id.toString(),
+                            name = it.nickname,
+                            image = it.imageUrl.toString()
+                        )
+                    )
+                }.launchIn(viewModelScope)
+        }
+    }
+
+    fun connectChattingClient(
+        chatClient: ChatClient,
+        user: User
+    ) {
+        if (chatClient.clientState.isConnecting) {
+            sendSideEffect(SplashSideEffect.AutoLogin)
+        } else {
+            chattingRepository.requestChattingToken()
+                .onEach {
+                    chatClient.connectUser(
+                        user = user,
+                        token = it.value
+                    ).enqueue {
+                        Timber.d("chatClient connect User ${it.isSuccess}")
+                    }
+                }.onCompletion {
+                    sendSideEffect(SplashSideEffect.AutoLogin)
+                }.launchIn(viewModelScope)
+        }
     }
 
     private fun refreshToken(token: String) {
