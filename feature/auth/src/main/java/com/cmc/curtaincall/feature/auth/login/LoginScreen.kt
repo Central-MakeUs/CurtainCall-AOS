@@ -24,6 +24,7 @@ import com.cmc.curtaincall.common.designsystem.dimension.Paddings
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.feature.auth.login.kakao.LoginKaKaoButton
 import com.cmc.curtaincall.feature.auth.login.naver.LoginNaverButton
+import io.getstream.chat.android.client.ChatClient
 import kotlinx.coroutines.flow.collectLatest
 
 private const val CURTAINCALL_LOGO = "CURTAINCALL_LOGO"
@@ -32,6 +33,7 @@ private const val CURTAINCALL_START_LOGIN_DESCRIPTION = "CURTAINCALL_START_LOGIN
 @Composable
 fun LoginScreen(
     loginViewModel: LoginViewModel = hiltViewModel(),
+    chatClient: ChatClient,
     onNavigateSignUpTerms: () -> Unit,
     onNavigateHome: () -> Unit
 ) {
@@ -46,6 +48,12 @@ fun LoginScreen(
                     onNavigateHome()
                 }
             }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        loginViewModel.user.collectLatest { user ->
+            loginViewModel.connectChattingClient(chatClient, user)
         }
     }
 

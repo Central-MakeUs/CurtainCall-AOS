@@ -48,6 +48,7 @@ import com.cmc.curtaincall.common.designsystem.theme.Grey7
 import com.cmc.curtaincall.common.designsystem.theme.Grey9
 import com.cmc.curtaincall.common.designsystem.theme.Red
 import com.cmc.curtaincall.common.designsystem.theme.White
+import io.getstream.chat.android.client.ChatClient
 import kotlinx.coroutines.flow.collectLatest
 
 private const val INPUT_CHECK_REGEX = "^[ㄱ-ㅎ가-힣a-zA-Z0-9]{1,15}$"
@@ -56,6 +57,7 @@ private const val INPUT_SECOND_CHECK = "^[가-힣A-Za-z0-9]*\$"
 
 @Composable
 internal fun SignUpInputScreen(
+    chatClient: ChatClient,
     onNavigateToHome: () -> Unit = {},
     onBack: () -> Unit = {}
 ) {
@@ -72,6 +74,7 @@ internal fun SignUpInputScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
                 .background(White),
+            chatClient = chatClient,
             onNavigateToHome = onNavigateToHome
         )
     }
@@ -82,6 +85,7 @@ internal fun SignUpInputScreen(
 private fun SignUpInputContent(
     modifier: Modifier = Modifier,
     signUpViewModel: SignUpInputViewModel = hiltViewModel(),
+    chatClient: ChatClient,
     onNavigateToHome: () -> Unit = {}
 ) {
     val validationCheckState by signUpViewModel.validationCheckState.collectAsStateWithLifecycle()
@@ -92,6 +96,12 @@ private fun SignUpInputContent(
     LaunchedEffect(signUpViewModel) {
         signUpViewModel.isComplete.collectLatest { isComplete ->
             if (isComplete) onNavigateToHome()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        signUpViewModel.user.collectLatest { user ->
+            signUpViewModel.connectChattingClient(chatClient, user)
         }
     }
 

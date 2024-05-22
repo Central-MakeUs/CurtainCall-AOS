@@ -4,13 +4,10 @@ import androidx.lifecycle.viewModelScope
 import com.cmc.curtaincall.common.utility.extensions.convertDDay
 import com.cmc.curtaincall.core.base.BaseViewModel
 import com.cmc.curtaincall.domain.enums.ShowGenreType
-import com.cmc.curtaincall.domain.repository.ChattingRepository
 import com.cmc.curtaincall.domain.repository.LaunchRepository
 import com.cmc.curtaincall.domain.repository.MemberRepository
 import com.cmc.curtaincall.domain.repository.ShowRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.getstream.chat.android.client.ChatClient
-import io.getstream.chat.android.client.models.User
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -18,7 +15,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -29,15 +25,12 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val memberRepository: MemberRepository,
     private val showRepository: ShowRepository,
-    private val chattingRepository: ChattingRepository,
     private val launchRepository: LaunchRepository
 
 ) : BaseViewModel<HomeState, HomeEvent, Nothing>(
     initialState = HomeState()
 ) {
     private val memberID = MutableStateFlow(Int.MIN_VALUE)
-    private val _user = MutableStateFlow(User())
-    private val _token = MutableStateFlow("")
 
     init {
         checkMemberId()
@@ -211,29 +204,6 @@ class HomeViewModel @Inject constructor(
                     )
                 )
             }.launchIn(viewModelScope)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun connectChattingClient(chatClient: ChatClient) {
-        memberRepository.getMemberId().flatMapLatest {
-            memberRepository.requestMemberInfo(it)
-        }.onEach {
-            _user.value = User(
-                id = it.id.toString(),
-                name = it.nickname,
-                image = it.imageUrl.toString()
-            )
-        }.flatMapLatest {
-            chattingRepository.requestChattingToken()
-        }.onEach {
-            _token.value = it.value
-            chatClient.connectUser(
-                user = _user.value,
-                token = it.value
-            ).enqueue {
-                Timber.d("chatClient connect User ${it.isSuccess}")
-            }
-        }.launchIn(viewModelScope)
     }
 
     fun requestShowRecommendations() {

@@ -10,14 +10,19 @@ import com.cmc.curtaincall.common.navigation.destination.HomeDestination
 import com.cmc.curtaincall.feature.auth.login.LoginScreen
 import com.cmc.curtaincall.feature.auth.signup.input.SignUpInputScreen
 import com.cmc.curtaincall.feature.auth.signup.terms.SignUpTermsScreen
+import io.getstream.chat.android.client.ChatClient
 
-fun NavGraphBuilder.authNavGraph(navHostController: NavHostController) {
+fun NavGraphBuilder.authNavGraph(
+    navHostController: NavHostController,
+    chatClient: ChatClient
+) {
     navigation(
         startDestination = AuthDestination.Login.route,
         route = NavGraphLabel.AUTH
     ) {
         composable(route = AuthDestination.Login.route) {
             LoginScreen(
+                chatClient = chatClient,
                 onNavigateSignUpTerms = {
                     navHostController.navigate(AuthDestination.SignUpTerms.route)
                 },
@@ -44,6 +49,7 @@ fun NavGraphBuilder.authNavGraph(navHostController: NavHostController) {
 
         composable(route = AuthDestination.SignUpInput.route) {
             SignUpInputScreen(
+                chatClient = chatClient,
                 onNavigateToHome = {
                     navHostController.navigate(HomeDestination.Home.route) {
                         popUpTo(AuthDestination.Login.route) {
