@@ -61,7 +61,7 @@ class LoginViewModel @Inject constructor(
         chatClient: ChatClient,
         user: User
     ) {
-        if (chatClient.clientState.isConnecting) {
+        if (chatClient.clientState.isInitialized) {
             sendSideEffect(LoginSideEffect.ExistMember)
         } else {
             chattingRepository.requestChattingToken()
