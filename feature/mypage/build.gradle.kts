@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.accompanist.webview)
     implementation(libs.coil.compose)
     implementation(libs.calendar.compose)
+    implementation(libs.getstream.chat.android.compose)
 
     // logging
     implementation(libs.timber)

@@ -42,21 +42,15 @@ import com.cmc.curtaincall.common.utility.extensions.convertSimpleDate
 import com.cmc.curtaincall.common.utility.extensions.toChangeDate
 import com.cmc.curtaincall.domain.enums.translateShowGenreType
 import com.cmc.curtaincall.domain.model.show.ShowRecommendationModel
-import io.getstream.chat.android.client.ChatClient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
-    chatClient: ChatClient,
     onNavigateToPerformanceDetail: (String) -> Unit,
     onNavigateToMyParty: () -> Unit = {},
     onNavigateToPartyDetail: (Int?, String?) -> Unit = { _, _ -> }
 ) {
-    LaunchedEffect(Unit) {
-        homeViewModel.connectChattingClient(chatClient)
-    }
-
     SystemUiStatusBar(Grey8)
     Scaffold(
         topBar = {

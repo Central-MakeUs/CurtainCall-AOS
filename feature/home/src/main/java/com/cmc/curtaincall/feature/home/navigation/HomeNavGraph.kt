@@ -56,7 +56,6 @@ fun HomeNavHost(
         ) {
             composable(route = HomeDestination.Home.route) {
                 HomeScreen(
-                    chatClient = chatClient,
                     onNavigateToPerformanceDetail = {
                         navHostController.navigate("${ShowDestination.Detail.route}/$it")
                     },
@@ -109,6 +108,7 @@ fun HomeNavHost(
             )
             mypageNavGraph(
                 navHostController = navHostController,
+                chatClient = chatClient,
                 onLogout = onLogout,
                 onDeleteMember = onDeleteMember
             )

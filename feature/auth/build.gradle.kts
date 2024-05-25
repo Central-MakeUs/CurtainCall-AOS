@@ -29,6 +29,7 @@ dependencies {
     // compose
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.accompanist.webview)
+    implementation(libs.getstream.chat.android.compose)
 
     // logging
     implementation(libs.timber)
