@@ -113,7 +113,7 @@ class SplashViewModel @Inject constructor(
         chatClient: ChatClient,
         user: User
     ) {
-        if (chatClient.clientState.isConnecting) {
+        if (chatClient.clientState.isInitialized) {
             sendSideEffect(SplashSideEffect.AutoLogin)
         } else {
             chattingRepository.requestChattingToken()
@@ -144,7 +144,10 @@ class SplashViewModel @Inject constructor(
 
     private fun checkIsFirstEntryOnBoarding() {
         launchRepository.getIsFirstEntryOnBoarding()
-            .onEach { _isFirstEntryOnBoarding.value = it }
+            .onEach {
+                Timber.d("checkIsFirstEntryOnBoarding $it")
+                _isFirstEntryOnBoarding.value = it
+            }
             .launchIn(viewModelScope)
     }
 }

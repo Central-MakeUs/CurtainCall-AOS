@@ -71,7 +71,7 @@ class SignUpInputViewModel @Inject constructor(
         chatClient: ChatClient,
         user: User
     ) {
-        if (chatClient.clientState.isConnecting) {
+        if (chatClient.clientState.isInitialized) {
             viewModelScope.launch {
                 _isComplete.emit(true)
             }

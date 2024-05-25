@@ -108,6 +108,7 @@ fun HomeNavHost(
             )
             mypageNavGraph(
                 navHostController = navHostController,
+                chatClient = chatClient,
                 onLogout = onLogout,
                 onDeleteMember = onDeleteMember
             )

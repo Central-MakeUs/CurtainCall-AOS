@@ -19,9 +19,11 @@ import com.cmc.curtaincall.feature.mypage.profile.MyPageProfileScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageDeleteMemberScreen
 import com.cmc.curtaincall.feature.mypage.setting.MyPageSettingScreen
 import com.cmc.curtaincall.feature.mypage.writing.MyPageWritingScreen
+import io.getstream.chat.android.client.ChatClient
 
 fun NavGraphBuilder.mypageNavGraph(
     navHostController: NavHostController,
+    chatClient: ChatClient,
     onLogout: () -> Unit,
     onDeleteMember: () -> Unit
 ) {
@@ -118,6 +120,7 @@ fun NavGraphBuilder.mypageNavGraph(
 
         composable(MyPageDestination.Setting.route) {
             MyPageSettingScreen(
+                chatClient = chatClient,
                 onLogout = onLogout,
                 onNavigateDeleteMember = {
                     navHostController.navigate(MyPageDestination.DeleteMember.route)

@@ -35,10 +35,12 @@ import com.cmc.curtaincall.domain.Urls.PRIVACY_INFORMATION_TERMS_URL
 import com.cmc.curtaincall.domain.Urls.SERVICE_TERMS_URL
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
+import io.getstream.chat.android.client.ChatClient
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 internal fun MyPageSettingScreen(
+    chatClient: ChatClient,
     onLogout: () -> Unit,
     onNavigateDeleteMember: () -> Unit,
     onBack: () -> Unit
@@ -69,6 +71,7 @@ internal fun MyPageSettingScreen(
                     .padding(paddingValues)
                     .fillMaxSize()
                     .background(White),
+                chatClient = chatClient,
                 onLogout = onLogout,
                 onNavigateDeleteMember = onNavigateDeleteMember,
                 onClickTerms = { webViewUrl = it }
@@ -101,6 +104,7 @@ internal fun MyPageSettingScreen(
 private fun MyPageSettingContent(
     modifier: Modifier = Modifier,
     myPageSettingViewModel: MyPageSettingViewModel = hiltViewModel(),
+    chatClient: ChatClient,
     onLogout: () -> Unit = {},
     onNavigateDeleteMember: () -> Unit = {},
     onClickTerms: (String) -> Unit = {}
@@ -113,7 +117,7 @@ private fun MyPageSettingContent(
             actionButtonText = stringResource(R.string.mypage_setting_logout),
             onDismiss = { isShowLogoutDialog = false },
             onCancel = { isShowLogoutDialog = false },
-            onAction = { myPageSettingViewModel.memberLogout() }
+            onAction = { myPageSettingViewModel.memberLogout(chatClient) }
         )
     }
 
