@@ -10,6 +10,7 @@ android {
 
 dependencies {
     implementation(project(":common:designsystem"))
+    implementation(project(":common:navigation"))
     implementation(project(":common:utility"))
     implementation(project(":core:base"))
     implementation(project(":domain"))
@@ -21,6 +22,7 @@ dependencies {
 
     // compose
     implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.accompanist.inset)
     implementation(libs.coil.compose)
     implementation(libs.getstream.chat.android.compose)
 

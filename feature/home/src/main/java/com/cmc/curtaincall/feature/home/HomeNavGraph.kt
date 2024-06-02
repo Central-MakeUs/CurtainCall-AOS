@@ -1,4 +1,4 @@
-package com.cmc.curtaincall.feature.home.navigation
+package com.cmc.curtaincall.feature.home
 
 import android.os.Build
 import android.os.Bundle
@@ -18,7 +18,6 @@ import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
 import com.cmc.curtaincall.common.navigation.destination.PartyMemberDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
 import com.cmc.curtaincall.domain.type.ReportType
-import com.cmc.curtaincall.feature.home.HomeScreen
 import com.cmc.curtaincall.feature.home.report.HomeReportScreen
 import com.cmc.curtaincall.feature.livetalk.livetalkNavGraph
 import com.cmc.curtaincall.feature.mypage.mypageNavGraph

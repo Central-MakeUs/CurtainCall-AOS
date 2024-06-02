@@ -154,7 +154,7 @@ fun ShowDetailCard(
             textStyle = CurtainCallTheme.typography.body2.copy(
                 fontWeight = FontWeight.SemiBold
             ),
-            onClick = onLikeClick
+            onClick = onNavigateToLiveTalk
         )
     }
 }

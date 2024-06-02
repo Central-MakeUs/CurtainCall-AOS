@@ -44,7 +44,7 @@ internal fun ShowDetailScreen(
     showId: String?,
     onNavigateToReview: (String) -> Unit = {},
     onNavigateToReviewCreate: () -> Unit = {},
-    onNavigateToLostProperty: (String, String) -> Unit = { _, _ -> },
+    onNavigateToLiveTalk: () -> Unit = {},
     onBack: () -> Unit = {}
 ) {
     requireNotNull(showId)
@@ -82,14 +82,13 @@ internal fun ShowDetailScreen(
                 showDetailModel = showDetailUiState.showDetailModel,
                 isFavorite = showDetailUiState.isFavorite,
                 isShowCoachMark = showDetailUiState.isShowCoachMark,
-                onBack = onBack
+                onNavigateToLiveTalk = onNavigateToLiveTalk
             )
             ShowDetailMenuTab(
                 modifier = Modifier.fillMaxSize(),
                 showId = showId,
                 onNavigateToReview = onNavigateToReview,
                 onNavigateToReviewCreate = onNavigateToReviewCreate,
-                onNavigateToLostProperty = onNavigateToLostProperty
             )
         }
     }
@@ -101,8 +100,7 @@ private fun ShowDetailMenuTab(
     showDetailViewModel: ShowDetailViewModel = hiltViewModel(),
     showId: String = "",
     onNavigateToReview: (String) -> Unit = {},
-    onNavigateToReviewCreate: () -> Unit = {},
-    onNavigateToLostProperty: (String, String) -> Unit = { _, _ -> }
+    onNavigateToReviewCreate: () -> Unit = {}
 ) {
     val showDetailUiState by showDetailViewModel.uiState.collectAsStateWithLifecycle()
     Column(modifier) {
@@ -191,7 +189,7 @@ private fun ShowDetailContent(
     showDetailModel: ShowDetailModel = ShowDetailModel(),
     isFavorite: Boolean = false,
     isShowCoachMark: Boolean = false,
-    onBack: () -> Unit = {}
+    onNavigateToLiveTalk: () -> Unit = {}
 ) {
     Box(
         modifier = modifier,
@@ -214,7 +212,8 @@ private fun ShowDetailContent(
                     showId = showDetailModel.id,
                     isFavorite = isFavorite.not()
                 )
-            }
+            },
+            onNavigateToLiveTalk = onNavigateToLiveTalk
         )
         if (isShowCoachMark) {
             CurtainCallShowLiveTalkTooltip(
