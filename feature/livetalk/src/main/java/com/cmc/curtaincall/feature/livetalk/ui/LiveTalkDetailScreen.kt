@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -31,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -42,14 +40,11 @@ import com.cmc.curtaincall.common.designsystem.theme.Cetacean_Blue
 import com.cmc.curtaincall.common.designsystem.theme.Eggplant
 import com.cmc.curtaincall.common.designsystem.theme.Electric_Indigo
 import com.cmc.curtaincall.common.designsystem.theme.Harmonies
-import com.cmc.curtaincall.common.designsystem.theme.Lavendar_Phlox
 import com.cmc.curtaincall.common.designsystem.theme.Roman_Silver
 import com.cmc.curtaincall.common.designsystem.theme.White
 import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
 import com.cmc.curtaincall.common.utility.extensions.toDateInKorea
 import com.cmc.curtaincall.common.utility.extensions.toTimePM
-import com.cmc.curtaincall.feature.livetalk.LiveTalkViewModel
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.client.models.Channel
 import io.getstream.chat.android.client.models.User
@@ -57,43 +52,41 @@ import io.getstream.chat.android.compose.state.messages.list.MessageItemState
 import io.getstream.chat.android.compose.ui.messages.composer.MessageComposer
 import io.getstream.chat.android.compose.ui.messages.header.MessageListHeader
 import io.getstream.chat.android.compose.ui.messages.list.MessageList
-import io.getstream.chat.android.compose.ui.theme.ChatTheme
-import io.getstream.chat.android.compose.ui.theme.StreamColors
 import io.getstream.chat.android.compose.viewmodel.messages.MessageComposerViewModel
 import io.getstream.chat.android.compose.viewmodel.messages.MessageListViewModel
 import io.getstream.chat.android.compose.viewmodel.messages.MessagesViewModelFactory
 
 @Composable
 internal fun LiveTalkDetailScreen(
-    liveTalkViewModel: LiveTalkViewModel = hiltViewModel(),
+    // liveTalkViewModel: LiveTalkViewModel = hiltViewModel(),
     chatClient: ChatClient,
     showId: String,
     showName: String,
     showAt: String,
     onBack: () -> Unit
 ) {
-    val systemUiController = rememberSystemUiController()
-    systemUiController.setStatusBarColor(Electric_Indigo)
-
-    val user by liveTalkViewModel.userState.collectAsStateWithLifecycle()
-    ChatTheme(
-        isInDarkMode = false,
-        colors = StreamColors.defaultColors().copy(
-            appBackground = Cetacean_Blue,
-            barsBackground = Lavendar_Phlox,
-            ownMessagesBackground = Color.Transparent,
-            otherMessagesBackground = Color.Transparent
-        )
-    ) {
-        LiveTalkDetailContent(
-            chatClient = chatClient,
-            showId = showId,
-            showName = showName,
-            showAt = showAt,
-            user = user,
-            onBack = onBack
-        )
-    }
+//    val systemUiController = rememberSystemUiController()
+//    systemUiController.setStatusBarColor(Electric_Indigo)
+//
+//    val user by liveTalkViewModel.userState.collectAsStateWithLifecycle()
+//    ChatTheme(
+//        isInDarkMode = false,
+//        colors = StreamColors.defaultColors().copy(
+//            appBackground = Cetacean_Blue,
+//            barsBackground = Lavendar_Phlox,
+//            ownMessagesBackground = Color.Transparent,
+//            otherMessagesBackground = Color.Transparent
+//        )
+//    ) {
+//        LiveTalkDetailContent(
+//            chatClient = chatClient,
+//            showId = showId,
+//            showName = showName,
+//            showAt = showAt,
+//            user = user,
+//            onBack = onBack
+//        )
+//    }
 }
 
 @Composable

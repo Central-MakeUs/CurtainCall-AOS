@@ -1,6 +1,7 @@
 package com.cmc.curtaincall.feature.livetalk.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,14 +10,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
@@ -26,26 +24,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
-import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallLiveTalkAppBarWithBack
-import com.cmc.curtaincall.common.designsystem.component.card.LiveTalkCard
-import com.cmc.curtaincall.common.designsystem.extensions.toSp
-import com.cmc.curtaincall.common.designsystem.theme.Bright_Gray
-import com.cmc.curtaincall.common.designsystem.theme.Cultured
+import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
-import com.cmc.curtaincall.common.designsystem.theme.White
-import com.cmc.curtaincall.common.designsystem.theme.spoqahansanseeo
-import com.cmc.curtaincall.common.utility.extensions.toTime
 import com.cmc.curtaincall.feature.livetalk.LiveTalkViewModel
 import io.getstream.chat.android.client.ChatClient
+import io.getstream.chat.android.compose.state.messages.list.MessageItemGroupPosition
 import io.getstream.chat.android.compose.state.messages.list.MessageItemState
 import io.getstream.chat.android.compose.ui.messages.composer.MessageComposer
 import io.getstream.chat.android.compose.ui.messages.list.MessageList
@@ -79,9 +73,8 @@ fun LiveTalkScreen(
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                CurtainCallLiveTalkAppBarWithBack(
+                CurtainCallCenterTopAppBarWithBack(
                     title = "데스노트",
-                    date = "일시 | 2024.02.24(토), 오후 7:30",
                     containerColor = CurtainCallTheme.colors.primary,
                     contentColor = CurtainCallTheme.colors.onPrimary,
                     onBack = onBack
@@ -105,7 +98,6 @@ fun LiveTalkScreen(
                     .padding(paddingValues)
                     .fillMaxSize()
                     .background(CurtainCallTheme.colors.primary),
-                chatClient = chatClient,
                 messageFactory = messageFactory
             )
         }
@@ -115,8 +107,10 @@ fun LiveTalkScreen(
 @Composable
 private fun LiveTalkMessageComposer(
     modifier: Modifier = Modifier,
+    liveTalkViewModel: LiveTalkViewModel = hiltViewModel(),
     messageFactory: MessagesViewModelFactory
 ) {
+    val memberName by liveTalkViewModel.memberName.collectAsStateWithLifecycle()
     val messageComposerViewModel = viewModel(MessageComposerViewModel::class.java, factory = messageFactory)
     MessageComposer(
         modifier = modifier,
@@ -127,7 +121,7 @@ private fun LiveTalkMessageComposer(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(42.dp)
+                    .heightIn(min = 42.dp)
                     .background(
                         color = CurtainCallTheme.colors.secondary,
                         shape = RoundedCornerShape(30.dp)
@@ -147,17 +141,16 @@ private fun LiveTalkMessageComposer(
                     onValueChange = { messageComposerViewModel.setMessageInput(it) },
                     modifier = Modifier
                         .padding(start = 10.dp)
+                        .padding(vertical = 4.dp)
                         .weight(1f),
                     textStyle = CurtainCallTheme.typography.body4.copy(
                         CurtainCallTheme.colors.primary
-                    ),
-                    singleLine = true,
-                    maxLines = 1
+                    )
                 ) { innerTextField ->
                     innerTextField()
                     if (inputState.inputValue.isEmpty()) {
                         Text(
-                            text = "고라파덕으로 메시지 보내기...",
+                            text = "${memberName}으로 메시지 보내기...",
                             style = CurtainCallTheme.typography.body4.copy(
                                 CurtainCallTheme.colors.primary
                             )
@@ -169,7 +162,14 @@ private fun LiveTalkMessageComposer(
                     contentDescription = null,
                     modifier = Modifier
                         .padding(horizontal = 10.dp)
-                        .size(24.dp),
+                        .size(24.dp)
+                        .clickable {
+                            messageComposerViewModel.sendMessage(
+                                messageComposerViewModel.buildNewMessage(
+                                    inputState.inputValue
+                                )
+                            )
+                        },
                     tint = Color.Unspecified
                 )
             }
@@ -180,7 +180,6 @@ private fun LiveTalkMessageComposer(
 @Composable
 private fun LiveTalkContent(
     modifier: Modifier = Modifier,
-    chatClient: ChatClient,
     messageFactory: MessagesViewModelFactory
 ) {
     val messageListViewModel = viewModel(MessageListViewModel::class.java, factory = messageFactory)
@@ -188,137 +187,174 @@ private fun LiveTalkContent(
         viewModel = messageListViewModel,
         modifier = modifier,
         emptyContent = {},
-        loadingContent = {}
-    ) {
-        if (it is MessageItemState) {
-            val message = it.message
-            if (message.user.id == "146") {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Text(
-                        text = "오후 1:30",
-                        style = CurtainCallTheme.typography.caption.copy(
-                            color = CurtainCallTheme.colors.onPrimary
-                        )
-                    )
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = CurtainCallTheme.colors.secondary,
-                                shape = RoundedCornerShape(
-                                    topStart = 10.dp,
-                                    bottomStart = 10.dp,
-                                    bottomEnd = 10.dp
-                                )
-                            ).padding(horizontal = 10.dp, vertical = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = message.text,
-                            style = CurtainCallTheme.typography.body4.copy(
-                                color = CurtainCallTheme.colors.primary
-                            )
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun LiveTalkContent(
-    liveTalkViewModel: LiveTalkViewModel,
-    modifier: Modifier = Modifier,
-    chatClient: ChatClient,
-    onNavigateDetail: (String, String, String) -> Unit
-) {
-    val liveTalkShows by liveTalkViewModel.liveTalkShows.collectAsStateWithLifecycle()
-    Column(modifier) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(top = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            item(span = { GridItemSpan(2) }) {
-                Column {
-                    Text(
-                        text = stringResource(R.string.livetalk_app_bar_title),
-                        color = White,
-                        fontSize = 24.dp.toSp(),
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = spoqahansanseeo
-                    )
-                    Text(
-                        text = stringResource(R.string.livetalk_app_bar_description),
-                        modifier = Modifier.padding(top = 2.dp),
-                        color = White,
-                        fontSize = 14.dp.toSp(),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = spoqahansanseeo
-                    )
-                    Spacer(modifier = Modifier.size(30.dp))
-                }
-            }
-
-            if (liveTalkShows.isEmpty()) {
-                item(span = { GridItemSpan(2) }) {
-                    Column(
+        loadingContent = {},
+    ) { item ->
+        if (item is MessageItemState) {
+            val message = item.message
+            Column(Modifier.fillMaxWidth()) {
+                // 내 채팅
+                if (item.isMine) {
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 190.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .padding(start = 30.dp, end = 20.dp),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.Bottom
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_error_report),
-                            contentDescription = null,
-                            modifier = Modifier.size(60.dp),
-                            tint = Cultured
-                        )
                         Text(
-                            text = "지금은 진행 중인 라이브톡이 없어요!",
-                            modifier = Modifier.padding(top = 12.dp),
-                            color = Bright_Gray,
-                            fontSize = 15.dp.toSp(),
-                            fontWeight = FontWeight.Medium,
-                            fontFamily = spoqahansanseeo
+                            text = "오후 1:30",
+                            style = CurtainCallTheme.typography.caption.copy(
+                                color = CurtainCallTheme.colors.onPrimary
+                            )
                         )
-                    }
-                }
-            } else {
-                items(liveTalkShows) { liveTalkShow ->
-                    LiveTalkCard(
-                        modifier = Modifier.width(152.dp),
-                        startTime = liveTalkShow.showAt.toTime(),
-                        endTime = liveTalkShow.showEndAt.toTime(),
-                        posterUrl = liveTalkShow.poster,
-                        name = liveTalkShow.name,
-                        facilityName = liveTalkShow.facilityName,
-                        onClick = {
-                            onNavigateDetail(
-                                liveTalkShow.id,
-                                liveTalkShow.name,
-                                liveTalkShow.showAt
+                        Box(
+                            modifier = Modifier
+                                .weight(1f, false)
+                                .padding(start = 6.dp)
+                                .background(
+                                    color = CurtainCallTheme.colors.secondary,
+                                    shape = RoundedCornerShape(
+                                        topStart = 10.dp,
+                                        bottomStart = 10.dp,
+                                        bottomEnd = 10.dp
+                                    )
+                                )
+                                .padding(horizontal = 10.dp, vertical = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = message.text,
+                                style = CurtainCallTheme.typography.body4.copy(
+                                    color = CurtainCallTheme.colors.primary
+                                )
                             )
                         }
-                    )
+                    }
+                } else {
+                    // 다른 사용자 채팅의 가장 상단 메세지
+                    if (item.groupPosition == MessageItemGroupPosition.Top ||
+                        item.groupPosition == MessageItemGroupPosition.None
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(start = 20.dp, end = 30.dp)
+                                .fillMaxWidth()
+                        ) {
+                            AsyncImage(
+                                model = message.user.image,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape),
+                                placeholder = painterResource(R.drawable.ic_default_profile),
+                                error = painterResource(R.drawable.ic_default_profile)
+                            )
+                            Column(
+                                modifier = Modifier
+                                    .padding(start = 10.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = message.user.name,
+                                    style = CurtainCallTheme.typography.body4.copy(
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = CurtainCallTheme.colors.onPrimary
+                                    )
+                                )
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 6.dp),
+                                    verticalAlignment = Alignment.Bottom
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f, false)
+                                            .background(
+                                                color = CurtainCallTheme.colors.onPrimary.copy(
+                                                    alpha = 0.3f
+                                                ),
+                                                shape = RoundedCornerShape(
+                                                    topEnd = 10.dp,
+                                                    bottomStart = 10.dp,
+                                                    bottomEnd = 10.dp
+                                                )
+                                            )
+                                            .padding(horizontal = 10.dp, vertical = 8.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = message.text,
+                                            style = CurtainCallTheme.typography.body4.copy(
+                                                color = CurtainCallTheme.colors.onPrimary
+                                            )
+                                        )
+                                    }
+                                    Text(
+                                        text = "오후 1:30",
+                                        modifier = Modifier
+                                            .padding(start = 6.dp),
+                                        style = CurtainCallTheme.typography.caption.copy(
+                                            color = CurtainCallTheme.colors.onPrimary
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 66.dp, end = 30.dp),
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f, false)
+                                    .background(
+                                        color = CurtainCallTheme.colors.onPrimary.copy(
+                                            alpha = 0.3f
+                                        ),
+                                        shape = RoundedCornerShape(
+                                            topEnd = 10.dp,
+                                            bottomStart = 10.dp,
+                                            bottomEnd = 10.dp
+                                        )
+                                    )
+                                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = message.text,
+                                    style = CurtainCallTheme.typography.body4.copy(
+                                        color = CurtainCallTheme.colors.onPrimary
+                                    )
+                                )
+                            }
+                            Text(
+                                text = "오후 1:30",
+                                modifier = Modifier
+                                    .padding(start = 6.dp),
+                                style = CurtainCallTheme.typography.caption.copy(
+                                    color = CurtainCallTheme.colors.onPrimary
+                                )
+                            )
+                        }
+                    }
                 }
+                Spacer(
+                    modifier = Modifier
+                        .height(
+                            if (item.groupPosition == MessageItemGroupPosition.Bottom ||
+                                item.groupPosition == MessageItemGroupPosition.None
+                            ) {
+                                20.dp
+                            } else {
+                                8.dp
+                            }
+                        )
+                )
             }
         }
-    }
-}
-
-@Composable
-private fun LiveTalkSearchContent(
-    modifier: Modifier = Modifier
-) {
-    Column(modifier) {
     }
 }
