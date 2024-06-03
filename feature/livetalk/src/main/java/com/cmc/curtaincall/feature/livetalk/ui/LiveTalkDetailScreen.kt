@@ -106,7 +106,6 @@ private fun LiveTalkDetailContent(
             chatClient = chatClient
         )
     }
-
     val messageListViewModel = viewModel(MessageListViewModel::class.java, factory = messageFactory)
     val messageComposerViewModel = viewModel(MessageComposerViewModel::class.java, factory = messageFactory)
     val messageComposerState by messageComposerViewModel.messageComposerState.collectAsStateWithLifecycle()

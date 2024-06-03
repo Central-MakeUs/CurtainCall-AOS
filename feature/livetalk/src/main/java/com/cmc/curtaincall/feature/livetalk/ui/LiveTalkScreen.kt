@@ -1,6 +1,7 @@
 package com.cmc.curtaincall.feature.livetalk.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,14 +38,18 @@ import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
+import com.cmc.curtaincall.common.utility.extensions.toPM
+import com.cmc.curtaincall.common.utility.extensions.toSeparatorDate
 import com.cmc.curtaincall.feature.livetalk.LiveTalkViewModel
 import io.getstream.chat.android.client.ChatClient
+import io.getstream.chat.android.compose.state.messages.list.DateSeparatorState
 import io.getstream.chat.android.compose.state.messages.list.MessageItemGroupPosition
 import io.getstream.chat.android.compose.state.messages.list.MessageItemState
 import io.getstream.chat.android.compose.ui.messages.composer.MessageComposer
 import io.getstream.chat.android.compose.ui.messages.list.MessageList
 import io.getstream.chat.android.compose.ui.theme.ChatTheme
 import io.getstream.chat.android.compose.ui.theme.StreamColors
+import io.getstream.chat.android.compose.ui.util.rememberMessageListState
 import io.getstream.chat.android.compose.viewmodel.messages.MessageComposerViewModel
 import io.getstream.chat.android.compose.viewmodel.messages.MessageListViewModel
 import io.getstream.chat.android.compose.viewmodel.messages.MessagesViewModelFactory
@@ -183,11 +188,14 @@ private fun LiveTalkContent(
     messageFactory: MessagesViewModelFactory
 ) {
     val messageListViewModel = viewModel(MessageListViewModel::class.java, factory = messageFactory)
+    val lazyListState = rememberMessageListState(parentMessageId = messageListViewModel.currentMessagesState.parentMessageId)
     MessageList(
         viewModel = messageListViewModel,
         modifier = modifier,
+        lazyListState = lazyListState,
         emptyContent = {},
         loadingContent = {},
+        loadingMoreContent = {}
     ) { item ->
         if (item is MessageItemState) {
             val message = item.message
@@ -202,7 +210,7 @@ private fun LiveTalkContent(
                         verticalAlignment = Alignment.Bottom
                     ) {
                         Text(
-                            text = "오후 1:30",
+                            text = message.createdAt.toPM(),
                             style = CurtainCallTheme.typography.caption.copy(
                                 color = CurtainCallTheme.colors.onPrimary
                             )
@@ -291,7 +299,7 @@ private fun LiveTalkContent(
                                         )
                                     }
                                     Text(
-                                        text = "오후 1:30",
+                                        text = message.createdAt.toPM(),
                                         modifier = Modifier
                                             .padding(start = 6.dp),
                                         style = CurtainCallTheme.typography.caption.copy(
@@ -332,7 +340,7 @@ private fun LiveTalkContent(
                                 )
                             }
                             Text(
-                                text = "오후 1:30",
+                                text = message.createdAt.toPM(),
                                 modifier = Modifier
                                     .padding(start = 6.dp),
                                 style = CurtainCallTheme.typography.caption.copy(
@@ -355,6 +363,79 @@ private fun LiveTalkContent(
                         )
                 )
             }
+        } else if (item is DateSeparatorState) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier
+                        .border(1.dp, CurtainCallTheme.colors.onPrimary, RoundedCornerShape(20.dp))
+                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = item.date.toSeparatorDate(),
+                        style = CurtainCallTheme.typography.caption.copy(
+                            color = CurtainCallTheme.colors.onPrimary
+                        )
+                    )
+                }
+                Spacer(Modifier.height(20.dp))
+            }
         }
     }
 }
+
+// @Composable
+// private fun LiveTalkHelperContent(
+//    messagesState: MessagesState,
+//    lazyListState: LazyListState
+// ) {
+//    val messages = messagesState.messageItems
+//    val newMessageState = messagesState.newMessageState
+//    val coroutineScope = rememberCoroutineScope()
+//
+//    val firstVisibleItemIndex = lazyListState.firstVisibleItemIndex
+//    val focusedItemIndex = messages.indexOfFirst { it is MessageItemState && it.focusState is MessageFocused }
+//    val offset = messagesState.focusedMessageOffset.collectAsState()
+//
+//    LaunchedEffect(
+//        newMessageState,
+//        firstVisibleItemIndex,
+//        focusedItemIndex,
+//        offset.value
+//    ) {
+//        if (focusedItemIndex != -1 && !lazyListState.isScrollInProgress) {
+//            coroutineScope.launch {
+//                lazyListState.scrollToItem(focusedItemIndex, offset.value ?: 0)
+//            }
+//        }
+//
+//        when {
+//            !lazyListState.isScrollInProgress && newMessageState == Other &&
+//                firstVisibleItemIndex < 3 -> coroutineScope.launch {
+//                lazyListState.animateScrollToItem(0)
+//            }
+//
+//            !lazyListState.isScrollInProgress && newMessageState == MyOwn -> coroutineScope.launch {
+//                if (firstVisibleItemIndex > 5) {
+//                    lazyListState.scrollToItem(5)
+//                }
+//                lazyListState.animateScrollToItem(0)
+//            }
+//        }
+//    }
+//
+//    if (abs(firstVisibleItemIndex) >= 3) {
+//
+//    }
+//    Icon(
+//        painter = painterResource(R.drawable.ic_livetalk_add),
+//        contentDescription = null,
+//        modifier = Modifier
+//            .padding(start = 4.dp)
+//            .size(34.dp),
+//        tint = Color.Unspecified
+//    )
+// }
