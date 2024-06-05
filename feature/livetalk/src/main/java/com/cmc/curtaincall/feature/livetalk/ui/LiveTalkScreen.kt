@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,14 +16,21 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,10 +46,14 @@ import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
+import com.cmc.curtaincall.common.designsystem.theme.NoRippleTheme
 import com.cmc.curtaincall.common.utility.extensions.toPM
 import com.cmc.curtaincall.common.utility.extensions.toSeparatorDate
 import com.cmc.curtaincall.feature.livetalk.LiveTalkViewModel
 import io.getstream.chat.android.client.ChatClient
+import io.getstream.chat.android.compose.state.messages.MessagesState
+import io.getstream.chat.android.compose.state.messages.MyOwn
+import io.getstream.chat.android.compose.state.messages.Other
 import io.getstream.chat.android.compose.state.messages.list.DateSeparatorState
 import io.getstream.chat.android.compose.state.messages.list.MessageItemGroupPosition
 import io.getstream.chat.android.compose.state.messages.list.MessageItemState
@@ -53,6 +65,8 @@ import io.getstream.chat.android.compose.ui.util.rememberMessageListState
 import io.getstream.chat.android.compose.viewmodel.messages.MessageComposerViewModel
 import io.getstream.chat.android.compose.viewmodel.messages.MessageListViewModel
 import io.getstream.chat.android.compose.viewmodel.messages.MessagesViewModelFactory
+import kotlinx.coroutines.launch
+import java.lang.Math.abs
 
 @Composable
 fun LiveTalkScreen(
@@ -195,7 +209,13 @@ private fun LiveTalkContent(
         lazyListState = lazyListState,
         emptyContent = {},
         loadingContent = {},
-        loadingMoreContent = {}
+        loadingMoreContent = {},
+        helperContent = {
+            LiveTalkHelperContent(
+                messagesState = messageListViewModel.currentMessagesState,
+                lazyListState = lazyListState
+            )
+        }
     ) { item ->
         if (item is MessageItemState) {
             val message = item.message
@@ -387,55 +407,57 @@ private fun LiveTalkContent(
     }
 }
 
-// @Composable
-// private fun LiveTalkHelperContent(
-//    messagesState: MessagesState,
-//    lazyListState: LazyListState
-// ) {
-//    val messages = messagesState.messageItems
-//    val newMessageState = messagesState.newMessageState
-//    val coroutineScope = rememberCoroutineScope()
-//
-//    val firstVisibleItemIndex = lazyListState.firstVisibleItemIndex
-//    val focusedItemIndex = messages.indexOfFirst { it is MessageItemState && it.focusState is MessageFocused }
-//    val offset = messagesState.focusedMessageOffset.collectAsState()
-//
-//    LaunchedEffect(
-//        newMessageState,
-//        firstVisibleItemIndex,
-//        focusedItemIndex,
-//        offset.value
-//    ) {
-//        if (focusedItemIndex != -1 && !lazyListState.isScrollInProgress) {
-//            coroutineScope.launch {
-//                lazyListState.scrollToItem(focusedItemIndex, offset.value ?: 0)
-//            }
-//        }
-//
-//        when {
-//            !lazyListState.isScrollInProgress && newMessageState == Other &&
-//                firstVisibleItemIndex < 3 -> coroutineScope.launch {
-//                lazyListState.animateScrollToItem(0)
-//            }
-//
-//            !lazyListState.isScrollInProgress && newMessageState == MyOwn -> coroutineScope.launch {
-//                if (firstVisibleItemIndex > 5) {
-//                    lazyListState.scrollToItem(5)
-//                }
-//                lazyListState.animateScrollToItem(0)
-//            }
-//        }
-//    }
-//
-//    if (abs(firstVisibleItemIndex) >= 3) {
-//
-//    }
-//    Icon(
-//        painter = painterResource(R.drawable.ic_livetalk_add),
-//        contentDescription = null,
-//        modifier = Modifier
-//            .padding(start = 4.dp)
-//            .size(34.dp),
-//        tint = Color.Unspecified
-//    )
-// }
+@Composable
+private fun BoxScope.LiveTalkHelperContent(
+    messagesState: MessagesState,
+    lazyListState: LazyListState
+) {
+    val messages = messagesState.messageItems
+    val newMessageState = messagesState.newMessageState
+    val coroutineScope = rememberCoroutineScope()
+
+    val firstVisibleItemIndex by remember {
+        derivedStateOf { lazyListState.firstVisibleItemIndex }
+    }
+
+    LaunchedEffect(
+        newMessageState,
+        firstVisibleItemIndex
+    ) {
+        when {
+            !lazyListState.isScrollInProgress && newMessageState == Other &&
+                firstVisibleItemIndex < 3 -> coroutineScope.launch {
+                lazyListState.animateScrollToItem(0)
+            }
+
+            !lazyListState.isScrollInProgress && newMessageState == MyOwn -> coroutineScope.launch {
+                if (firstVisibleItemIndex > 5) {
+                    lazyListState.scrollToItem(5)
+                }
+                lazyListState.animateScrollToItem(0)
+            }
+        }
+    }
+
+    if (abs(firstVisibleItemIndex) >= 3) {
+        CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+            Icon(
+                painter = painterResource(R.drawable.ic_livetalk_fab),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 15.dp)
+                    .size(40.dp)
+                    .clickable {
+                        coroutineScope.launch {
+                            if (firstVisibleItemIndex > 5) {
+                                lazyListState.scrollToItem(5)
+                            }
+                            lazyListState.animateScrollToItem(0)
+                        }
+                    },
+                tint = Color.Unspecified
+            )
+        }
+    }
+}
