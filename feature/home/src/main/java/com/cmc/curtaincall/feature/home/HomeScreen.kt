@@ -55,7 +55,8 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             CurtainCallTitleTopAppBar(containerColor = Grey8)
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { paddingValues ->
         HomeContent(
             homeViewModel = homeViewModel,

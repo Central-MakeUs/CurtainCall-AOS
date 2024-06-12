@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -68,6 +71,7 @@ import io.getstream.chat.android.compose.viewmodel.messages.MessagesViewModelFac
 import kotlinx.coroutines.launch
 import java.lang.Math.abs
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LiveTalkScreen(
     chatClient: ChatClient,
@@ -90,7 +94,6 @@ fun LiveTalkScreen(
         )
     ) {
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
             topBar = {
                 CurtainCallCenterTopAppBarWithBack(
                     title = "데스노트",
@@ -103,6 +106,7 @@ fun LiveTalkScreen(
                 LiveTalkMessageComposer(
                     modifier = Modifier
                         .background(CurtainCallTheme.colors.primary)
+                        .imePadding()
                         .padding(bottom = 10.dp)
                         .padding(horizontal = 20.dp)
                         .fillMaxWidth()
@@ -110,7 +114,8 @@ fun LiveTalkScreen(
                     messageFactory = messageFactory
                 )
             },
-            containerColor = CurtainCallTheme.colors.primary
+            containerColor = CurtainCallTheme.colors.primary,
+            contentWindowInsets = WindowInsets(0, 0, 0, 0)
         ) { paddingValues ->
             LiveTalkContent(
                 modifier = Modifier

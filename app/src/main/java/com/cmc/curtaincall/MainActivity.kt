@@ -6,13 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.core.os.bundleOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.NoRippleTheme
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -34,8 +34,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         installSplashScreen()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            CurtainCallApp(chatClient = createChatClient(this))
+            CurtainCallApp(chatClient = createChatClient(this@MainActivity))
         }
 
         if (::firebaseAnalytics.isInitialized) {
@@ -56,7 +57,7 @@ private fun CurtainCallApp(chatClient: ChatClient) {
         CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
             Surface(
                 modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
+                color = CurtainCallTheme.colors.background
             ) {
                 AppNavHost(chatClient = chatClient)
             }

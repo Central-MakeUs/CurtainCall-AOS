@@ -31,6 +31,7 @@ dependencies {
     implementation(project(":feature:partymember"))
 
     // androidx
+    implementation(libs.androidx.activity)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.splashscreen)

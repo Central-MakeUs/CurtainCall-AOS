@@ -8,6 +8,7 @@ googleServicesPlugin = "4.3.15"
 hiltPlugin = "2.45"
 
 # androidx
+androidx-activity = "1.9.0"
 androidx-core-ktx = "1.8.0"
 androidx-lifecycle = "2.5.1"
 androidxPaging = "3.1.1"
@@ -95,6 +96,7 @@ curtaincall-android-room = { id = "curtaincall.android.room", version = "unspeci
 
 [libraries]
 # androidx
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "androidx-activity"}
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }

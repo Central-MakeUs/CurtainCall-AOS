@@ -32,6 +32,7 @@ private val NavigationBarHeight = 72.dp
 
 @Composable
 fun CurtainCallNavigationBar(
+    modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
     bottomDestinations: List<BottomDestination> = listOf()
 ) {
@@ -42,7 +43,7 @@ fun CurtainCallNavigationBar(
     val hasBottomNavigation = bottomDestinations.any { (it as CurtainCallDestination).route == currentDestination?.route }
 
     if (hasBottomNavigation) {
-        Column {
+        Column(modifier) {
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
                 background = Grey8
