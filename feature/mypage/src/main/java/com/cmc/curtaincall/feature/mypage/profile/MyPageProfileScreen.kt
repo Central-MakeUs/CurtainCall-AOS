@@ -55,6 +55,7 @@ import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey9
 import com.cmc.curtaincall.common.designsystem.theme.Red
 import com.cmc.curtaincall.domain.enums.ProfileEditImageMode
+import io.getstream.chat.android.client.ChatClient
 import kotlinx.coroutines.flow.collectLatest
 
 private const val INPUT_CHECK_REGEX = "^[ㄱ-ㅎ가-힣a-zA-Z0-9]{1,15}$"
@@ -67,6 +68,7 @@ enum class ValidationCheckState {
 
 @Composable
 fun MyPageProfileScreen(
+    chatClient: ChatClient,
     onBack: () -> Unit = {}
 ) {
     Scaffold(
@@ -81,7 +83,8 @@ fun MyPageProfileScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(CurtainCallTheme.colors.background)
+                .background(CurtainCallTheme.colors.background),
+            chatClient = chatClient
         )
     }
 }
@@ -90,7 +93,8 @@ fun MyPageProfileScreen(
 @Composable
 private fun MyPageProfileContent(
     modifier: Modifier = Modifier,
-    myPageProfileViewModel: MyPageProfileViewModel = hiltViewModel()
+    myPageProfileViewModel: MyPageProfileViewModel = hiltViewModel(),
+    chatClient: ChatClient,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
@@ -118,7 +122,7 @@ private fun MyPageProfileContent(
                 isNickNameEdit = false
                 myPageProfileViewModel.changeDefaultProfile(false)
                 myPageProfileViewModel.clearValidationState()
-                myPageProfileViewModel.requestMemberInfo()
+                myPageProfileViewModel.requestMemberInfo(chatClient)
             }
         }
     }

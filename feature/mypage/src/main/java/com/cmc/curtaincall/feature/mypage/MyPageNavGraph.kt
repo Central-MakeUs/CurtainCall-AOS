@@ -55,9 +55,10 @@ fun NavGraphBuilder.mypageNavGraph(
         }
 
         composable(route = MyPageDestination.Profile.route) {
-            MyPageProfileScreen {
-                navHostController.popBackStack()
-            }
+            MyPageProfileScreen(
+                chatClient = chatClient,
+                onBack = { navHostController.popBackStack() }
+            )
         }
 
         composable(route = MyPageDestination.Writing.route) {
