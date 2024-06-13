@@ -32,8 +32,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,10 +51,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
+import com.cmc.curtaincall.common.designsystem.component.sheets.bottom.CurtainCallLivetalkBottomSheet
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.NoRippleTheme
 import com.cmc.curtaincall.common.utility.extensions.toPM
 import com.cmc.curtaincall.common.utility.extensions.toSeparatorDate
+import com.cmc.curtaincall.domain.model.member.MemberInfoModel
 import com.cmc.curtaincall.feature.livetalk.LiveTalkViewModel
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.compose.state.messages.MessagesState
@@ -158,7 +162,8 @@ private fun LiveTalkMessageComposer(
                     contentDescription = null,
                     modifier = Modifier
                         .padding(start = 4.dp)
-                        .size(34.dp),
+                        .size(34.dp)
+                        .clickable { },
                     tint = Color.Unspecified
                 )
                 BasicTextField(
@@ -209,6 +214,16 @@ private fun LiveTalkContent(
 ) {
     val messageListViewModel = viewModel(MessageListViewModel::class.java, factory = messageFactory)
     val lazyListState = rememberMessageListState(parentMessageId = messageListViewModel.currentMessagesState.parentMessageId)
+    var touchUserInfo: MemberInfoModel by remember { mutableStateOf(MemberInfoModel()) }
+
+    if (touchUserInfo.id != Int.MIN_VALUE) {
+        CurtainCallLivetalkBottomSheet(
+            imageUrl = touchUserInfo.imageUrl,
+            name = touchUserInfo.nickname,
+            onDismissRequest = { touchUserInfo = MemberInfoModel() }
+        )
+    }
+
     MessageList(
         viewModel = messageListViewModel,
         modifier = modifier,
@@ -279,7 +294,13 @@ private fun LiveTalkContent(
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(36.dp)
-                                    .clip(CircleShape),
+                                    .clip(CircleShape)
+                                    .clickable {
+                                        touchUserInfo = MemberInfoModel(
+                                            id = message.user.id.toInt(),
+                                            nickname = message.user.name
+                                        )
+                                    },
                                 placeholder = painterResource(R.drawable.ic_default_profile),
                                 error = painterResource(R.drawable.ic_default_profile),
                                 contentScale = ContentScale.FillBounds
