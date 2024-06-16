@@ -71,7 +71,8 @@ class MyPageProfileViewModel @Inject constructor(
                             User(
                                 id = model.id.toString(),
                                 name = model.nickname,
-                                image = model.imageUrl.toString()
+                                image = model.imageUrl.toString(),
+                                role = "channel_member"
                             )
                         ).enqueue {
                             if (it.isSuccess) {

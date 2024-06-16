@@ -37,11 +37,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,6 +53,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
+import com.cmc.curtaincall.common.designsystem.component.dialogs.LiveTalkImageDialog
 import com.cmc.curtaincall.common.designsystem.component.sheets.bottom.CurtainCallLivetalkBottomSheet
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.NoRippleTheme
@@ -62,21 +65,27 @@ import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.compose.state.messages.MessagesState
 import io.getstream.chat.android.compose.state.messages.MyOwn
 import io.getstream.chat.android.compose.state.messages.Other
+import io.getstream.chat.android.compose.state.messages.attachments.Images
+import io.getstream.chat.android.compose.state.messages.attachments.MediaCapture
 import io.getstream.chat.android.compose.state.messages.list.DateSeparatorState
 import io.getstream.chat.android.compose.state.messages.list.MessageItemGroupPosition
 import io.getstream.chat.android.compose.state.messages.list.MessageItemState
+import io.getstream.chat.android.compose.ui.messages.attachments.AttachmentsPicker
+import io.getstream.chat.android.compose.ui.messages.attachments.factory.AttachmentsPickerTabFactories
 import io.getstream.chat.android.compose.ui.messages.composer.MessageComposer
 import io.getstream.chat.android.compose.ui.messages.list.MessageList
 import io.getstream.chat.android.compose.ui.theme.ChatTheme
 import io.getstream.chat.android.compose.ui.theme.StreamColors
 import io.getstream.chat.android.compose.ui.util.rememberMessageListState
+import io.getstream.chat.android.compose.viewmodel.messages.AttachmentsPickerViewModel
 import io.getstream.chat.android.compose.viewmodel.messages.MessageComposerViewModel
 import io.getstream.chat.android.compose.viewmodel.messages.MessageListViewModel
 import io.getstream.chat.android.compose.viewmodel.messages.MessagesViewModelFactory
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.lang.Math.abs
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun LiveTalkScreen(
     chatClient: ChatClient,
@@ -88,6 +97,29 @@ fun LiveTalkScreen(
             context = context,
             channelId = "messaging:1234",
             chatClient = chatClient
+        )
+    }
+    var isShowAttachmentDialog by remember { mutableStateOf(false) }
+    var isShowSelectImageDialog by remember { mutableStateOf(false) }
+    val messageComposerViewModel = viewModel(MessageComposerViewModel::class.java, factory = messageFactory)
+    val attachmentsPickerViewModel = viewModel(AttachmentsPickerViewModel::class.java, factory = messageFactory)
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    if (isShowAttachmentDialog) {
+        LiveTalkImageDialog(
+            onSelectImage = {
+                keyboardController?.hide()
+                attachmentsPickerViewModel.changeAttachmentPickerMode(Images)
+                attachmentsPickerViewModel.changeAttachmentState(true)
+                isShowAttachmentDialog = false
+            },
+            onTakePicture = {
+                keyboardController?.hide()
+                attachmentsPickerViewModel.changeAttachmentPickerMode(MediaCapture)
+                attachmentsPickerViewModel.changeAttachmentState(true)
+                isShowAttachmentDialog = false
+            },
+            onDismiss = { isShowAttachmentDialog = false }
         )
     }
 
@@ -108,27 +140,63 @@ fun LiveTalkScreen(
                 )
             },
             bottomBar = {
-                LiveTalkMessageComposer(
-                    modifier = Modifier
-                        .background(CurtainCallTheme.colors.primary)
-                        .imePadding()
-                        .padding(bottom = 10.dp)
-                        .padding(horizontal = 20.dp)
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                    messageFactory = messageFactory
-                )
+                if (attachmentsPickerViewModel.isShowingAttachments.not()) {
+                    LiveTalkMessageComposer(
+                        modifier = Modifier
+                            .background(CurtainCallTheme.colors.primary)
+                            .imePadding()
+                            .padding(bottom = 10.dp)
+                            .padding(horizontal = 20.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        messageComposerViewModel = messageComposerViewModel,
+                        onAttachmentClick = {
+                            // isShowAttachmentDialog = true
+                        }
+                    )
+                }
             },
             containerColor = CurtainCallTheme.colors.primary,
             contentWindowInsets = WindowInsets(0, 0, 0, 0)
         ) { paddingValues ->
-            LiveTalkContent(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .background(CurtainCallTheme.colors.primary),
-                messageFactory = messageFactory
-            )
+            Box(Modifier.fillMaxSize()) {
+                LiveTalkContent(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                        .background(CurtainCallTheme.colors.primary),
+                    messageFactory = messageFactory
+                )
+                if (attachmentsPickerViewModel.isShowingAttachments) {
+                    AttachmentsPicker(
+                        attachmentsPickerViewModel = attachmentsPickerViewModel,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .height(350.dp),
+                        onAttachmentsSelected = {
+                            messageComposerViewModel.sendMessage(
+                                messageComposerViewModel.buildNewMessage(
+                                    message = "",
+                                    attachments = it
+                                )
+                            )
+                            attachmentsPickerViewModel.changeAttachmentState(false)
+                            attachmentsPickerViewModel.dismissAttachments()
+                        },
+                        onDismiss = {
+                            attachmentsPickerViewModel.changeAttachmentState(false)
+                            attachmentsPickerViewModel.dismissAttachments()
+                        },
+                        tabFactories = AttachmentsPickerTabFactories.defaultFactories(
+                            takeImageEnabled = attachmentsPickerViewModel.attachmentsPickerMode == MediaCapture,
+                            recordVideoEnabled = false,
+                            imagesTabEnabled = attachmentsPickerViewModel.attachmentsPickerMode == Images,
+                            filesTabEnabled = false
+                        )
+                    )
+                }
+            }
         }
     }
 }
@@ -137,10 +205,10 @@ fun LiveTalkScreen(
 private fun LiveTalkMessageComposer(
     modifier: Modifier = Modifier,
     liveTalkViewModel: LiveTalkViewModel = hiltViewModel(),
-    messageFactory: MessagesViewModelFactory
+    messageComposerViewModel: MessageComposerViewModel,
+    onAttachmentClick: () -> Unit = {}
 ) {
     val memberName by liveTalkViewModel.memberName.collectAsStateWithLifecycle()
-    val messageComposerViewModel = viewModel(MessageComposerViewModel::class.java, factory = messageFactory)
     MessageComposer(
         modifier = modifier,
         viewModel = messageComposerViewModel,
@@ -163,9 +231,10 @@ private fun LiveTalkMessageComposer(
                     modifier = Modifier
                         .padding(start = 4.dp)
                         .size(34.dp)
-                        .clickable { },
+                        .clickable { onAttachmentClick() },
                     tint = Color.Unspecified
                 )
+
                 BasicTextField(
                     value = inputState.inputValue,
                     onValueChange = { messageComposerViewModel.setMessageInput(it) },
@@ -271,12 +340,42 @@ private fun LiveTalkContent(
                                 .padding(horizontal = 10.dp, vertical = 8.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = message.text,
-                                style = CurtainCallTheme.typography.body4.copy(
-                                    color = CurtainCallTheme.colors.primary
+                            if (message.attachments.isNotEmpty()) {
+                                Timber.d("message ${message.attachments}")
+                                Column(
+                                    modifier = Modifier
+                                        .wrapContentHeight()
+                                        .clip(RoundedCornerShape(10.dp))
+                                ) {
+                                    for (i in 0 until message.attachments.size step 2) {
+                                        Row(Modifier.padding(bottom = 2.dp)) {
+                                            AsyncImage(
+                                                model = message.attachments[i].imageUrl,
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .size(100.dp)
+                                                    .clip(RoundedCornerShape(10.dp)),
+                                                contentScale = ContentScale.FillBounds
+                                            )
+                                            AsyncImage(
+                                                model = message.attachments[i + 1].imageUrl,
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .size(100.dp)
+                                                    .clip(RoundedCornerShape(10.dp)),
+                                                contentScale = ContentScale.FillBounds
+                                            )
+                                        }
+                                    }
+                                }
+                            } else {
+                                Text(
+                                    text = message.text,
+                                    style = CurtainCallTheme.typography.body4.copy(
+                                        color = CurtainCallTheme.colors.primary
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 } else {

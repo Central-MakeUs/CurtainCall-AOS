@@ -51,7 +51,8 @@ class LoginViewModel @Inject constructor(
                     User(
                         id = it.id.toString(),
                         name = it.nickname,
-                        image = it.imageUrl.toString()
+                        image = it.imageUrl.toString(),
+                        role = "channel_member"
                     )
                 )
             }.launchIn(viewModelScope)
