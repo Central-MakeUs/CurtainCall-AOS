@@ -45,7 +45,7 @@ internal fun ShowDetailScreen(
     showId: String?,
     onNavigateToReview: (String) -> Unit = {},
     onNavigateToReviewCreate: () -> Unit = {},
-    onNavigateToLiveTalk: () -> Unit = {},
+    onNavigateToLiveTalk: (String, String) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
     requireNotNull(showId)
@@ -191,7 +191,7 @@ private fun ShowDetailContent(
     showDetailModel: ShowDetailModel = ShowDetailModel(),
     isFavorite: Boolean = false,
     isShowCoachMark: Boolean = false,
-    onNavigateToLiveTalk: () -> Unit = {}
+    onNavigateToLiveTalk: (String, String) -> Unit = { _, _ -> }
 ) {
     Box(
         modifier = modifier,

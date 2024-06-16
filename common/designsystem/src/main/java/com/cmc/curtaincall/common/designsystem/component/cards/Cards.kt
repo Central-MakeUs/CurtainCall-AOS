@@ -36,8 +36,8 @@ import com.cmc.curtaincall.common.designsystem.component.chips.CurtainCallBasicC
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey4
 import com.cmc.curtaincall.common.designsystem.theme.Grey8
-import com.cmc.curtaincall.domain.model.show.ShowDetailModel
 import com.cmc.curtaincall.domain.enums.translateShowGenreType
+import com.cmc.curtaincall.domain.model.show.ShowDetailModel
 
 @Composable
 fun ShowDetailCard(
@@ -45,7 +45,7 @@ fun ShowDetailCard(
     showDetailModel: ShowDetailModel = ShowDetailModel(),
     isFavorite: Boolean = false,
     onLikeClick: () -> Unit = {},
-    onNavigateToLiveTalk: () -> Unit = {}
+    onNavigateToLiveTalk: (String, String) -> Unit = { _, _ -> }
 ) {
     var updateFavorite by remember(isFavorite) { mutableStateOf(isFavorite) }
     Card(
@@ -154,7 +154,12 @@ fun ShowDetailCard(
             textStyle = CurtainCallTheme.typography.body2.copy(
                 fontWeight = FontWeight.SemiBold
             ),
-            onClick = onNavigateToLiveTalk
+            onClick = {
+                onNavigateToLiveTalk(
+                    showDetailModel.id,
+                    showDetailModel.name
+                )
+            }
         )
     }
 }

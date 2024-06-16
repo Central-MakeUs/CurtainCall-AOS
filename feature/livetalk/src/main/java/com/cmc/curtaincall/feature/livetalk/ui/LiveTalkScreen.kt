@@ -89,13 +89,26 @@ import java.lang.Math.abs
 @Composable
 fun LiveTalkScreen(
     chatClient: ChatClient,
+    showId: String?,
+    showName: String?,
+    partyId: Int?,
+    partyAt: String?,
     onBack: () -> Unit = {}
 ) {
+    checkNotNull(showId)
+    checkNotNull(showName)
+    Timber.d("LiveTalkScreen $showId $showName $partyId $partyAt")
+
     val context = LocalContext.current
+    val channelId = if (partyId == Int.MIN_VALUE) {
+        "messaging:SHOW-$showId"
+    } else {
+        "messaging:PARTY-$partyId"
+    }
     val messageFactory by lazy {
         MessagesViewModelFactory(
             context = context,
-            channelId = "messaging:1234",
+            channelId = channelId,
             chatClient = chatClient
         )
     }
@@ -133,7 +146,7 @@ fun LiveTalkScreen(
         Scaffold(
             topBar = {
                 CurtainCallCenterTopAppBarWithBack(
-                    title = "데스노트",
+                    title = showName,
                     containerColor = CurtainCallTheme.colors.primary,
                     contentColor = CurtainCallTheme.colors.onPrimary,
                     onBack = onBack

@@ -50,8 +50,8 @@ fun NavGraphBuilder.showNavGraph(
                             "${ShowDestination.ReviewCreate.reviewIdArg}=$DEFAULT_REVIEW_ID"
                     )
                 },
-                onNavigateToLiveTalk = {
-                    navHostController.navigate(LiveTalkDestination.LiveTalk.route)
+                onNavigateToLiveTalk = { showId, showName ->
+                    navHostController.navigate("${LiveTalkDestination.LiveTalk.route}/$showId/$showName/${Int.MIN_VALUE}/null")
                 },
                 onBack = {
                     navHostController.popBackStack()

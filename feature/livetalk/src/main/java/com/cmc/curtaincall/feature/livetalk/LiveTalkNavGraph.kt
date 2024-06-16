@@ -46,10 +46,21 @@ fun NavGraphBuilder.livetalkNavGraph(
     navHostController: NavHostController,
     chatClient: ChatClient
 ) {
-    navigation(startDestination = LiveTalkDestination.LiveTalk.route, route = NavGraphLabel.LIVETALK) {
-        composable(route = LiveTalkDestination.LiveTalk.route) {
+    navigation(startDestination = LiveTalkDestination.LiveTalk.routeWithArgs, route = NavGraphLabel.LIVETALK) {
+        composable(
+            route = LiveTalkDestination.LiveTalk.routeWithArgs,
+            arguments = LiveTalkDestination.LiveTalk.arguments
+        ) { entry ->
+            val showId = entry.arguments?.getString(LiveTalkDestination.LiveTalk.showIdArg)
+            val showName = entry.arguments?.getString(LiveTalkDestination.LiveTalk.showNameArg)
+            val partyId = entry.arguments?.getInt(LiveTalkDestination.LiveTalk.partyIdArg)
+            val partyAt = entry.arguments?.getString(LiveTalkDestination.LiveTalk.partyAtArg)
             LiveTalkScreen(
                 chatClient = chatClient,
+                showId = showId,
+                showName = showName,
+                partyId = partyId,
+                partyAt = partyAt,
                 onBack = {
                     navHostController.popBackStack()
                 }
