@@ -54,13 +54,13 @@ fun NavGraphBuilder.livetalkNavGraph(
             val showId = entry.arguments?.getString(LiveTalkDestination.LiveTalk.showIdArg)
             val showName = entry.arguments?.getString(LiveTalkDestination.LiveTalk.showNameArg)
             val partyId = entry.arguments?.getInt(LiveTalkDestination.LiveTalk.partyIdArg)
-            val partyAt = entry.arguments?.getString(LiveTalkDestination.LiveTalk.partyAtArg)
+            val showAt = entry.arguments?.getString(LiveTalkDestination.LiveTalk.showAtArg)
             LiveTalkScreen(
                 chatClient = chatClient,
                 showId = showId,
                 showName = showName,
                 partyId = partyId,
-                partyAt = partyAt,
+                showAt = showAt,
                 onBack = {
                     navHostController.popBackStack()
                 }

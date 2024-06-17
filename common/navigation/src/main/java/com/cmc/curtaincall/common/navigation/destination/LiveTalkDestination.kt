@@ -8,7 +8,7 @@ import com.cmc.curtaincall.core.navigation.CurtainCallDestination
 private const val SHOW_ID_ARG = "showId"
 private const val SHOW_NAME_ARG = "showName"
 private const val PARTY_ID_ARG = "partyId"
-private const val PARTY_AT_ARG = "partyAt"
+private const val SHOW_AT_ARG = "showAt"
 
 sealed class LiveTalkDestination : CurtainCallDestination {
     object LiveTalk : LiveTalkDestination() {
@@ -16,8 +16,8 @@ sealed class LiveTalkDestination : CurtainCallDestination {
         const val showIdArg = SHOW_ID_ARG
         const val showNameArg = SHOW_NAME_ARG
         const val partyIdArg = PARTY_ID_ARG
-        const val partyAtArg = PARTY_AT_ARG
-        val routeWithArgs = "$route/{$showIdArg}/{$showNameArg}/{$partyIdArg}/{$partyAtArg}"
+        const val showAtArg = SHOW_AT_ARG
+        val routeWithArgs = "$route/{$showIdArg}/{$showNameArg}/{$partyIdArg}/{$showAtArg}"
         val arguments = listOf(
             navArgument(showIdArg) {
                 type = NavType.StringType
@@ -28,7 +28,7 @@ sealed class LiveTalkDestination : CurtainCallDestination {
             navArgument(partyIdArg) {
                 type = NavType.IntType
             },
-            navArgument(partyAtArg) {
+            navArgument(showAtArg) {
                 type = NavType.StringType
             }
         )

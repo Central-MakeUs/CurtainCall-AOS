@@ -41,6 +41,7 @@ import com.cmc.curtaincall.common.designsystem.dimension.Paddings
 import com.cmc.curtaincall.common.designsystem.theme.Black
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey2
+import com.cmc.curtaincall.common.designsystem.theme.Grey3
 import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey9
 import com.cmc.curtaincall.common.designsystem.theme.avenirnext
@@ -651,7 +652,7 @@ fun CurtainCallLiveTalkAppBarWithBack(
                 text = date,
                 modifier = Modifier.fillMaxSize(),
                 style = CurtainCallTheme.typography.body4.copy(
-                    color = contentColor
+                    color = Grey3
                 ),
                 textAlign = TextAlign.Center
             )

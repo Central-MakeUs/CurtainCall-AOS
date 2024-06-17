@@ -26,6 +26,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -53,9 +54,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallCenterTopAppBarWithBack
+import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallLiveTalkAppBarWithBack
+import com.cmc.curtaincall.common.designsystem.component.basic.SystemUiStatusBar
 import com.cmc.curtaincall.common.designsystem.component.dialogs.LiveTalkImageDialog
 import com.cmc.curtaincall.common.designsystem.component.sheets.bottom.CurtainCallLivetalkBottomSheet
+import com.cmc.curtaincall.common.designsystem.theme.Black
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
+import com.cmc.curtaincall.common.designsystem.theme.Grey5
+import com.cmc.curtaincall.common.designsystem.theme.Grey9
 import com.cmc.curtaincall.common.designsystem.theme.NoRippleTheme
 import com.cmc.curtaincall.common.utility.extensions.toPM
 import com.cmc.curtaincall.common.utility.extensions.toSeparatorDate
@@ -72,7 +78,6 @@ import io.getstream.chat.android.compose.state.messages.list.MessageItemGroupPos
 import io.getstream.chat.android.compose.state.messages.list.MessageItemState
 import io.getstream.chat.android.compose.ui.messages.attachments.AttachmentsPicker
 import io.getstream.chat.android.compose.ui.messages.attachments.factory.AttachmentsPickerTabFactories
-import io.getstream.chat.android.compose.ui.messages.composer.MessageComposer
 import io.getstream.chat.android.compose.ui.messages.list.MessageList
 import io.getstream.chat.android.compose.ui.theme.ChatTheme
 import io.getstream.chat.android.compose.ui.theme.StreamColors
@@ -84,6 +89,8 @@ import io.getstream.chat.android.compose.viewmodel.messages.MessagesViewModelFac
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.Math.abs
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -92,12 +99,12 @@ fun LiveTalkScreen(
     showId: String?,
     showName: String?,
     partyId: Int?,
-    partyAt: String?,
+    showAt: String?,
     onBack: () -> Unit = {}
 ) {
     checkNotNull(showId)
     checkNotNull(showName)
-    Timber.d("LiveTalkScreen $showId $showName $partyId $partyAt")
+    Timber.d("LiveTalkScreen $showId $showName $partyId")
 
     val context = LocalContext.current
     val channelId = if (partyId == Int.MIN_VALUE) {
@@ -117,7 +124,10 @@ fun LiveTalkScreen(
     val messageComposerViewModel = viewModel(MessageComposerViewModel::class.java, factory = messageFactory)
     val attachmentsPickerViewModel = viewModel(AttachmentsPickerViewModel::class.java, factory = messageFactory)
     val keyboardController = LocalSoftwareKeyboardController.current
+    val partyChatting = partyId != Int.MIN_VALUE
+    val backgroundColor = if (partyChatting) Grey9 else CurtainCallTheme.colors.primary
 
+    // TODO
     if (isShowAttachmentDialog) {
         LiveTalkImageDialog(
             onSelectImage = {
@@ -136,40 +146,58 @@ fun LiveTalkScreen(
         )
     }
 
+    SystemUiStatusBar(backgroundColor)
     ChatTheme(
         isInDarkMode = false,
         colors = StreamColors.defaultColors().copy(
-            barsBackground = CurtainCallTheme.colors.primary,
+            barsBackground = Color.Transparent,
             inputBackground = CurtainCallTheme.colors.secondary
-        )
+        ),
+        rippleTheme = NoRippleTheme
     ) {
         Scaffold(
             topBar = {
-                CurtainCallCenterTopAppBarWithBack(
-                    title = showName,
-                    containerColor = CurtainCallTheme.colors.primary,
-                    contentColor = CurtainCallTheme.colors.onPrimary,
-                    onBack = onBack
-                )
-            },
-            bottomBar = {
-                if (attachmentsPickerViewModel.isShowingAttachments.not()) {
-                    LiveTalkMessageComposer(
-                        modifier = Modifier
-                            .background(CurtainCallTheme.colors.primary)
-                            .imePadding()
-                            .padding(bottom = 10.dp)
-                            .padding(horizontal = 20.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        messageComposerViewModel = messageComposerViewModel,
-                        onAttachmentClick = {
-                            // isShowAttachmentDialog = true
-                        }
+                if (partyChatting) {
+                    checkNotNull(showAt)
+                    val showAtFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(showAt)
+                    CurtainCallLiveTalkAppBarWithBack(
+                        title = showName,
+                        date = SimpleDateFormat("yyyy.MM.dd(E), a h:mm", Locale.KOREA).format(showAtFormat),
+                        containerColor = Grey9,
+                        contentColor = Black,
+                        onBack = onBack
+                    )
+                } else {
+                    CurtainCallCenterTopAppBarWithBack(
+                        title = showName,
+                        containerColor = CurtainCallTheme.colors.primary,
+                        contentColor = CurtainCallTheme.colors.onPrimary,
+                        onBack = onBack
                     )
                 }
             },
-            containerColor = CurtainCallTheme.colors.primary,
+            bottomBar = {
+                if (attachmentsPickerViewModel.isShowingAttachments.not()) {
+                    Surface(
+                        shadowElevation = 0.dp
+                    ) {
+                        LiveTalkMessageComposer(
+                            modifier = Modifier
+                                .background(backgroundColor)
+                                .imePadding()
+                                .padding(bottom = 10.dp)
+                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            messageComposerViewModel = messageComposerViewModel,
+                            onAttachmentClick = {
+                                // isShowAttachmentDialog = true
+                            }
+                        )
+                    }
+                }
+            },
+            containerColor = backgroundColor,
             contentWindowInsets = WindowInsets(0, 0, 0, 0)
         ) { paddingValues ->
             Box(Modifier.fillMaxSize()) {
@@ -177,8 +205,9 @@ fun LiveTalkScreen(
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
-                        .background(CurtainCallTheme.colors.primary),
-                    messageFactory = messageFactory
+                        .background(backgroundColor),
+                    messageFactory = messageFactory,
+                    partyChatting = partyChatting
                 )
                 if (attachmentsPickerViewModel.isShowingAttachments) {
                     AttachmentsPicker(
@@ -222,77 +251,82 @@ private fun LiveTalkMessageComposer(
     onAttachmentClick: () -> Unit = {}
 ) {
     val memberName by liveTalkViewModel.memberName.collectAsStateWithLifecycle()
-    MessageComposer(
-        modifier = modifier,
-        viewModel = messageComposerViewModel,
-        integrations = {},
-        trailingContent = {},
-        input = { inputState ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 42.dp)
-                    .background(
-                        color = CurtainCallTheme.colors.secondary,
-                        shape = RoundedCornerShape(30.dp)
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_livetalk_add),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .size(34.dp)
-                        .clickable { onAttachmentClick() },
-                    tint = Color.Unspecified
-                )
+    var inputText by remember { mutableStateOf("") }
 
-                BasicTextField(
-                    value = inputState.inputValue,
-                    onValueChange = { messageComposerViewModel.setMessageInput(it) },
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                        .padding(vertical = 4.dp)
-                        .weight(1f),
-                    textStyle = CurtainCallTheme.typography.body4.copy(
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 42.dp)
+            .background(
+                color = CurtainCallTheme.colors.secondary,
+                shape = RoundedCornerShape(30.dp)
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_livetalk_add),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(start = 4.dp)
+                .size(34.dp)
+                .clickable { onAttachmentClick() },
+            tint = Color.Unspecified
+        )
+
+        BasicTextField(
+            value = inputText,
+            onValueChange = { inputText = it },
+            modifier = Modifier
+                .padding(start = 10.dp)
+                .padding(vertical = 4.dp)
+                .weight(1f),
+            textStyle = CurtainCallTheme.typography.body4.copy(
+                CurtainCallTheme.colors.primary
+            )
+        ) { innerTextField ->
+            innerTextField()
+            if (inputText.isEmpty()) {
+                Text(
+                    text = "${memberName}으로 메시지 보내기...",
+                    style = CurtainCallTheme.typography.body4.copy(
                         CurtainCallTheme.colors.primary
                     )
-                ) { innerTextField ->
-                    innerTextField()
-                    if (inputState.inputValue.isEmpty()) {
-                        Text(
-                            text = "${memberName}으로 메시지 보내기...",
-                            style = CurtainCallTheme.typography.body4.copy(
-                                CurtainCallTheme.colors.primary
-                            )
-                        )
-                    }
-                }
-                Icon(
-                    painter = painterResource(R.drawable.ic_livetalk_send),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .size(24.dp)
-                        .clickable {
-                            messageComposerViewModel.sendMessage(
-                                messageComposerViewModel.buildNewMessage(
-                                    inputState.inputValue
-                                )
-                            )
-                        },
-                    tint = Color.Unspecified
                 )
             }
         }
-    )
+        Icon(
+            painter = painterResource(R.drawable.ic_livetalk_send),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .size(24.dp)
+                .clickable {
+                    messageComposerViewModel.sendMessage(
+                        messageComposerViewModel.buildNewMessage(
+                            inputText
+                        )
+                    )
+                    inputText = ""
+                },
+            tint = Color.Unspecified
+        )
+    }
+//    MessageComposer(
+//        modifier = modifier,
+//        viewModel = messageComposerViewModel,
+//        integrations = {},
+//        trailingContent = {},
+//        input = { inputState ->
+//
+//        }
+//    )
 }
 
 @Composable
 private fun LiveTalkContent(
     modifier: Modifier = Modifier,
-    messageFactory: MessagesViewModelFactory
+    messageFactory: MessagesViewModelFactory,
+    partyChatting: Boolean
 ) {
     val messageListViewModel = viewModel(MessageListViewModel::class.java, factory = messageFactory)
     val lazyListState = rememberMessageListState(parentMessageId = messageListViewModel.currentMessagesState.parentMessageId)
@@ -335,7 +369,7 @@ private fun LiveTalkContent(
                         Text(
                             text = message.createdAt.toPM(),
                             style = CurtainCallTheme.typography.caption.copy(
-                                color = CurtainCallTheme.colors.onPrimary
+                                color = if (partyChatting) Grey5 else CurtainCallTheme.colors.onPrimary
                             )
                         )
                         Box(
@@ -426,7 +460,7 @@ private fun LiveTalkContent(
                                     text = message.user.name,
                                     style = CurtainCallTheme.typography.body4.copy(
                                         fontWeight = FontWeight.SemiBold,
-                                        color = CurtainCallTheme.colors.onPrimary
+                                        color = if (partyChatting) Black else CurtainCallTheme.colors.onPrimary
                                     )
                                 )
                                 Row(
@@ -439,9 +473,11 @@ private fun LiveTalkContent(
                                         modifier = Modifier
                                             .weight(1f, false)
                                             .background(
-                                                color = CurtainCallTheme.colors.onPrimary.copy(
-                                                    alpha = 0.3f
-                                                ),
+                                                color = if (partyChatting) {
+                                                    CurtainCallTheme.colors.background
+                                                } else {
+                                                    CurtainCallTheme.colors.onPrimary.copy(alpha = 0.3f)
+                                                },
                                                 shape = RoundedCornerShape(
                                                     topEnd = 10.dp,
                                                     bottomStart = 10.dp,
@@ -454,7 +490,7 @@ private fun LiveTalkContent(
                                         Text(
                                             text = message.text,
                                             style = CurtainCallTheme.typography.body4.copy(
-                                                color = CurtainCallTheme.colors.onPrimary
+                                                color = if (partyChatting) Black else CurtainCallTheme.colors.onPrimary
                                             )
                                         )
                                     }
@@ -463,7 +499,7 @@ private fun LiveTalkContent(
                                         modifier = Modifier
                                             .padding(start = 6.dp),
                                         style = CurtainCallTheme.typography.caption.copy(
-                                            color = CurtainCallTheme.colors.onPrimary
+                                            color = if (partyChatting) Grey5 else CurtainCallTheme.colors.onPrimary
                                         )
                                     )
                                 }
@@ -530,14 +566,18 @@ private fun LiveTalkContent(
             ) {
                 Box(
                     modifier = Modifier
-                        .border(1.dp, CurtainCallTheme.colors.onPrimary, RoundedCornerShape(20.dp))
+                        .border(
+                            width = 1.dp,
+                            color = if (partyChatting) CurtainCallTheme.colors.primary else CurtainCallTheme.colors.onPrimary,
+                            shape = RoundedCornerShape(20.dp)
+                        )
                         .padding(horizontal = 10.dp, vertical = 4.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = item.date.toSeparatorDate(),
                         style = CurtainCallTheme.typography.caption.copy(
-                            color = CurtainCallTheme.colors.onPrimary
+                            color = if (partyChatting) CurtainCallTheme.colors.primary else CurtainCallTheme.colors.onPrimary
                         )
                     )
                 }
