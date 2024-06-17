@@ -90,7 +90,7 @@ internal fun ShowDetailScreen(
                 modifier = Modifier.fillMaxSize(),
                 showId = showId,
                 onNavigateToReview = onNavigateToReview,
-                onNavigateToReviewCreate = onNavigateToReviewCreate,
+                onNavigateToReviewCreate = onNavigateToReviewCreate
             )
         }
     }

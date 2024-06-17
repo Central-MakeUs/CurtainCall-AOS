@@ -2,6 +2,7 @@ package com.cmc.curtaincall.feature.mypage.notice
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -45,7 +46,8 @@ internal fun MyPageNoticeDetailScreen(
                 title = stringResource(R.string.mypage_profile_notice),
                 onBack = onBack
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { paddingValues ->
         MyPageNoticeDetailContent(
             myPageNoticeViewModel = myPageNoticeViewModel,
