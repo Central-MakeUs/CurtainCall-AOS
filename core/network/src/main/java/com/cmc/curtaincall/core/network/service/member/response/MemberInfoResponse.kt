@@ -5,7 +5,7 @@ import com.cmc.curtaincall.domain.model.member.MemberInfoModel
 data class MemberInfoResponse(
     val id: Int,
     val nickname: String,
-    val imageId: String?,
+    val imageId: Int?,
     val imageUrl: String?,
     val recruitingNum: Int,
     val participationNum: Int

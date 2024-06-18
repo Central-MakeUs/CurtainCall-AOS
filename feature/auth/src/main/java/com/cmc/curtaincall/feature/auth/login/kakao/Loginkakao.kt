@@ -81,7 +81,9 @@ private fun loginWithKaKaoAccount(
         if (error != null) {
             continuation.resume(LoginResponse.Failure(error.localizedMessage))
         } else if (token != null) {
-            continuation.resume(LoginResponse.Success(token.accessToken))
+            token.idToken?.let { idToken ->
+                continuation.resume(LoginResponse.Success(idToken))
+            }
         }
     }
 }

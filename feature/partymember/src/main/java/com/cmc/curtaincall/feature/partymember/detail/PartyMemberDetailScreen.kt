@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -76,6 +77,7 @@ fun PartyMemberDetailScreen(
     showName: String?,
     onNavigateToEdit: (Int?, String?) -> Unit = { _, _ -> },
     onNavigateToReport: (Int, ReportType) -> Unit = { _, _ -> },
+    onNavigateToLiveTalk: (String?, String?, Int?, String?) -> Unit = { _, _, _, _ -> },
     onBack: () -> Unit = {}
 ) {
     checkNotNull(partyId)
@@ -143,61 +145,81 @@ fun PartyMemberDetailScreen(
             }
         },
         floatingActionButton = {
-            if (isMyWriting) {
-                CurtainCallFilledButton(
-                    text = stringResource(R.string.enter_livetalk),
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .padding(bottom = 14.dp)
-                        .fillMaxWidth()
-                        .height(51.dp),
-                    containerColor = CurtainCallTheme.colors.secondary,
-                    contentColor = CurtainCallTheme.colors.primary,
-                    onClick = {
-                        // TODO 라이브톡 진입
-                    }
-                )
-            } else {
-                if (isParticipated) {
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .padding(bottom = 14.dp)
-                            .fillMaxWidth()
-                            .height(51.dp)
-                    ) {
-                        CurtainCallFilledButton(
-                            text = stringResource(R.string.cancel_participate),
-                            modifier = Modifier
-                                .weight(104f)
-                                .fillMaxHeight(),
-                            containerColor = Grey8,
-                            contentColor = Grey4,
-                            onClick = { showCancelPopup = true }
-                        )
-                        CurtainCallFilledButton(
-                            text = stringResource(R.string.enter_livetalk),
-                            modifier = Modifier
-                                .padding(start = 10.dp)
-                                .weight(206f)
-                                .fillMaxHeight(),
-                            containerColor = CurtainCallTheme.colors.secondary,
-                            contentColor = CurtainCallTheme.colors.primary,
-                            onClick = {
-                                // TODO 라이브톡 진입
-                            }
-                        )
-                    }
-                } else {
-                    if (partyDetailModel.showAt.isNotEmpty()) {
-                        val showAt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(partyDetailModel.showAt)
+            if (partyDetailModel.showAt.isNotEmpty()) {
+                val showAt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(partyDetailModel.showAt)
+                val today = Date()
+                if (showAt != null) {
+                    if (isMyWriting) {
                         if (showAt != null) {
                             CurtainCallFilledButton(
                                 text = stringResource(
-                                    if (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum) {
-                                        R.string.party_member_full_number_of_member
-                                    } else if (showAt <= Date()) {
+                                    if (today <= showAt) {
+                                        R.string.enter_livetalk
+                                    } else {
                                         R.string.end_recruitment
+                                    }
+                                ),
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .padding(bottom = 14.dp)
+                                    .fillMaxWidth()
+                                    .height(51.dp),
+                                enabled = today <= showAt,
+                                containerColor = CurtainCallTheme.colors.secondary,
+                                contentColor = CurtainCallTheme.colors.primary,
+                                onClick = {
+                                    onNavigateToLiveTalk(
+                                        partyDetailModel.showId,
+                                        partyDetailModel.showName,
+                                        partyDetailModel.id,
+                                        partyDetailModel.showAt
+                                    )
+                                }
+                            )
+                        }
+                    } else {
+                        if (isParticipated) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .padding(bottom = 14.dp)
+                                    .fillMaxWidth()
+                                    .height(51.dp)
+                            ) {
+                                CurtainCallFilledButton(
+                                    text = stringResource(R.string.cancel_participate),
+                                    modifier = Modifier
+                                        .weight(104f)
+                                        .fillMaxHeight(),
+                                    containerColor = Grey8,
+                                    contentColor = Grey4,
+                                    onClick = { showCancelPopup = true }
+                                )
+                                CurtainCallFilledButton(
+                                    text = stringResource(R.string.enter_livetalk),
+                                    modifier = Modifier
+                                        .padding(start = 10.dp)
+                                        .weight(206f)
+                                        .fillMaxHeight(),
+                                    containerColor = CurtainCallTheme.colors.secondary,
+                                    contentColor = CurtainCallTheme.colors.primary,
+                                    onClick = {
+                                        onNavigateToLiveTalk(
+                                            partyDetailModel.showId,
+                                            partyDetailModel.showName,
+                                            partyDetailModel.id,
+                                            partyDetailModel.showAt
+                                        )
+                                    }
+                                )
+                            }
+                        } else {
+                            CurtainCallFilledButton(
+                                text = stringResource(
+                                    if (showAt <= today) {
+                                        R.string.end_recruitment
+                                    } else if (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum) {
+                                        R.string.party_member_full_number_of_member
                                     } else {
                                         R.string.participate
                                     }
@@ -207,7 +229,7 @@ fun PartyMemberDetailScreen(
                                     .padding(bottom = 14.dp)
                                     .fillMaxWidth()
                                     .height(51.dp),
-                                enabled = (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum).not() && (showAt <= Date()).not(),
+                                enabled = (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum).not() && (today <= showAt),
                                 containerColor = CurtainCallTheme.colors.secondary,
                                 contentColor = CurtainCallTheme.colors.primary,
                                 onClick = { showParticipatePopup = true }
@@ -217,7 +239,8 @@ fun PartyMemberDetailScreen(
                 }
             }
         },
-        floatingActionButtonPosition = FabPosition.Center
+        floatingActionButtonPosition = FabPosition.Center,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { paddingValues ->
         PartyMemberDetailContent(
             modifier = Modifier

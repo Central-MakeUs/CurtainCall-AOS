@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":common:utility"))
     implementation(project(":core:base"))
     implementation(project(":domain"))
+    implementation(project(":feature:livetalk"))
 
     // androidx
     implementation(libs.androidx.core.ktx)

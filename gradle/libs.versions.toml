@@ -8,6 +8,7 @@ googleServicesPlugin = "4.3.15"
 hiltPlugin = "2.45"
 
 # androidx
+androidx-activity = "1.9.0"
 androidx-core-ktx = "1.8.0"
 androidx-lifecycle = "2.5.1"
 androidxPaging = "3.1.1"
@@ -95,6 +96,7 @@ curtaincall-android-room = { id = "curtaincall.android.room", version = "unspeci
 
 [libraries]
 # androidx
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "androidx-activity"}
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
@@ -122,6 +124,7 @@ accompanist-systemuicontroller = { group = "com.google.accompanist", name = "acc
 accompanist-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanist-compose" }
 accompanist-pager-indicators = { group = "com.google.accompanist", name = "accompanist-pager-indicators", version.ref = "accompanist-compose" }
 accompanist-webview = { group = "com.google.accompanist", name = "accompanist-webview", version.ref = "accompanist-compose" }
+accompanist-inset = { group = "com.google.accompanist", name = "accompanist-insets", version.ref = "accompanist-compose" }
 calendar-compose = { group = "com.kizitonwose.calendar", name = "compose", version.ref = "calendar-compose" }
 naver-map-compose = { group = "io.github.fornewid", name = "naver-map-compose", version.ref = "naver-map-compose" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-compose" }

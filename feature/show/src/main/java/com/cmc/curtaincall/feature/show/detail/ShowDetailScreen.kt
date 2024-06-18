@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,7 +45,7 @@ internal fun ShowDetailScreen(
     showId: String?,
     onNavigateToReview: (String) -> Unit = {},
     onNavigateToReviewCreate: () -> Unit = {},
-    onNavigateToLostProperty: (String, String) -> Unit = { _, _ -> },
+    onNavigateToLiveTalk: (String, String) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
     requireNotNull(showId)
@@ -65,13 +66,14 @@ internal fun ShowDetailScreen(
                 contentColor = CurtainCallTheme.colors.onPrimary,
                 onBack = onBack
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(CurtainCallTheme.colors.primary)
+                .background(CurtainCallTheme.colors.background)
                 .verticalScroll(scrollState)
         ) {
             ShowDetailContent(
@@ -82,14 +84,13 @@ internal fun ShowDetailScreen(
                 showDetailModel = showDetailUiState.showDetailModel,
                 isFavorite = showDetailUiState.isFavorite,
                 isShowCoachMark = showDetailUiState.isShowCoachMark,
-                onBack = onBack
+                onNavigateToLiveTalk = onNavigateToLiveTalk
             )
             ShowDetailMenuTab(
                 modifier = Modifier.fillMaxSize(),
                 showId = showId,
                 onNavigateToReview = onNavigateToReview,
-                onNavigateToReviewCreate = onNavigateToReviewCreate,
-                onNavigateToLostProperty = onNavigateToLostProperty
+                onNavigateToReviewCreate = onNavigateToReviewCreate
             )
         }
     }
@@ -101,8 +102,7 @@ private fun ShowDetailMenuTab(
     showDetailViewModel: ShowDetailViewModel = hiltViewModel(),
     showId: String = "",
     onNavigateToReview: (String) -> Unit = {},
-    onNavigateToReviewCreate: () -> Unit = {},
-    onNavigateToLostProperty: (String, String) -> Unit = { _, _ -> }
+    onNavigateToReviewCreate: () -> Unit = {}
 ) {
     val showDetailUiState by showDetailViewModel.uiState.collectAsStateWithLifecycle()
     Column(modifier) {
@@ -191,7 +191,7 @@ private fun ShowDetailContent(
     showDetailModel: ShowDetailModel = ShowDetailModel(),
     isFavorite: Boolean = false,
     isShowCoachMark: Boolean = false,
-    onBack: () -> Unit = {}
+    onNavigateToLiveTalk: (String, String) -> Unit = { _, _ -> }
 ) {
     Box(
         modifier = modifier,
@@ -214,7 +214,8 @@ private fun ShowDetailContent(
                     showId = showDetailModel.id,
                     isFavorite = isFavorite.not()
                 )
-            }
+            },
+            onNavigateToLiveTalk = onNavigateToLiveTalk
         )
         if (isShowCoachMark) {
             CurtainCallShowLiveTalkTooltip(

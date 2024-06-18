@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.cmc.curtaincall.common.navigation.NavGraphLabel
 import com.cmc.curtaincall.common.navigation.destination.DEFAULT_REVIEW_ID
+import com.cmc.curtaincall.common.navigation.destination.LiveTalkDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
 import com.cmc.curtaincall.domain.type.ReportType
 import com.cmc.curtaincall.feature.show.detail.ShowDetailScreen
@@ -49,8 +50,8 @@ fun NavGraphBuilder.showNavGraph(
                             "${ShowDestination.ReviewCreate.reviewIdArg}=$DEFAULT_REVIEW_ID"
                     )
                 },
-                onNavigateToLostProperty = { facilityId, facilityName ->
-                    navHostController.navigate("${ShowDestination.LostProperty.route}/$facilityId/$facilityName")
+                onNavigateToLiveTalk = { showId, showName ->
+                    navHostController.navigate("${LiveTalkDestination.LiveTalk.route}/$showId/$showName/${Int.MIN_VALUE}/null")
                 },
                 onBack = {
                     navHostController.popBackStack()

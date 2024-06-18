@@ -32,7 +32,7 @@ fun ColumnScope.PartyMemberRecruitThirdScreen(
     content: String = ""
 ) {
     Text(
-        text = stringResource(R.string.party_member_show_time_guide),
+        text = stringResource(R.string.party_member_show_title_guide),
         modifier = Modifier.padding(top = 30.dp, start = 20.dp),
         style = CurtainCallTheme.typography.subTitle4
     )

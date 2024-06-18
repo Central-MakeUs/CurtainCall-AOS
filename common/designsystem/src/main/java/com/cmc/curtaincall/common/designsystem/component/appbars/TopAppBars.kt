@@ -3,8 +3,10 @@ package com.cmc.curtaincall.common.designsystem.component.appbars
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,6 +41,7 @@ import com.cmc.curtaincall.common.designsystem.dimension.Paddings
 import com.cmc.curtaincall.common.designsystem.theme.Black
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.designsystem.theme.Grey2
+import com.cmc.curtaincall.common.designsystem.theme.Grey3
 import com.cmc.curtaincall.common.designsystem.theme.Grey6
 import com.cmc.curtaincall.common.designsystem.theme.Grey9
 import com.cmc.curtaincall.common.designsystem.theme.avenirnext
@@ -594,6 +597,64 @@ fun CurtainCallSearchTitleTopAppBarWithCalendar(
                     .size(TopAppBarBackIconSize)
                     .clickable { searchAppBarState.onSearch() },
                 tint = contentColor
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CurtainCallLiveTalkAppBarWithBack(
+    title: String,
+    date: String,
+    containerColor: Color = CurtainCallTheme.colors.background,
+    contentColor: Color = Black,
+    onBack: () -> Unit = {}
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(92.dp),
+        color = containerColor
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(TopAppBarHeight),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_back),
+                    contentDescription = TopAppBarBackIconDescription,
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = 14.dp)
+                        .size(TopAppBarBackIconSize)
+                        .clickable { onBack() },
+                    tint = contentColor
+                )
+                Text(
+                    text = title,
+                    modifier = Modifier.width(180.dp),
+                    style = CurtainCallTheme.typography.subTitle4.copy(
+                        color = contentColor
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center
+                )
+            }
+            Text(
+                text = date,
+                modifier = Modifier.fillMaxSize(),
+                style = CurtainCallTheme.typography.body4.copy(
+                    color = Grey3
+                ),
+                textAlign = TextAlign.Center
             )
         }
     }

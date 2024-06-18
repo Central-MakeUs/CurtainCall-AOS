@@ -54,7 +54,8 @@ fun ShowSearchScreen(
                 title = stringResource(R.string.show),
                 searchAppBarState = searchAppBarState
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { paddingValues ->
         if (searchAppBarState.isSearchMode.value) {
             ShowSearchContent(

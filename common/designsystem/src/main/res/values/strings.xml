@@ -202,6 +202,10 @@
     <string name="mypage_myparty_recruitment_subtitle">파티원 모집글을 작성하고\n네트워킹을 즐겨보세요!</string>
     <string name="mypage_myparty_navigate_to_party">파티원으로 이동하기</string>
 
+    <string name="livetalk_popup_title">입력할 방법을 선택해주세요</string>
+    <string name="livetalk_popup_take_picture">카메라 촬영</string>
+    <string name="livetalk_popup_select_image">사진 선택</string>
+
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
     <!-- common -->

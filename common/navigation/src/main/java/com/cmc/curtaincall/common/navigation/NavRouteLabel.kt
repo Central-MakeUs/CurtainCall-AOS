@@ -35,4 +35,6 @@ object NavRouteLabel {
     const val MYPAGE_SETTING = "mypage_setting"
     const val MYPAGE_DELETE = "mypage_delete"
     const val MYPAGE_MY_PARTY = "mypage_my_party"
+
+    const val LIVTALK = "livetalk"
 }

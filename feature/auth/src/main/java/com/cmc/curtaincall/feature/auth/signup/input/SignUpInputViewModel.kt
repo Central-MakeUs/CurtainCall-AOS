@@ -61,7 +61,8 @@ class SignUpInputViewModel @Inject constructor(
                 _user.emit(
                     User(
                         id = memberId.toString(),
-                        name = nickname
+                        name = nickname,
+                        role = "channel_member"
                     )
                 )
             }.launchIn(viewModelScope)

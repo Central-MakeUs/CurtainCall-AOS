@@ -1,9 +1,13 @@
-package com.cmc.curtaincall.feature.home.navigation
+package com.cmc.curtaincall.feature.home
 
 import android.os.Build
 import android.os.Bundle
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,13 +16,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cmc.curtaincall.common.designsystem.component.navigation.CurtainCallNavigationBar
+import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
 import com.cmc.curtaincall.common.navigation.NavGraphLabel
 import com.cmc.curtaincall.common.navigation.destination.HomeDestination
 import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
 import com.cmc.curtaincall.common.navigation.destination.PartyMemberDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
 import com.cmc.curtaincall.domain.type.ReportType
-import com.cmc.curtaincall.feature.home.HomeScreen
 import com.cmc.curtaincall.feature.home.report.HomeReportScreen
 import com.cmc.curtaincall.feature.livetalk.livetalkNavGraph
 import com.cmc.curtaincall.feature.mypage.mypageNavGraph
@@ -44,14 +48,18 @@ fun HomeNavHost(
                     MyPageDestination.MyPage
                 )
             )
-        }
+        },
+        modifier = Modifier
+            .background(CurtainCallTheme.colors.primary)
+            .navigationBarsPadding(),
+        contentWindowInsets = WindowInsets.statusBars
     ) { innerPadding ->
         NavHost(
             navController = navHostController,
             startDestination = HomeDestination.Home.route,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .fillMaxSize(),
             route = NavGraphLabel.HOME
         ) {
             composable(route = HomeDestination.Home.route) {

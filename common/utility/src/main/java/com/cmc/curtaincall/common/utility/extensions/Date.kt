@@ -2,6 +2,7 @@ package com.cmc.curtaincall.common.utility.extensions
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
@@ -137,4 +138,14 @@ fun String.convertPartyTime(): String {
     } ?: kotlin.run {
         return ""
     }
+}
+
+fun Date?.toPM(): String {
+    val dateFormat = SimpleDateFormat("a h:mm", Locale.getDefault())
+    return this?.let { dateFormat.format(it) } ?: ""
+}
+
+fun Date.toSeparatorDate(): String {
+    val dateFormat = SimpleDateFormat("yyyy.MM.dd(E)", Locale.getDefault())
+    return dateFormat.format(this)
 }
