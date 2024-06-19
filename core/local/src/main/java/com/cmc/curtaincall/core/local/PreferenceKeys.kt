@@ -2,6 +2,7 @@ package com.cmc.curtaincall.core.local
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 
 object PreferenceKeys {
@@ -18,4 +19,6 @@ object PreferenceKeys {
     val IS_SHOW_PARTY_TOOLTIPS = booleanPreferencesKey("IS_SHOW_PARTY_TOOLTIPS")
     val IS_SHOW_PARTY_SORT_TOOLTIP = booleanPreferencesKey("IS_SHOW_PARTY_SORT_TOOLTIP")
     val IS_SHOW_HOME_TOOLTIP = booleanPreferencesKey("IS_SHOW_HOME_TOOLTIP")
+
+    val SHOW_RANKS_CACHE_TIME = longPreferencesKey("SHOW_RANKS_CACHE_TIME")
 }

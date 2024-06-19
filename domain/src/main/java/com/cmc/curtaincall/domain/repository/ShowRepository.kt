@@ -22,6 +22,10 @@ interface ShowRepository {
 
     suspend fun deleteShowSearchWordList()
 
+    fun getShowRankCacheTime(): Flow<Long>
+
+    suspend fun saveShowRankCacheTime(time: Long)
+
     fun fetchShowList(
         genre: String,
         sort: String?
