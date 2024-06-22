@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -31,11 +32,13 @@ class HomeViewModel @Inject constructor(
     initialState = HomeState()
 ) {
     private val memberID = MutableStateFlow(Int.MIN_VALUE)
+    private val cacheTime = MutableStateFlow(0L)
 
     init {
         checkMemberId()
         checkCostEffectiveTooltip()
         getMemberNickname()
+        getCacheTime()
     }
 
     override fun reduceState(currentState: HomeState, event: HomeEvent): HomeState =
@@ -103,6 +106,12 @@ class HomeViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
+    private fun getCacheTime() {
+        showRepository.getShowRankCacheTime()
+            .onEach { cacheTime.value = it }
+            .launchIn(viewModelScope)
+    }
+
     private fun checkCostEffectiveTooltip() {
         launchRepository.isShowHomeTooltip()
             .onEach { isShow ->
@@ -150,27 +159,57 @@ class HomeViewModel @Inject constructor(
     }
 
     fun requestPopularShowList() {
-        val type = "DAY"
-        val baseDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now().minusDays(2))
-        showRepository.requestPopularShowList(
-            type = type,
-            genre = ShowGenreType.PLAY.name,
-            baseDate = baseDate
-        ).zip(
+        val cacheDate = Calendar.getInstance().apply {
+            timeInMillis = cacheTime.value
+            set(Calendar.HOUR, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        cacheDate.add(Calendar.DAY_OF_MONTH, 1)
+
+        val todayDate = Calendar.getInstance().apply {
+            set(Calendar.HOUR, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        Timber.d("requestPopularShowList ${cacheDate.time} ${todayDate.time}")
+        if (cacheDate < todayDate) {
+            val type = "DAY"
+            val baseDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now().minusDays(2))
             showRepository.requestPopularShowList(
                 type = type,
-                genre = ShowGenreType.MUSICAL.name,
+                genre = ShowGenreType.PLAY.name,
                 baseDate = baseDate
-            )
-        ) { popular1, popular2 ->
-            (popular1 + popular2).sortedBy { it.rank }.take(10)
-        }.onEach {
-            sendAction(
-                HomeEvent.RequestPopularShowList(
-                    showRanks = it
+            ).zip(
+                showRepository.requestPopularShowList(
+                    type = type,
+                    genre = ShowGenreType.MUSICAL.name,
+                    baseDate = baseDate
                 )
-            )
-        }.launchIn(viewModelScope)
+            ) { popular1, popular2 ->
+                (popular1 + popular2).sortedBy { it.rank }.take(10)
+            }.onEach {
+                sendAction(
+                    HomeEvent.RequestPopularShowList(
+                        showRanks = it
+                    )
+                )
+                showRepository.saveShowRankCacheTime(System.currentTimeMillis())
+                showRepository.saveShowRankList(it)
+            }.launchIn(viewModelScope)
+        } else {
+            showRepository.getShowRankList()
+                .onEach {
+                    sendAction(
+                        HomeEvent.RequestPopularShowList(
+                            showRanks = it
+                        )
+                    )
+                }.launchIn(viewModelScope)
+        }
     }
 
     fun requestOpenShowList() {

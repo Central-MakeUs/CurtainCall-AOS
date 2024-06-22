@@ -53,6 +53,15 @@ class ShowRepositoryImpl @Inject constructor(
         showLocalSource.saveShowRankCacheTime(time)
     }
 
+    override fun getShowRankList(): Flow<List<ShowRankModel>> =
+        showLocalSource.getShowRankList().map { entities ->
+            entities.map { it.toModel() }
+        }
+
+    override suspend fun saveShowRankList(showRanks: List<ShowRankModel>) {
+        showLocalSource.saveShowRankList(showRanks = showRanks)
+    }
+
     override fun fetchShowList(
         genre: String,
         sort: String?

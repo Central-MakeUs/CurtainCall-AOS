@@ -26,6 +26,10 @@ interface ShowRepository {
 
     suspend fun saveShowRankCacheTime(time: Long)
 
+    fun getShowRankList(): Flow<List<ShowRankModel>>
+
+    suspend fun saveShowRankList(showRanks: List<ShowRankModel>)
+
     fun fetchShowList(
         genre: String,
         sort: String?

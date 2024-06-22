@@ -6,6 +6,7 @@ import com.cmc.curtaincall.core.local.db.CurtainCallDatabase
 import com.cmc.curtaincall.core.local.db.MIGRATION_4_5
 import com.cmc.curtaincall.core.local.db.dao.LostPropertySearchDao
 import com.cmc.curtaincall.core.local.db.dao.PartySearchDao
+import com.cmc.curtaincall.core.local.db.dao.ShowRankDao
 import com.cmc.curtaincall.core.local.db.dao.ShowSearchDao
 import dagger.Module
 import dagger.Provides
@@ -37,6 +38,13 @@ object DatabaseModule {
         curtainCallDatabase: CurtainCallDatabase
     ): ShowSearchDao =
         curtainCallDatabase.showSearchDao()
+
+    @Provides
+    @Singleton
+    fun provideShowRankDao(
+        curtainCallDatabase: CurtainCallDatabase
+    ): ShowRankDao =
+        curtainCallDatabase.showRankDao()
 
     @Provides
     @Singleton
