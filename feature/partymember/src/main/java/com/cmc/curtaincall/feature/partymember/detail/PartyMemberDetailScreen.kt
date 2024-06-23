@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -144,102 +143,6 @@ fun PartyMemberDetailScreen(
                 )
             }
         },
-        floatingActionButton = {
-            if (partyDetailModel.showAt.isNotEmpty()) {
-                val showAt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(partyDetailModel.showAt)
-                val today = Date()
-                if (showAt != null) {
-                    if (isMyWriting) {
-                        if (showAt != null) {
-                            CurtainCallFilledButton(
-                                text = stringResource(
-                                    if (today <= showAt) {
-                                        R.string.enter_livetalk
-                                    } else {
-                                        R.string.end_recruitment
-                                    }
-                                ),
-                                modifier = Modifier
-                                    .padding(horizontal = 20.dp)
-                                    .padding(bottom = 14.dp)
-                                    .fillMaxWidth()
-                                    .height(51.dp),
-                                enabled = today <= showAt,
-                                containerColor = CurtainCallTheme.colors.secondary,
-                                contentColor = CurtainCallTheme.colors.primary,
-                                onClick = {
-                                    onNavigateToLiveTalk(
-                                        partyDetailModel.showId,
-                                        partyDetailModel.showName,
-                                        partyDetailModel.id,
-                                        partyDetailModel.showAt
-                                    )
-                                }
-                            )
-                        }
-                    } else {
-                        if (isParticipated) {
-                            Row(
-                                modifier = Modifier
-                                    .padding(horizontal = 20.dp)
-                                    .padding(bottom = 14.dp)
-                                    .fillMaxWidth()
-                                    .height(51.dp)
-                            ) {
-                                CurtainCallFilledButton(
-                                    text = stringResource(R.string.cancel_participate),
-                                    modifier = Modifier
-                                        .weight(104f)
-                                        .fillMaxHeight(),
-                                    containerColor = Grey8,
-                                    contentColor = Grey4,
-                                    onClick = { showCancelPopup = true }
-                                )
-                                CurtainCallFilledButton(
-                                    text = stringResource(R.string.enter_livetalk),
-                                    modifier = Modifier
-                                        .padding(start = 10.dp)
-                                        .weight(206f)
-                                        .fillMaxHeight(),
-                                    containerColor = CurtainCallTheme.colors.secondary,
-                                    contentColor = CurtainCallTheme.colors.primary,
-                                    onClick = {
-                                        onNavigateToLiveTalk(
-                                            partyDetailModel.showId,
-                                            partyDetailModel.showName,
-                                            partyDetailModel.id,
-                                            partyDetailModel.showAt
-                                        )
-                                    }
-                                )
-                            }
-                        } else {
-                            CurtainCallFilledButton(
-                                text = stringResource(
-                                    if (showAt <= today) {
-                                        R.string.end_recruitment
-                                    } else if (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum) {
-                                        R.string.party_member_full_number_of_member
-                                    } else {
-                                        R.string.participate
-                                    }
-                                ),
-                                modifier = Modifier
-                                    .padding(horizontal = 20.dp)
-                                    .padding(bottom = 14.dp)
-                                    .fillMaxWidth()
-                                    .height(51.dp),
-                                enabled = (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum).not() && (today <= showAt),
-                                containerColor = CurtainCallTheme.colors.secondary,
-                                contentColor = CurtainCallTheme.colors.primary,
-                                onClick = { showParticipatePopup = true }
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Center,
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { paddingValues ->
         PartyMemberDetailContent(
@@ -248,9 +151,13 @@ fun PartyMemberDetailScreen(
                 .fillMaxSize()
                 .background(CurtainCallTheme.colors.primary),
             showEditMenu = showEditMenu,
+            isParticipated = isParticipated,
+            onActiveShowCancelPopup = { showCancelPopup = true },
+            onActiveShowParticipationPopup = { showParticipatePopup = true },
             onCloseShowEditMenu = { showEditMenu = false },
             onNavigateToEdit = onNavigateToEdit,
-            onNavigateToReport = onNavigateToReport
+            onNavigateToReport = onNavigateToReport,
+            onNavigateToLiveTalk = onNavigateToLiveTalk
         )
     }
 
@@ -268,9 +175,13 @@ private fun PartyMemberDetailContent(
     modifier: Modifier = Modifier,
     partyMemberDetailViewModel: PartyMemberDetailViewModel = hiltViewModel(),
     showEditMenu: Boolean = false,
+    isParticipated: Boolean = false,
+    onActiveShowCancelPopup: (Boolean) -> Unit = {},
+    onActiveShowParticipationPopup: (Boolean) -> Unit = {},
     onCloseShowEditMenu: () -> Unit = {},
     onNavigateToEdit: (Int?, String?) -> Unit = { _, _ -> },
     onNavigateToReport: (Int, ReportType) -> Unit = { _, _ -> },
+    onNavigateToLiveTalk: (String?, String?, Int?, String?) -> Unit = { _, _, _, _ -> }
 ) {
     val scrollState = rememberScrollState()
     val partyDetailModel by partyMemberDetailViewModel.partyDetailModel.collectAsStateWithLifecycle()
@@ -346,271 +257,370 @@ private fun PartyMemberDetailContent(
                 }
             }
         }
-        Column(
-            modifier = Modifier
-                .padding(top = 20.dp, bottom = 121.dp)
-                .padding(horizontal = 20.dp)
-                .fillMaxWidth()
-                .background(CurtainCallTheme.colors.background, RoundedCornerShape(20.dp))
-        ) {
-            AsyncImage(
-                model = partyDetailModel.showPoster,
-                contentDescription = null,
+        Column(Modifier.fillMaxSize()) {
+            Column(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 40.dp)
-                    .size(180.dp, 257.dp)
-                    .clip(RoundedCornerShape(18.dp)),
-                contentScale = ContentScale.FillBounds,
-                error = painterResource(R.drawable.ic_error_poster),
-                placeholder = painterResource(R.drawable.ic_error_poster)
-            )
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 30.dp)
+                    .padding(top = 20.dp)
+                    .padding(horizontal = 20.dp)
                     .fillMaxWidth()
+                    .background(CurtainCallTheme.colors.background, RoundedCornerShape(20.dp))
             ) {
                 AsyncImage(
-                    model = partyDetailModel.creatorImageUrl,
+                    model = partyDetailModel.showPoster,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape),
-                    error = painterResource(R.drawable.ic_default_profile),
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 40.dp)
+                        .size(180.dp, 257.dp)
+                        .clip(RoundedCornerShape(18.dp)),
+                    contentScale = ContentScale.FillBounds,
+                    error = painterResource(R.drawable.ic_error_poster),
                     placeholder = painterResource(R.drawable.ic_error_poster)
                 )
-                Column(Modifier.padding(start = 12.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = partyDetailModel.creatorNickname,
-                            modifier = Modifier.width(159.dp),
-                            style = CurtainCallTheme.typography.body3.copy(
-                                fontWeight = FontWeight.SemiBold
-                            ),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        if (!isMyWriting) {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 30.dp)
+                        .fillMaxWidth()
+                ) {
+                    AsyncImage(
+                        model = partyDetailModel.creatorImageUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.FillBounds,
+                        error = painterResource(R.drawable.ic_default_profile),
+                        placeholder = painterResource(R.drawable.ic_error_poster)
+                    )
+                    Column(Modifier.padding(start = 12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
-                                text = stringResource(R.string.report),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { onNavigateToReport(partyDetailModel.id, ReportType.PARTY) },
-                                style = CurtainCallTheme.typography.body4.copy(
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Grey6
+                                text = partyDetailModel.creatorNickname,
+                                modifier = Modifier.width(159.dp),
+                                style = CurtainCallTheme.typography.body3.copy(
+                                    fontWeight = FontWeight.SemiBold
                                 ),
-                                textAlign = TextAlign.End
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
+                            if (!isMyWriting) {
+                                Text(
+                                    text = stringResource(R.string.report),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onNavigateToReport(partyDetailModel.id, ReportType.PARTY) },
+                                    style = CurtainCallTheme.typography.body4.copy(
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Grey6
+                                    ),
+                                    textAlign = TextAlign.End
+                                )
+                            }
                         }
+                        Text(
+                            text = partyDetailModel.createdAt.convertUIDate(),
+                            style = CurtainCallTheme.typography.body3.copy(
+                                color = Grey5
+                            )
+                        )
                     }
+                }
+                Text(
+                    text = partyDetailModel.title,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 20.dp),
+                    style = CurtainCallTheme.typography.subTitle4,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = partyDetailModel.content,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 10.dp),
+                    style = CurtainCallTheme.typography.body3.copy(
+                        color = Grey1
+                    )
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Canvas(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .size(16.dp)
+                            .offset(x = (-8).dp)
+                    ) {
+                        drawArc(
+                            color = Primary,
+                            startAngle = -90f,
+                            sweepAngle = 180f,
+                            useCenter = false
+                        )
+                    }
+                    DottedLine(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .fillMaxWidth(),
+                        strokeWidth = 5.dp.value,
+                        strokeColor = Grey7
+                    )
+                    Canvas(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .size(16.dp)
+                            .offset(x = 8.dp)
+                    ) {
+                        drawArc(
+                            color = Primary,
+                            startAngle = -90f,
+                            sweepAngle = -180f,
+                            useCenter = false
+                        )
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = partyDetailModel.createdAt.convertUIDate(),
-                        style = CurtainCallTheme.typography.body3.copy(
+                        text = stringResource(R.string.party_member_detail_show_name),
+                        modifier = Modifier.width(69.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            fontWeight = FontWeight.SemiBold,
                             color = Grey5
                         )
                     )
-                }
-            }
-            Text(
-                text = partyDetailModel.title,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 20.dp),
-                style = CurtainCallTheme.typography.subTitle4,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = partyDetailModel.content,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 10.dp),
-                style = CurtainCallTheme.typography.body3.copy(
-                    color = Grey1
-                )
-            )
-            Box(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Canvas(
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .size(16.dp)
-                        .offset(x = (-8).dp)
-                ) {
-                    drawArc(
-                        color = Primary,
-                        startAngle = -90f,
-                        sweepAngle = 180f,
-                        useCenter = false
-                    )
-                }
-                DottedLine(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .fillMaxWidth(),
-                    strokeWidth = 5.dp.value,
-                    strokeColor = Grey7
-                )
-                Canvas(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .size(16.dp)
-                        .offset(x = 8.dp)
-                ) {
-                    drawArc(
-                        color = Primary,
-                        startAngle = -90f,
-                        sweepAngle = -180f,
-                        useCenter = false
-                    )
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.party_member_detail_show_name),
-                    modifier = Modifier.width(69.dp),
-                    style = CurtainCallTheme.typography.body4.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        color = Grey5
-                    )
-                )
-                Text(
-                    text = partyDetailModel.showName,
-                    style = CurtainCallTheme.typography.body4.copy(
-                        color = Grey1
-                    )
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.party_member_detail_show_date),
-                    modifier = Modifier.width(69.dp),
-                    style = CurtainCallTheme.typography.body4.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        color = Grey5
-                    )
-                )
-                Text(
-                    text = partyDetailModel.showAt.convertUIDate(),
-                    style = CurtainCallTheme.typography.body4.copy(
-                        color = Grey1
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.party_member_detail_show_time),
-                    modifier = Modifier.width(69.dp),
-                    style = CurtainCallTheme.typography.body4.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        color = Grey5
-                    )
-                )
-                Text(
-                    text = if (partyDetailModel.showAt.isNotEmpty()) partyDetailModel.showAt.substring(11, 16) else "",
-                    style = CurtainCallTheme.typography.body4.copy(
-                        color = Grey1
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.party_member_detail_show_location),
-                    modifier = Modifier.width(69.dp),
-                    style = CurtainCallTheme.typography.body4.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        color = Grey5
-                    )
-                )
-                Text(
-                    text = partyDetailModel.facilityName,
-                    style = CurtainCallTheme.typography.body4.copy(
-                        color = Grey1
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(top = 9.dp)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.party_member_detail_number_of_participation),
-                    modifier = Modifier.width(69.dp),
-                    style = CurtainCallTheme.typography.body4.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        color = Grey5
-                    )
-                )
-                if (partyDetailModel.curMemberNum > 3) {
-                    for (i in 0..2) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_default_profile),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                            tint = Color.Unspecified
-                        )
-                    }
                     Text(
-                        text = String.format("+%d명", partyDetailModel.curMemberNum - 3),
-                        modifier = Modifier.padding(start = 4.dp),
+                        text = partyDetailModel.showName,
                         style = CurtainCallTheme.typography.body4.copy(
                             color = Grey1
                         )
                     )
-                } else {
-                    (0 until partyDetailModel.curMemberNum).forEach {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_default_profile),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                            tint = Color.Unspecified
+                }
+                Row(
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.party_member_detail_show_date),
+                        modifier = Modifier.width(69.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = Grey5
                         )
+                    )
+                    Text(
+                        text = partyDetailModel.showAt.convertUIDate(),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            color = Grey1
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.party_member_detail_show_time),
+                        modifier = Modifier.width(69.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = Grey5
+                        )
+                    )
+                    Text(
+                        text = if (partyDetailModel.showAt.isNotEmpty()) partyDetailModel.showAt.substring(11, 16) else "",
+                        style = CurtainCallTheme.typography.body4.copy(
+                            color = Grey1
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.party_member_detail_show_location),
+                        modifier = Modifier.width(69.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = Grey5
+                        )
+                    )
+                    Text(
+                        text = partyDetailModel.facilityName,
+                        style = CurtainCallTheme.typography.body4.copy(
+                            color = Grey1
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .padding(top = 9.dp)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.party_member_detail_number_of_participation),
+                        modifier = Modifier.width(69.dp),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = Grey5
+                        )
+                    )
+                    if (partyDetailModel.curMemberNum > 3) {
+                        for (i in 0..2) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_default_profile),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = Color.Unspecified
+                            )
+                        }
+                        Text(
+                            text = String.format("+%d명", partyDetailModel.curMemberNum - 3),
+                            modifier = Modifier.padding(start = 4.dp),
+                            style = CurtainCallTheme.typography.body4.copy(
+                                color = Grey1
+                            )
+                        )
+                    } else {
+                        (0 until partyDetailModel.curMemberNum).forEach {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_default_profile),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = Color.Unspecified
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.size(31.dp))
+            }
+            if (partyDetailModel.showAt.isNotEmpty()) {
+                val showAt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(partyDetailModel.showAt)
+                val today = Date()
+                if (showAt != null) {
+                    if (isMyWriting) {
+                        if (showAt != null) {
+                            CurtainCallFilledButton(
+                                text = stringResource(
+                                    if (today <= showAt) {
+                                        R.string.enter_livetalk
+                                    } else {
+                                        R.string.end_recruitment
+                                    }
+                                ),
+                                modifier = Modifier
+                                    .align(Alignment.End)
+                                    .padding(horizontal = 20.dp)
+                                    .padding(bottom = 30.dp, top = 40.dp)
+                                    .fillMaxWidth()
+                                    .height(51.dp),
+                                enabled = today <= showAt,
+                                containerColor = CurtainCallTheme.colors.secondary,
+                                contentColor = CurtainCallTheme.colors.primary,
+                                onClick = {
+                                    onNavigateToLiveTalk(
+                                        partyDetailModel.showId,
+                                        partyDetailModel.showName,
+                                        partyDetailModel.id,
+                                        partyDetailModel.showAt
+                                    )
+                                }
+                            )
+                        }
+                    } else {
+                        if (isParticipated) {
+                            Row(
+                                modifier = Modifier
+                                    .align(Alignment.End)
+                                    .padding(horizontal = 20.dp)
+                                    .padding(bottom = 30.dp, top = 40.dp)
+                                    .fillMaxWidth()
+                                    .height(51.dp)
+                            ) {
+                                CurtainCallFilledButton(
+                                    text = stringResource(R.string.cancel_participate),
+                                    modifier = Modifier
+                                        .weight(104f)
+                                        .fillMaxHeight(),
+                                    containerColor = Grey8,
+                                    contentColor = Grey4,
+                                    onClick = { onActiveShowCancelPopup(true) }
+                                )
+                                CurtainCallFilledButton(
+                                    text = stringResource(R.string.enter_livetalk),
+                                    modifier = Modifier
+                                        .padding(start = 10.dp)
+                                        .weight(206f)
+                                        .fillMaxHeight(),
+                                    containerColor = CurtainCallTheme.colors.secondary,
+                                    contentColor = CurtainCallTheme.colors.primary,
+                                    onClick = {
+                                        onNavigateToLiveTalk(
+                                            partyDetailModel.showId,
+                                            partyDetailModel.showName,
+                                            partyDetailModel.id,
+                                            partyDetailModel.showAt
+                                        )
+                                    }
+                                )
+                            }
+                        } else {
+                            CurtainCallFilledButton(
+                                text = stringResource(
+                                    if (showAt <= today) {
+                                        R.string.end_recruitment
+                                    } else if (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum) {
+                                        R.string.party_member_full_number_of_member
+                                    } else {
+                                        R.string.participate
+                                    }
+                                ),
+                                modifier = Modifier
+                                    .align(Alignment.End)
+                                    .padding(horizontal = 20.dp)
+                                    .padding(bottom = 30.dp, top = 40.dp)
+                                    .fillMaxWidth()
+                                    .height(51.dp),
+                                enabled = (partyDetailModel.curMemberNum == partyDetailModel.maxMemberNum).not() && (today <= showAt),
+                                containerColor = CurtainCallTheme.colors.secondary,
+                                contentColor = CurtainCallTheme.colors.primary,
+                                onClick = { onActiveShowParticipationPopup(true) }
+                            )
+                        }
                     }
                 }
             }
-            Spacer(Modifier.size(31.dp))
         }
     }
 }
