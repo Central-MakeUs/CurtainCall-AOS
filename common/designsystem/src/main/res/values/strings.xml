@@ -12,6 +12,7 @@
     <string name="no_information">정보없음</string>
     <string name="finish_recruitment">모집완료</string>
     <string name="recruiting">모집중</string>
+    <string name="participating">참여중</string>
     <string name="finish_select">선택완료</string>
     <string name="finish_write">작성 완료</string>
     <string name="complete">확인</string>
