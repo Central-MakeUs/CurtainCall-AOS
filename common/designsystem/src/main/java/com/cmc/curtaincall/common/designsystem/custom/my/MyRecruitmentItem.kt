@@ -282,7 +282,7 @@ fun MyRecruitmentItem(
                 .background(
                     color = CurtainCallTheme.colors.secondary,
                     shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
-                ),
+                ).clickable { onNavigateToLiveTalk() },
             contentAlignment = Alignment.Center
         ) {
             Text(

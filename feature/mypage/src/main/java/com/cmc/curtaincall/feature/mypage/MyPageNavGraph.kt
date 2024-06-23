@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.cmc.curtaincall.common.navigation.NavGraphLabel
+import com.cmc.curtaincall.common.navigation.destination.LiveTalkDestination
 import com.cmc.curtaincall.common.navigation.destination.MyPageDestination
 import com.cmc.curtaincall.common.navigation.destination.PartyMemberDestination
 import com.cmc.curtaincall.common.navigation.destination.ShowDestination
@@ -153,6 +154,9 @@ fun NavGraphBuilder.mypageNavGraph(
                 },
                 onNavigateToPartyEdit = { partyId, showName ->
                     navHostController.navigate("${PartyMemberDestination.Edit.route}/$partyId/$showName")
+                },
+                onNavigateToLiveTalk = { showId, showName, partyId, showAt ->
+                    navHostController.navigate("${LiveTalkDestination.LiveTalk.route}/$showId/$showName/$partyId/$showAt")
                 },
                 onBack = { navHostController.popBackStack() }
             )

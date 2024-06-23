@@ -52,6 +52,7 @@ internal fun MyPagePartyScreen(
     onNavigateToParty: () -> Unit = {},
     onNavigateToPartyDetail: (Int?, String?) -> Unit = { _, _ -> },
     onNavigateToPartyEdit: (Int?, String?) -> Unit = { _, _ -> },
+    onNavigateToLiveTalk: (String?, String?, Int?, String?) -> Unit = { _, _, _, _ -> },
     onBack: () -> Unit = {}
 ) {
     SystemUiStatusBar(Grey8)
@@ -72,7 +73,9 @@ internal fun MyPagePartyScreen(
                 .background(Grey8),
             onNavigateToParty = onNavigateToParty,
             onNavigateToPartyDetail = onNavigateToPartyDetail,
-            onNavigateToPartyEdit = onNavigateToPartyEdit
+            onNavigateToPartyEdit = onNavigateToPartyEdit,
+            onNavigateToLiveTalk = onNavigateToLiveTalk
+
         )
     }
 
@@ -88,6 +91,7 @@ private fun MyPagePartyContent(
     onNavigateToParty: () -> Unit = {},
     onNavigateToPartyDetail: (Int?, String?) -> Unit = { _, _ -> },
     onNavigateToPartyEdit: (Int?, String?) -> Unit = { _, _ -> },
+    onNavigateToLiveTalk: (String?, String?, Int?, String?) -> Unit = { _, _, _, _ -> }
 ) {
     val partyType by myPagePartyViewModel.myPartyType.collectAsStateWithLifecycle()
     val memberInfo by myPagePartyViewModel.memberInfo.collectAsStateWithLifecycle()
@@ -196,6 +200,14 @@ private fun MyPagePartyContent(
                                 },
                                 onCancel = {
                                     cancelPartyId = it.id
+                                },
+                                onNavigateToLiveTalk = {
+                                    onNavigateToLiveTalk(
+                                        it.showId,
+                                        it.showName,
+                                        it.id,
+                                        it.showAt
+                                    )
                                 }
                             )
                         }
@@ -276,6 +288,14 @@ private fun MyPagePartyContent(
                                 onNavigateToDetail = {
                                     selectEditIndex = Int.MIN_VALUE
                                     onNavigateToPartyDetail(it.id, it.showName)
+                                },
+                                onNavigateToLiveTalk = {
+                                    onNavigateToLiveTalk(
+                                        it.showId,
+                                        it.showName,
+                                        it.id,
+                                        it.showAt
+                                    )
                                 }
                             )
                         }
