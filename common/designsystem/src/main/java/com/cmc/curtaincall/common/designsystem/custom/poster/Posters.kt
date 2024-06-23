@@ -351,7 +351,9 @@ fun CurtainCallShowPoster(
                 model = model,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.FillBounds,
+                error = painterResource(R.drawable.ic_error_poster),
+                placeholder = painterResource(R.drawable.ic_error_poster)
             )
             CurtainCallLikeButton(
                 modifier = Modifier
