@@ -45,6 +45,7 @@ import com.cmc.curtaincall.domain.model.member.MyParticipationModel
 import com.cmc.curtaincall.domain.model.member.MyRecruitmentModel
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @Composable
 fun MyRecruitmentItem(
@@ -59,7 +60,7 @@ fun MyRecruitmentItem(
     onNavigateToDetail: () -> Unit = {},
     onNavigateToLiveTalk: () -> Unit = {}
 ) {
-    val isEndRecruitment = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(myRecruitmentModel.showAt) <= Date()
+    val isRecruitmenting = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(myRecruitmentModel.showAt) >= Date()
     Box(
         modifier = modifier
             .size(320.dp, 222.dp)
@@ -256,20 +257,31 @@ fun MyRecruitmentItem(
             Box(
                 modifier = Modifier
                     .padding(start = 6.dp)
-                    .background(Grey8, RoundedCornerShape(4.dp))
+                    .background(
+                        if (myRecruitmentModel.curMemberNum < myRecruitmentModel.maxMemberNum && isRecruitmenting) {
+                            CurtainCallTheme.colors.secondary
+                        } else {
+                            Grey8
+                        },
+                        RoundedCornerShape(4.dp)
+                    )
                     .padding(vertical = 2.dp, horizontal = 6.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(
-                        if (myRecruitmentModel.curMemberNum == myRecruitmentModel.maxMemberNum || isEndRecruitment) {
-                            R.string.finish_recruitment
+                        if (myRecruitmentModel.curMemberNum < myRecruitmentModel.maxMemberNum && isRecruitmenting) {
+                            R.string.participating
                         } else {
-                            R.string.recruiting
+                            R.string.finish_recruitment
                         }
                     ),
                     style = CurtainCallTheme.typography.body5.copy(
-                        color = Grey4
+                        color = if (myRecruitmentModel.curMemberNum < myRecruitmentModel.maxMemberNum && isRecruitmenting) {
+                            CurtainCallTheme.colors.primary
+                        } else {
+                            Grey4
+                        }
                     )
                 )
             }
@@ -280,16 +292,21 @@ fun MyRecruitmentItem(
                 .fillMaxWidth()
                 .height(40.dp)
                 .background(
-                    color = CurtainCallTheme.colors.secondary,
+                    color = if (isRecruitmenting) CurtainCallTheme.colors.secondary else Grey9,
                     shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
-                ).clickable { onNavigateToLiveTalk() },
+                )
+                .clickable {
+                    if (isRecruitmenting) {
+                        onNavigateToLiveTalk()
+                    }
+                },
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = stringResource(R.string.enter_livetalk),
                 style = CurtainCallTheme.typography.body3.copy(
                     fontWeight = FontWeight.SemiBold,
-                    color = CurtainCallTheme.colors.primary
+                    color = if (isRecruitmenting) CurtainCallTheme.colors.primary else Grey6
                 )
             )
         }
@@ -304,7 +321,7 @@ fun MyParticipationtItem(
     onCancel: () -> Unit = {},
     onNavigateToLiveTalk: () -> Unit = {}
 ) {
-    val isEndRecruitment = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(myParticipationModel.showAt) <= Date()
+    val isRecruitmenting = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(myParticipationModel.showAt) >= Date()
     Box(
         modifier = modifier
             .size(320.dp, 222.dp)
@@ -439,20 +456,31 @@ fun MyParticipationtItem(
             Box(
                 modifier = Modifier
                     .padding(start = 6.dp)
-                    .background(Grey8, RoundedCornerShape(4.dp))
+                    .background(
+                        if (myParticipationModel.curMemberNum < myParticipationModel.maxMemberNum && isRecruitmenting) {
+                            CurtainCallTheme.colors.secondary
+                        } else {
+                            Grey8
+                        },
+                        RoundedCornerShape(4.dp)
+                    )
                     .padding(vertical = 2.dp, horizontal = 6.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(
-                        if (myParticipationModel.curMemberNum == myParticipationModel.maxMemberNum || isEndRecruitment) {
-                            R.string.finish_recruitment
+                        if (myParticipationModel.curMemberNum < myParticipationModel.maxMemberNum && isRecruitmenting) {
+                            R.string.participating
                         } else {
-                            R.string.recruiting
+                            R.string.finish_recruitment
                         }
                     ),
                     style = CurtainCallTheme.typography.body5.copy(
-                        color = Grey4
+                        color = if (myParticipationModel.curMemberNum < myParticipationModel.maxMemberNum && isRecruitmenting) {
+                            CurtainCallTheme.colors.primary
+                        } else {
+                            Grey4
+                        }
                     )
                 )
             }
@@ -486,17 +514,21 @@ fun MyParticipationtItem(
                     .weight(1f)
                     .height(40.dp)
                     .background(
-                        color = CurtainCallTheme.colors.secondary,
+                        color = if (isRecruitmenting) CurtainCallTheme.colors.secondary else Grey9,
                         shape = RoundedCornerShape(bottomEnd = 12.dp)
                     )
-                    .clickable { onNavigateToLiveTalk() },
+                    .clickable {
+                        if (isRecruitmenting) {
+                            onNavigateToLiveTalk()
+                        }
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(R.string.enter_livetalk),
                     style = CurtainCallTheme.typography.body3.copy(
                         fontWeight = FontWeight.SemiBold,
-                        color = CurtainCallTheme.colors.primary
+                        color = if (isRecruitmenting) CurtainCallTheme.colors.primary else Grey6
                     )
                 )
             }
