@@ -83,6 +83,9 @@ private fun MyPageFAQContent(
             items(FAQMenu.values()) {
                 CurtainCallBasicChip(
                     text = it.value,
+                    textStyle = CurtainCallTheme.typography.body2.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
                     isSelect = it == menu,
                     onClick = { myPageFAQViewModel.selectFAQMenu(it) }
                 )
