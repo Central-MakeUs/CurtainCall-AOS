@@ -81,6 +81,11 @@ class PartyMemberViewModel @Inject constructor(
                     endDate = endDate
                 ).cachedIn(viewModelScope)
             )
+//            PartyMemberEvent.FetchPartyMember(
+//                partyModels = flow {
+//                    PagingData.empty<PartyModel>()
+//                }
+//            )
         )
     }
 
