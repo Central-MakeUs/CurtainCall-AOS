@@ -77,6 +77,9 @@ fun RowScope.CurtainCallNavigationBarItem(
         selected = selected,
         onClick = {
             navHostController.navigate(bottomDestination.route) {
+                popUpTo(bottomDestination.route) {
+                    inclusive = false
+                }
                 launchSingleTop = true
             }
         },
