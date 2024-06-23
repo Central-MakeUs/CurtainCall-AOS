@@ -3,9 +3,10 @@ package com.cmc.curtaincall.core.local.di
 import android.content.Context
 import androidx.room.Room
 import com.cmc.curtaincall.core.local.db.CurtainCallDatabase
-import com.cmc.curtaincall.core.local.db.MIGRATION_3_4
+import com.cmc.curtaincall.core.local.db.MIGRATION_4_5
 import com.cmc.curtaincall.core.local.db.dao.LostPropertySearchDao
 import com.cmc.curtaincall.core.local.db.dao.PartySearchDao
+import com.cmc.curtaincall.core.local.db.dao.ShowRankDao
 import com.cmc.curtaincall.core.local.db.dao.ShowSearchDao
 import dagger.Module
 import dagger.Provides
@@ -29,7 +30,7 @@ object DatabaseModule {
             context,
             CurtainCallDatabase::class.java,
             CURTAINCALL_DB
-        ).addMigrations(MIGRATION_3_4).build()
+        ).addMigrations(MIGRATION_4_5).build()
 
     @Provides
     @Singleton
@@ -37,6 +38,13 @@ object DatabaseModule {
         curtainCallDatabase: CurtainCallDatabase
     ): ShowSearchDao =
         curtainCallDatabase.showSearchDao()
+
+    @Provides
+    @Singleton
+    fun provideShowRankDao(
+        curtainCallDatabase: CurtainCallDatabase
+    ): ShowRankDao =
+        curtainCallDatabase.showRankDao()
 
     @Provides
     @Singleton

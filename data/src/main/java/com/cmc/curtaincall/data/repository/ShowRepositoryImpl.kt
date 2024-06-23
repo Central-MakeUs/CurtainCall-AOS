@@ -27,9 +27,9 @@ import javax.inject.Inject
 
 class ShowRepositoryImpl @Inject constructor(
     private val showRemoteSource: ShowRemoteSource,
+    private val showLocalSource: ShowLocalSource,
     private val showService: ShowService,
-    private val favoriteService: FavoriteService,
-    private val showLocalSource: ShowLocalSource
+    private val favoriteService: FavoriteService
 ) : ShowRepository {
 
     override fun getShowSearchWordList(): Flow<List<ShowSearchWordModel>> =
@@ -45,6 +45,22 @@ class ShowRepositoryImpl @Inject constructor(
 
     override suspend fun deleteShowSearchWordList() =
         showLocalSource.deleteShowSearchWordList()
+
+    override fun getShowRankCacheTime(): Flow<Long> =
+        showLocalSource.getShowRankCacheTime()
+
+    override suspend fun saveShowRankCacheTime(time: Long) {
+        showLocalSource.saveShowRankCacheTime(time)
+    }
+
+    override fun getShowRankList(): Flow<List<ShowRankModel>> =
+        showLocalSource.getShowRankList().map { entities ->
+            entities.map { it.toModel() }
+        }
+
+    override suspend fun saveShowRankList(showRanks: List<ShowRankModel>) {
+        showLocalSource.saveShowRankList(showRanks = showRanks)
+    }
 
     override fun fetchShowList(
         genre: String,
