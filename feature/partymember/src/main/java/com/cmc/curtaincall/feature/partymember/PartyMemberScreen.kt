@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.appbars.CurtainCallSearchTitleTopAppBarWithCalendar
@@ -259,7 +260,7 @@ private fun PartyMemberContent(
             )
         }
 
-        if (partyModels.itemCount == 0) {
+        if (partyModels.itemCount == 0 && partyModels.loadState.source.refresh is LoadState.Error) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Spacer(Modifier.weight(200f))
                 PartyEmptyContent(Modifier.align(Alignment.CenterHorizontally))

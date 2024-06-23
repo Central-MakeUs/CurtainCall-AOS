@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,7 @@ import coil.compose.AsyncImage
 import com.cmc.curtaincall.common.designsystem.R
 import com.cmc.curtaincall.common.designsystem.component.basic.DottedLine
 import com.cmc.curtaincall.common.designsystem.theme.CurtainCallTheme
+import com.cmc.curtaincall.common.designsystem.theme.Grey2
 import com.cmc.curtaincall.common.designsystem.theme.Grey3
 import com.cmc.curtaincall.common.designsystem.theme.Grey4
 import com.cmc.curtaincall.common.designsystem.theme.Grey8
@@ -39,6 +41,7 @@ import com.cmc.curtaincall.domain.model.member.MyRecruitmentModel
 import com.cmc.curtaincall.domain.model.party.PartyModel
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @Composable
 fun PartyEmptyContent(
@@ -92,6 +95,7 @@ fun PartyHomeContent(
     val showAt = myRecruitmentModel.showAt?.let {
         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(it)
     } ?: Date()
+    val today = Date()
 
     Column(
         modifier = modifier
@@ -222,23 +226,43 @@ fun PartyHomeContent(
                     )
                 )
             }
+//            if (partyModel.curMemberNum < partyModel.maxMemberNum && today <= showAt) {
+//                if (partyModel.isParticipation) {
+//                    R.string.participating
+//                } else {
+//                    R.string.recruiting
+//                }
+//            } else {
+//                R.string.finish_recruitment
+//            }
             Box(
                 modifier = Modifier
                     .padding(start = 6.dp)
-                    .background(Grey8, RoundedCornerShape(4.dp))
+                    .background(
+                        if (myRecruitmentModel.curMemberNum < myRecruitmentModel.maxMemberNum && today <= showAt) {
+                            CurtainCallTheme.colors.secondary
+                        } else {
+                            Grey8
+                        },
+                        RoundedCornerShape(4.dp)
+                    )
                     .padding(vertical = 2.dp, horizontal = 6.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(
-                        if (myRecruitmentModel.curMemberNum == myRecruitmentModel.maxMemberNum || showAt <= Date()) {
-                            R.string.finish_recruitment
+                        if (myRecruitmentModel.curMemberNum < myRecruitmentModel.maxMemberNum && today <= showAt) {
+                            R.string.participating
                         } else {
-                            R.string.recruiting
+                            R.string.finish_recruitment
                         }
                     ),
                     style = CurtainCallTheme.typography.body5.copy(
-                        color = Grey4
+                        color = if (myRecruitmentModel.curMemberNum < myRecruitmentModel.maxMemberNum && today <= showAt) {
+                            CurtainCallTheme.colors.primary
+                        } else {
+                            Grey4
+                        }
                     )
                 )
             }
@@ -253,8 +277,9 @@ fun PartyContent(
     onClick: () -> Unit = {}
 ) {
     val showAt = partyModel.showAt?.let {
-        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(it)
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).parse(it)
     } ?: Date()
+    val today = Date()
 
     Column(
         modifier = modifier
@@ -388,23 +413,54 @@ fun PartyContent(
             Box(
                 modifier = Modifier
                     .padding(start = 6.dp)
-                    .background(Grey8, RoundedCornerShape(4.dp))
+                    .background(
+                        if (partyModel.curMemberNum < partyModel.maxMemberNum && today <= showAt) {
+                            if (partyModel.isParticipation) {
+                                CurtainCallTheme.colors.secondary
+                            } else {
+                                CurtainCallTheme.colors.systemGreen.copy(0.1f)
+                            }
+                        } else {
+                            Grey8
+                        },
+                        RoundedCornerShape(4.dp)
+                    )
                     .padding(vertical = 2.dp, horizontal = 6.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(
-                        if (partyModel.curMemberNum == partyModel.maxMemberNum || showAt <= Date()) {
-                            R.string.finish_recruitment
+                        if (partyModel.curMemberNum < partyModel.maxMemberNum && today <= showAt) {
+                            if (partyModel.isParticipation) {
+                                R.string.participating
+                            } else {
+                                R.string.recruiting
+                            }
                         } else {
-                            R.string.recruiting
+                            R.string.finish_recruitment
                         }
                     ),
                     style = CurtainCallTheme.typography.body5.copy(
-                        color = Grey4
+                        color = if (partyModel.curMemberNum < partyModel.maxMemberNum && today <= showAt) {
+                            if (partyModel.isParticipation) {
+                                CurtainCallTheme.colors.primary
+                            } else {
+                                CurtainCallTheme.colors.systemGreen
+                            }
+                        } else {
+                            Grey4
+                        }
                     )
                 )
             }
+            Spacer(Modifier.weight(1f))
+            Text(
+                text = "${partyModel.curMemberNum}/${partyModel.maxMemberNum}",
+                modifier = Modifier.padding(end = 16.dp),
+                style = CurtainCallTheme.typography.body5.copy(
+                    color = Grey2
+                )
+            )
         }
     }
 }

@@ -29,6 +29,7 @@ fun MyNoticeContent(
     title: String,
     createdAt: String,
     isLast: Boolean = false,
+    isShowArrow: Boolean = true,
     onClick: () -> Unit = {}
 ) {
     Column(
@@ -36,6 +37,7 @@ fun MyNoticeContent(
             .padding(top = 20.dp)
             .padding(horizontal = 20.dp)
             .fillMaxWidth()
+            .clickable { onClick() }
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -52,14 +54,14 @@ fun MyNoticeContent(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Icon(
-                painter = painterResource(R.drawable.ic_arrow_right_pink),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(16.dp)
-                    .clickable { onClick() },
-                tint = Black
-            )
+            if (isShowArrow) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_right_pink),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = Black
+                )
+            }
         }
         Text(
             text = createdAt,

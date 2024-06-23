@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -70,11 +71,17 @@ private fun MyPageFavoriteContent(
         Row(modifier = Modifier.padding(start = 20.dp, top = 20.dp)) {
             CurtainCallBasicChip(
                 text = ShowGenreType.PLAY.value,
+                textStyle = CurtainCallTheme.typography.body2.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
                 isSelect = genreType == ShowGenreType.PLAY,
                 onClick = { myPageFavoriteViewModel.selectGenreType(ShowGenreType.PLAY) }
             )
             CurtainCallBasicChip(
                 text = ShowGenreType.MUSICAL.value,
+                textStyle = CurtainCallTheme.typography.body2.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
                 modifier = Modifier.padding(start = 8.dp),
                 isSelect = genreType == ShowGenreType.MUSICAL,
                 onClick = { myPageFavoriteViewModel.selectGenreType(ShowGenreType.MUSICAL) }

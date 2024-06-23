@@ -76,6 +76,7 @@ private fun MyPageNoticeDetailContent(
             MyNoticeContent(
                 title = noticeDetail.title,
                 createdAt = noticeDetail.createdAt.convertUIDate(),
+                isShowArrow = false,
                 onClick = onBack
             )
             Text(
