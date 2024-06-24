@@ -1,5 +1,8 @@
 package com.cmc.curtaincall.feature.mypage.faq
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -267,7 +271,11 @@ private fun MyPageFAQItem(
                     .background(Grey8)
             )
         }
-        if (isClick) {
+        AnimatedVisibility(
+            visible = isClick,
+            enter = expandVertically(expandFrom = Alignment.Top),
+            exit = shrinkVertically(shrinkTowards = Alignment.Bottom)
+        ) {
             Box(
                 modifier = Modifier
                     .padding(top = 13.dp)
