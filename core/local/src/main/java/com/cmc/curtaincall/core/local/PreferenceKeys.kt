@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 
 object PreferenceKeys {
+    val SERVER_URL = stringPreferencesKey("SERVER_URL")
+
     val ACCESS_TOKEN = stringPreferencesKey("ACCESS_TOKEN")
     val ACCESS_TOKEN_EXPIRESAT = stringPreferencesKey("ACCESS_TOKEN_EXPIRESAT")
     val REFRESH_TOKEN = stringPreferencesKey("REFRESH_TOKEN")

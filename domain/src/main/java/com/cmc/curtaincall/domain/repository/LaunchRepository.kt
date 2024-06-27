@@ -3,6 +3,9 @@ package com.cmc.curtaincall.domain.repository
 import kotlinx.coroutines.flow.Flow
 
 interface LaunchRepository {
+
+    suspend fun setServerUrl(url: String)
+
     fun getIsFirstEntryOnBoarding(): Flow<Boolean>
 
     suspend fun setIsFirstEntryOnBoarding()

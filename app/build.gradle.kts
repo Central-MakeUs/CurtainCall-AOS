@@ -52,6 +52,7 @@ dependencies {
     // firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.config)
 
     // test
     debugImplementation(libs.androidx.compose.ui.tooling)

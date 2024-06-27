@@ -1,5 +1,9 @@
 package com.cmc.curtaincall.core.network.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import com.cmc.curtaincall.core.local.PreferenceKeys
+import com.cmc.curtaincall.core.local.qualifiers.LaunchDataStore
 import com.cmc.curtaincall.core.network.BuildConfig
 import com.cmc.curtaincall.core.network.interceptors.CurtainCallInterceptor
 import com.cmc.curtaincall.core.network.qualifiers.LoggingClient
@@ -10,6 +14,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -26,25 +33,37 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideLoggingRetrofit(
-        @LoggingClient okHttpClient: OkHttpClient
-    ): Retrofit =
+        @LoggingClient okHttpClient: OkHttpClient,
+        @LaunchDataStore dataStore: DataStore<Preferences>
+    ): Retrofit = runBlocking {
+        val serverUrl = dataStore.data.map { preferences ->
+            preferences[PreferenceKeys.SERVER_URL] ?: BASE_URL
+        }.first()
+
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(serverUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
+    }
 
     @RefreshTokenRetrofit
     @Provides
     @Singleton
     fun provideRefreshTokenRetrofit(
-        @RefreshTokenClient okHttpClient: OkHttpClient
-    ): Retrofit =
+        @RefreshTokenClient okHttpClient: OkHttpClient,
+        @LaunchDataStore dataStore: DataStore<Preferences>
+    ): Retrofit = runBlocking {
+        val serverUrl = dataStore.data.map { preferences ->
+            preferences[PreferenceKeys.SERVER_URL] ?: BASE_URL
+        }.first()
+
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(serverUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
+    }
 
     @RefreshTokenClient
     @Provides
