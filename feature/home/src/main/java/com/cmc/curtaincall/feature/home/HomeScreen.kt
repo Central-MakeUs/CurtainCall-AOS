@@ -1,5 +1,8 @@
 package com.cmc.curtaincall.feature.home
 
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
@@ -7,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -18,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,6 +48,8 @@ import com.cmc.curtaincall.common.utility.extensions.convertSimpleDate
 import com.cmc.curtaincall.common.utility.extensions.toChangeDate
 import com.cmc.curtaincall.domain.enums.translateShowGenreType
 import com.cmc.curtaincall.domain.model.show.ShowRecommendationModel
+import kotlinx.coroutines.delay
+import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -265,6 +273,22 @@ private fun HomeContentsLazyRow(
     }
 }
 
+// ACTUAL OFFSET
+@OptIn(ExperimentalFoundationApi::class)
+fun PagerState.offsetForPage(page: Int) = (currentPage - page) + currentPageOffsetFraction
+
+// OFFSET ONLY FROM THE LEFT
+@OptIn(ExperimentalFoundationApi::class)
+fun PagerState.startOffsetForPage(page: Int): Float {
+    return offsetForPage(page).coerceAtLeast(0f)
+}
+
+// OFFSET ONLY FROM THE RIGHT
+@OptIn(ExperimentalFoundationApi::class)
+fun PagerState.endOffsetForPage(page: Int): Float {
+    return offsetForPage(page).coerceAtMost(0f)
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun HomeBannerScreen(
@@ -272,169 +296,196 @@ internal fun HomeBannerScreen(
     showRecommendations: List<ShowRecommendationModel>,
     onNavigateToPerformanceDetail: (String) -> Unit = {}
 ) {
-    val pagerState = rememberPagerState { showRecommendations.size + 1 }
+    val pageCount = showRecommendations.size + 1
+    val pagerState = rememberPagerState { Int.MAX_VALUE }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(5000)
+            pagerState.animateScrollToPage(
+                pagerState.currentPage + 1,
+                animationSpec = spring(stiffness = Spring.StiffnessVeryLow)
+            )
+        }
+    }
+
     HorizontalPager(
         state = pagerState,
         modifier = modifier
-    ) { position ->
-        if (position == 0) {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 20.dp)
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(CurtainCallTheme.colors.primary)
-                    .padding(top = 20.dp, bottom = 30.dp, start = 24.dp, end = 20.dp)
-            ) {
-                Row(Modifier.fillMaxWidth()) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_logo),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(top = 10.dp)
-                            .size(56.dp)
-                    )
-                    Spacer(Modifier.weight(1f))
-                    Box(
-                        modifier = Modifier
-                            .background(CurtainCallTheme.colors.background.copy(alpha = 0.2f), RoundedCornerShape(20.dp))
-                            .padding(vertical = 2.dp, horizontal = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = String.format("%d/%d", 1, pagerState.pageCount),
-                            style = CurtainCallTheme.typography.body5.copy(
-                                color = White
-                            )
-                        )
-                    }
-                }
-                Spacer(Modifier.weight(1f))
-                Text(
-                    text = stringResource(R.string.home_banner_renewal_description),
-                    style = CurtainCallTheme.typography.body4.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        color = White
-                    )
-                )
-                Text(
-                    text = stringResource(R.string.home_banner_renewal),
-                    modifier = Modifier.padding(top = 20.dp),
-                    style = CurtainCallTheme.typography.h2.copy(
-                        color = CurtainCallTheme.colors.secondary
-                    )
+    ) { page ->
+        val position = page % pageCount
+        Column(
+            modifier = Modifier.graphicsLayer {
+                val pageOffset = (pagerState.currentPage % pageCount) - position + pagerState.currentPageOffsetFraction
+                val offScreenRight = pageOffset < 0f
+                val deg = 105f
+                val interpolated = FastOutLinearInEasing.transform(pageOffset.absoluteValue)
+                rotationY = kotlin.math.min(interpolated * if (offScreenRight) deg else -deg, 90f)
+                transformOrigin = TransformOrigin(
+                    pivotFractionX = if (offScreenRight) 0f else 1f,
+                    pivotFractionY = .5f
                 )
             }
-        } else {
-            val brush = Brush.verticalGradient(listOf(Black.copy(alpha = 0f), Black.copy(alpha = 0.2f)))
-            val showRecommendation = showRecommendations[position - 1]
-            Box(
-                modifier = Modifier
-                    .clickable { onNavigateToPerformanceDetail(showRecommendations[position - 1].showId) }
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 20.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .fillMaxSize()
-            ) {
-                AsyncImage(
-                    model = showRecommendation.poster,
-                    contentDescription = null,
+        ) {
+            if (position == 0) {
+                Column(
                     modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 20.dp)
                         .fillMaxSize()
-                        .blur(80.dp),
-                    contentScale = ContentScale.FillBounds
-                )
-                Canvas(
-                    modifier = Modifier.fillMaxSize(),
-                    onDraw = {
-                        drawRect(brush)
-                    }
-                )
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(top = 20.dp, end = 20.dp)
-                        .background(CurtainCallTheme.colors.background.copy(alpha = 0.2f), RoundedCornerShape(20.dp))
-                        .padding(vertical = 2.dp, horizontal = 8.dp),
-                    contentAlignment = Alignment.Center
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(CurtainCallTheme.colors.primary)
+                        .padding(top = 20.dp, bottom = 30.dp, start = 24.dp, end = 20.dp)
                 ) {
+                    Row(Modifier.fillMaxWidth()) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_logo),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(top = 10.dp)
+                                .size(56.dp)
+                        )
+                        Spacer(Modifier.weight(1f))
+                        Box(
+                            modifier = Modifier
+                                .background(CurtainCallTheme.colors.background.copy(alpha = 0.2f), RoundedCornerShape(20.dp))
+                                .padding(vertical = 2.dp, horizontal = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = String.format("%d/%d", 1, pageCount),
+                                style = CurtainCallTheme.typography.body5.copy(
+                                    color = White
+                                )
+                            )
+                        }
+                    }
+                    Spacer(Modifier.weight(1f))
                     Text(
-                        text = String.format("%d/%d", position + 1, pagerState.pageCount),
-                        style = CurtainCallTheme.typography.body5.copy(
+                        text = stringResource(R.string.home_banner_renewal_description),
+                        style = CurtainCallTheme.typography.body4.copy(
+                            fontWeight = FontWeight.SemiBold,
                             color = White
                         )
                     )
+                    Text(
+                        text = stringResource(R.string.home_banner_renewal),
+                        modifier = Modifier.padding(top = 20.dp),
+                        style = CurtainCallTheme.typography.h2.copy(
+                            color = CurtainCallTheme.colors.secondary
+                        )
+                    )
                 }
-                Column(
+            } else {
+                val brush = Brush.verticalGradient(listOf(Black.copy(alpha = 0f), Black.copy(alpha = 0.2f)))
+                val showRecommendation = showRecommendations[position - 1]
+                Box(
                     modifier = Modifier
+                        .clickable { onNavigateToPerformanceDetail(showRecommendations[position - 1].showId) }
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 20.dp)
+                        .clip(RoundedCornerShape(14.dp))
                         .fillMaxSize()
-                        .padding(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     AsyncImage(
                         model = showRecommendation.poster,
                         contentDescription = null,
                         modifier = Modifier
-                            .size(137.dp, 182.dp)
-                            .clip(RoundedCornerShape(10.dp)),
+                            .fillMaxSize()
+                            .blur(80.dp),
                         contentScale = ContentScale.FillBounds
                     )
-                    Row(
-                        modifier = Modifier.padding(top = 16.dp)
+                    Canvas(
+                        modifier = Modifier.fillMaxSize(),
+                        onDraw = {
+                            drawRect(brush)
+                        }
+                    )
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 20.dp, end = 20.dp)
+                            .background(CurtainCallTheme.colors.background.copy(alpha = 0.2f), RoundedCornerShape(20.dp))
+                            .padding(vertical = 2.dp, horizontal = 8.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .background(CurtainCallTheme.colors.secondary, RoundedCornerShape(20.dp))
-                                .padding(vertical = 2.dp, horizontal = 8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = stringResource(R.string.home_banner_recommendation),
-                                style = CurtainCallTheme.typography.caption.copy(
-                                    color = CurtainCallTheme.colors.primary
-                                )
+                        Text(
+                            text = String.format("%d/%d", position + 1, pageCount),
+                            style = CurtainCallTheme.typography.body5.copy(
+                                color = White
                             )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .padding(start = 4.dp)
-                                .background(CurtainCallTheme.colors.primary, RoundedCornerShape(20.dp))
-                                .padding(vertical = 2.dp, horizontal = 8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = translateShowGenreType(showRecommendation.genre).value,
-                                style = CurtainCallTheme.typography.caption.copy(
-                                    color = CurtainCallTheme.colors.onPrimary
-                                )
-                            )
-                        }
+                        )
                     }
-                    Text(
-                        text = showRecommendation.description,
-                        modifier = Modifier.padding(top = Paddings.xlarge),
-                        style = CurtainCallTheme.typography.body5.copy(
-                            color = White
-                        ),
-                        maxLines = 1
-                    )
-                    Text(
-                        text = showRecommendation.name,
-                        modifier = Modifier.padding(top = Paddings.xsmall),
-                        style = CurtainCallTheme.typography.subTitle2.copy(
-                            color = White
-                        ),
-                        maxLines = 1
-                    )
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        text = String.format("%s - %s", showRecommendation.startDate.toChangeDate(), showRecommendation.endDate.toChangeDate()),
-                        style = CurtainCallTheme.typography.caption.copy(
-                            color = White
-                        ),
-                        maxLines = 1
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        AsyncImage(
+                            model = showRecommendation.poster,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(137.dp, 182.dp)
+                                .clip(RoundedCornerShape(10.dp)),
+                            contentScale = ContentScale.FillBounds
+                        )
+                        Row(
+                            modifier = Modifier.padding(top = 16.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .background(CurtainCallTheme.colors.secondary, RoundedCornerShape(20.dp))
+                                    .padding(vertical = 2.dp, horizontal = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.home_banner_recommendation),
+                                    style = CurtainCallTheme.typography.caption.copy(
+                                        color = CurtainCallTheme.colors.primary
+                                    )
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                                    .background(CurtainCallTheme.colors.primary, RoundedCornerShape(20.dp))
+                                    .padding(vertical = 2.dp, horizontal = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = translateShowGenreType(showRecommendation.genre).value,
+                                    style = CurtainCallTheme.typography.caption.copy(
+                                        color = CurtainCallTheme.colors.onPrimary
+                                    )
+                                )
+                            }
+                        }
+                        Text(
+                            text = showRecommendation.description,
+                            modifier = Modifier.padding(top = Paddings.xlarge),
+                            style = CurtainCallTheme.typography.body5.copy(
+                                color = White
+                            ),
+                            maxLines = 1
+                        )
+                        Text(
+                            text = showRecommendation.name,
+                            modifier = Modifier.padding(top = Paddings.xsmall),
+                            style = CurtainCallTheme.typography.subTitle2.copy(
+                                color = White
+                            ),
+                            maxLines = 1
+                        )
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            text = String.format("%s - %s", showRecommendation.startDate.toChangeDate(), showRecommendation.endDate.toChangeDate()),
+                            style = CurtainCallTheme.typography.caption.copy(
+                                color = White
+                            ),
+                            maxLines = 1
+                        )
+                    }
                 }
             }
         }
