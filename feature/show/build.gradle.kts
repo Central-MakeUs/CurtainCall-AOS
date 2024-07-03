@@ -24,6 +24,7 @@ dependencies {
     // compose
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.naver.map.compose)
+    implementation(libs.naver.map)
     implementation(libs.coil.compose)
     implementation(libs.calendar.compose)
 
