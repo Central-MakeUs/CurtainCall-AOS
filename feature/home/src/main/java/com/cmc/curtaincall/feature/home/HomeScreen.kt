@@ -1,5 +1,7 @@
 package com.cmc.curtaincall.feature.home
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -25,6 +27,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -314,6 +317,8 @@ internal fun HomeBannerScreen(
         modifier = modifier
     ) { page ->
         val position = page % pageCount
+        val context = LocalContext.current
+        val url = "https://www.instagram.com/curtaincall_official_/"
         Column(
             modifier = Modifier.graphicsLayer {
                 val pageOffset = (pagerState.currentPage % pageCount) - position + pagerState.currentPageOffsetFraction
@@ -336,6 +341,9 @@ internal fun HomeBannerScreen(
                         .clip(RoundedCornerShape(14.dp))
                         .background(CurtainCallTheme.colors.primary)
                         .padding(top = 20.dp, bottom = 30.dp, start = 24.dp, end = 20.dp)
+                        .clickable {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        }
                 ) {
                     Row(Modifier.fillMaxWidth()) {
                         Image(
