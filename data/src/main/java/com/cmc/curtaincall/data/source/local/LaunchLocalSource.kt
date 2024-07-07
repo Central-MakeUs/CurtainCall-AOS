@@ -8,6 +8,7 @@ import com.cmc.curtaincall.core.local.PreferenceKeys.IS_FIRST_ENTRY_SHOW_LIST
 import com.cmc.curtaincall.core.local.PreferenceKeys.IS_SHOW_HOME_TOOLTIP
 import com.cmc.curtaincall.core.local.PreferenceKeys.IS_SHOW_PARTY_SORT_TOOLTIP
 import com.cmc.curtaincall.core.local.PreferenceKeys.IS_SHOW_PARTY_TOOLTIPS
+import com.cmc.curtaincall.core.local.PreferenceKeys.SERVER_URL
 import com.cmc.curtaincall.core.local.qualifiers.LaunchDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,6 +17,12 @@ import javax.inject.Inject
 class LaunchLocalSource @Inject constructor(
     @LaunchDataStore private val dataStore: DataStore<Preferences>
 ) {
+    suspend fun setServerUrl(url: String) {
+        dataStore.edit { preferences ->
+            preferences[SERVER_URL] = url
+        }
+    }
+
     fun getIsFirstEntryOnBoarding(): Flow<Boolean> =
         dataStore.data.map { preferences ->
             preferences[IS_FIRST_ENTRY_ONBOARDING] ?: true

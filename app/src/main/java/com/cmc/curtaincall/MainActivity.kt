@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.Surface
@@ -30,11 +31,14 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var firebaseAnalytics: FirebaseAnalytics
 
+    private val mainViewModel by viewModels<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         installSplashScreen()
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        mainViewModel.fetchRemoteConfig()
         setContent {
             CurtainCallApp(chatClient = createChatClient(this@MainActivity))
         }

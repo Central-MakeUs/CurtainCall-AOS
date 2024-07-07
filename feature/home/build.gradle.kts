@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
     implementation(libs.coil.compose)
+    implementation(libs.naver.map.compose)
 
     implementation(libs.getstream.chat.android.compose)
 
