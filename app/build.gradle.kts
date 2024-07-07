@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
         applicationId = "com.cmc.curtaincall"
-        versionCode = 11
-        versionName = "1.0"
+        versionCode = 14
+        versionName = "2.0.2"
     }
 }
 

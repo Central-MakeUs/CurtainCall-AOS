@@ -26,7 +26,6 @@ androidxPagingCompose = "1.0.0-alpha18"
 accompanist-compose = "0.31.5-beta"
 calendar-compose = "2.4.0"
 naver-map-compose = "1.2.3"
-naver-map = "3.16.0"
 coil-compose = "2.4.0"
 bottomsheet-dialog = "1.2.2"
 getstream-chat-android-compose = "5.17.7"
@@ -128,7 +127,6 @@ accompanist-webview = { group = "com.google.accompanist", name = "accompanist-we
 accompanist-inset = { group = "com.google.accompanist", name = "accompanist-insets", version.ref = "accompanist-compose" }
 calendar-compose = { group = "com.kizitonwose.calendar", name = "compose", version.ref = "calendar-compose" }
 naver-map-compose = { group = "io.github.fornewid", name = "naver-map-compose", version.ref = "naver-map-compose" }
-naver-map = { group = "com.naver.maps", name = "map-sdk", version.ref = "naver-map" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-compose" }
 bottomsheet-dialog = { group = "com.holix.android", name = "bottomsheetdialog-compose", version.ref = "bottomsheet-dialog" }
 getstream-chat-android-compose = { group = "io.getstream", name = "stream-chat-android-compose", version.ref = "getstream-chat-android-compose" }
